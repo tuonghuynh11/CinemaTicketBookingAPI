@@ -15,7 +15,7 @@ namespace CinemaTicketBooking.Server.Scaffolds.Models.DataLayer.Contracts
 	{
 		Task<IEnumerable<Seats>> GetSeatsAsync(int pageSize = 10, int pageNumber = 1);
 
-		Task<Seats> GetSeatsAsync(Seats entity);
+		Task<Seats?> GetSeatsAsync(Seats entity);
 
 		Task<int> AddSeatsAsync(Seats entity);
 
@@ -25,7 +25,7 @@ namespace CinemaTicketBooking.Server.Scaffolds.Models.DataLayer.Contracts
 
 		Task<IEnumerable<FoodAndDrinks>> GetFoodAndDrinksAsync(int pageSize = 10, int pageNumber = 1);
 
-		Task<FoodAndDrinks> GetFoodAndDrinksAsync(FoodAndDrinks entity);
+		Task<FoodAndDrinks?> GetFoodAndDrinksAsync(FoodAndDrinks entity);
 
 		Task<int> AddFoodAndDrinksAsync(FoodAndDrinks entity);
 
@@ -35,7 +35,7 @@ namespace CinemaTicketBooking.Server.Scaffolds.Models.DataLayer.Contracts
 
 		Task<IEnumerable<Auditoriums>> GetAuditoriumsAsync(int pageSize = 10, int pageNumber = 1);
 
-		Task<Auditoriums> GetAuditoriumsAsync(Auditoriums entity);
+		Task<Auditoriums?> GetAuditoriumsAsync(Auditoriums entity);
 
 		Task<int> AddAuditoriumsAsync(Auditoriums entity);
 
@@ -45,7 +45,7 @@ namespace CinemaTicketBooking.Server.Scaffolds.Models.DataLayer.Contracts
 
 		Task<IEnumerable<Tickets>> GetTicketsAsync(int pageSize = 10, int pageNumber = 1);
 
-		Task<Tickets> GetTicketsAsync(Tickets entity);
+		Task<Tickets?> GetTicketsAsync(Tickets entity);
 
 		Task<int> AddTicketsAsync(Tickets entity);
 
@@ -55,7 +55,7 @@ namespace CinemaTicketBooking.Server.Scaffolds.Models.DataLayer.Contracts
 
 		Task<IEnumerable<Showtimes>> GetShowtimesAsync(int pageSize = 10, int pageNumber = 1);
 
-		Task<Showtimes> GetShowtimesAsync(Showtimes entity);
+		Task<Showtimes?> GetShowtimesAsync(Showtimes entity);
 
 		Task<int> AddShowtimesAsync(Showtimes entity);
 
@@ -65,7 +65,7 @@ namespace CinemaTicketBooking.Server.Scaffolds.Models.DataLayer.Contracts
 
 		Task<IEnumerable<Reservations>> GetReservationsAsync(int pageSize = 10, int pageNumber = 1);
 
-		Task<Reservations> GetReservationsAsync(Reservations entity);
+		Task<Reservations?> GetReservationsAsync(Reservations entity);
 
 		Task<int> AddReservationsAsync(Reservations entity);
 
@@ -75,7 +75,7 @@ namespace CinemaTicketBooking.Server.Scaffolds.Models.DataLayer.Contracts
 
 		Task<IEnumerable<Users>> GetUsersAsync(int pageSize = 10, int pageNumber = 1);
 
-		Task<Users> GetUsersAsync(Users entity);
+		Task<Users?> GetUsersAsync(Users entity);
 
 		Task<int> AddUsersAsync(Users entity);
 
@@ -85,7 +85,7 @@ namespace CinemaTicketBooking.Server.Scaffolds.Models.DataLayer.Contracts
 
 		Task<IEnumerable<Movies>> GetMoviesAsync(int pageSize = 10, int pageNumber = 1);
 
-		Task<Movies> GetMoviesAsync(Movies entity);
+		Task<Movies?> GetMoviesAsync(Movies entity);
 
 		Task<int> AddMoviesAsync(Movies entity);
 
@@ -95,7 +95,7 @@ namespace CinemaTicketBooking.Server.Scaffolds.Models.DataLayer.Contracts
 
 		Task<IEnumerable<Cinemas>> GetCinemasAsync(int pageSize = 10, int pageNumber = 1);
 
-		Task<Cinemas> GetCinemasAsync(Cinemas entity);
+		Task<Cinemas?> GetCinemasAsync(Cinemas entity);
 
 		Task<int> AddCinemasAsync(Cinemas entity);
 
@@ -105,7 +105,7 @@ namespace CinemaTicketBooking.Server.Scaffolds.Models.DataLayer.Contracts
 
 		Task<IEnumerable<Orders>> GetOrdersAsync(int pageSize = 10, int pageNumber = 1);
 
-		Task<Orders> GetOrdersAsync(Orders entity);
+		Task<Orders?> GetOrdersAsync(Orders entity);
 
 		Task<int> AddOrdersAsync(Orders entity);
 
@@ -115,7 +115,7 @@ namespace CinemaTicketBooking.Server.Scaffolds.Models.DataLayer.Contracts
 
 		Task<IEnumerable<Menus>> GetMenusAsync(int pageSize = 10, int pageNumber = 1);
 
-		Task<Menus> GetMenusAsync(Menus entity);
+		Task<Menus?> GetMenusAsync(Menus entity);
 
 		Task<int> AddMenusAsync(Menus entity);
 

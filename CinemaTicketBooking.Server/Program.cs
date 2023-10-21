@@ -37,8 +37,20 @@ namespace CinemaTicketBooking.Server
 			app.MapGet("/weatherforecast", async (HttpContext httpContext) =>
 			{
 				IEnumerable<Movies> movies = await httpContext.RequestServices.GetRequiredService<IPublicRepository>().GetMoviesAsync();
+				IEnumerable<Auditoriums> auditoriums = await httpContext.RequestServices.GetRequiredService<IPublicRepository>().GetAuditoriumsAsync();
+				IEnumerable<Cinemas> cinemas = await httpContext.RequestServices.GetRequiredService<IPublicRepository>().GetCinemasAsync();
+				IEnumerable<FoodAndDrinks> foodAndDrinks = await httpContext.RequestServices.GetRequiredService<IPublicRepository>().GetFoodAndDrinksAsync();
+				IEnumerable<Menus> menus = await httpContext.RequestServices.GetRequiredService<IPublicRepository>().GetMenusAsync();
+				IEnumerable<Orders> orders = await httpContext.RequestServices.GetRequiredService<IPublicRepository>().GetOrdersAsync();
+				IEnumerable<Reservations> reservations = await httpContext.RequestServices.GetRequiredService<IPublicRepository>().GetReservationsAsync();
+				IEnumerable<Seats> seats = await httpContext.RequestServices.GetRequiredService<IPublicRepository>().GetSeatsAsync();
+				IEnumerable<Showtimes> showtimes = await httpContext.RequestServices.GetRequiredService<IPublicRepository>().GetShowtimesAsync();
+				IEnumerable<Tickets> tickets = await httpContext.RequestServices.GetRequiredService<IPublicRepository>().GetTicketsAsync();
+				IEnumerable<Users> users = await httpContext.RequestServices.GetRequiredService<IPublicRepository>().GetUsersAsync();
 
-				return movies.Count();
+				Auditoriums? auditoriums1 = await httpContext.RequestServices.GetRequiredService<IPublicRepository>().GetAuditoriumsAsync(new(51));
+
+				return auditoriums1?.Name ?? "Unknown";
 
 				//var forecast = Enumerable.Range(1, 5).Select(index =>
 				//	new WeatherForecast
@@ -58,6 +70,7 @@ namespace CinemaTicketBooking.Server
 	}
 }
 
+//ensure ? for types (warnings)
 //ensure bracket "(" , ")"
 //ensure not empty where clause
 //ensure order by primary key(s)

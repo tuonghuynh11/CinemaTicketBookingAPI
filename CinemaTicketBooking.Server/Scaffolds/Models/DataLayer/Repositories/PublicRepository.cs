@@ -51,7 +51,7 @@ namespace CinemaTicketBooking.Server.Scaffolds.Models.DataLayer.Repositories
 			return await Connection.QueryAsync<Seats>(new CommandDefinition(query.ToString(), parameters));
 		}
 
-		public async Task<Seats> GetSeatsAsync(Seats entity)
+		public async Task<Seats?> GetSeatsAsync(Seats entity)
 		{
 			// Create string builder for query
 			var query = new StringBuilder();
@@ -207,7 +207,7 @@ namespace CinemaTicketBooking.Server.Scaffolds.Models.DataLayer.Repositories
 			return await Connection.QueryAsync<FoodAndDrinks>(new CommandDefinition(query.ToString(), parameters));
 		}
 
-		public async Task<FoodAndDrinks> GetFoodAndDrinksAsync(FoodAndDrinks entity)
+		public async Task<FoodAndDrinks?> GetFoodAndDrinksAsync(FoodAndDrinks entity)
 		{
 			// Create string builder for query
 			var query = new StringBuilder();
@@ -367,7 +367,7 @@ namespace CinemaTicketBooking.Server.Scaffolds.Models.DataLayer.Repositories
 			return await Connection.QueryAsync<Auditoriums>(new CommandDefinition(query.ToString(), parameters));
 		}
 
-		public async Task<Auditoriums> GetAuditoriumsAsync(Auditoriums entity)
+		public async Task<Auditoriums?> GetAuditoriumsAsync(Auditoriums entity)
 		{
 			// Create string builder for query
 			var query = new StringBuilder();
@@ -515,7 +515,7 @@ namespace CinemaTicketBooking.Server.Scaffolds.Models.DataLayer.Repositories
 			return await Connection.QueryAsync<Tickets>(new CommandDefinition(query.ToString(), parameters));
 		}
 
-		public async Task<Tickets> GetTicketsAsync(Tickets entity)
+		public async Task<Tickets?> GetTicketsAsync(Tickets entity)
 		{
 			// Create string builder for query
 			var query = new StringBuilder();
@@ -668,7 +668,7 @@ namespace CinemaTicketBooking.Server.Scaffolds.Models.DataLayer.Repositories
 			return await Connection.QueryAsync<Showtimes>(new CommandDefinition(query.ToString(), parameters));
 		}
 
-		public async Task<Showtimes> GetShowtimesAsync(Showtimes entity)
+		public async Task<Showtimes?> GetShowtimesAsync(Showtimes entity)
 		{
 			// Create string builder for query
 			var query = new StringBuilder();
@@ -847,7 +847,7 @@ namespace CinemaTicketBooking.Server.Scaffolds.Models.DataLayer.Repositories
 			return await Connection.QueryAsync<Reservations>(new CommandDefinition(query.ToString(), parameters));
 		}
 
-		public async Task<Reservations> GetReservationsAsync(Reservations entity)
+		public async Task<Reservations?> GetReservationsAsync(Reservations entity)
 		{
 			// Create string builder for query
 			var query = new StringBuilder();
@@ -1000,7 +1000,7 @@ namespace CinemaTicketBooking.Server.Scaffolds.Models.DataLayer.Repositories
 			return await Connection.QueryAsync<Users>(new CommandDefinition(query.ToString(), parameters));
 		}
 
-		public async Task<Users> GetUsersAsync(Users entity)
+		public async Task<Users?> GetUsersAsync(Users entity)
 		{
 			// Create string builder for query
 			var query = new StringBuilder();
@@ -1172,7 +1172,7 @@ namespace CinemaTicketBooking.Server.Scaffolds.Models.DataLayer.Repositories
 			return await Connection.QueryAsync<Movies>(new CommandDefinition(query.ToString(), parameters));
 		}
 
-		public async Task<Movies> GetMoviesAsync(Movies entity)
+		public async Task<Movies?> GetMoviesAsync(Movies entity)
 		{
 			// Create string builder for query
 			var query = new StringBuilder();
@@ -1464,7 +1464,7 @@ namespace CinemaTicketBooking.Server.Scaffolds.Models.DataLayer.Repositories
 			return await Connection.QueryAsync<Cinemas>(new CommandDefinition(query.ToString(), parameters));
 		}
 
-		public async Task<Cinemas> GetCinemasAsync(Cinemas entity)
+		public async Task<Cinemas?> GetCinemasAsync(Cinemas entity)
 		{
 			// Create string builder for query
 			var query = new StringBuilder();
@@ -1612,7 +1612,7 @@ namespace CinemaTicketBooking.Server.Scaffolds.Models.DataLayer.Repositories
 			return await Connection.QueryAsync<Orders>(new CommandDefinition(query.ToString(), parameters));
 		}
 
-		public async Task<Orders> GetOrdersAsync(Orders entity)
+		public async Task<Orders?> GetOrdersAsync(Orders entity)
 		{
 			// Create string builder for query
 			var query = new StringBuilder();
@@ -1763,7 +1763,7 @@ namespace CinemaTicketBooking.Server.Scaffolds.Models.DataLayer.Repositories
 			return await Connection.QueryAsync<Menus>(new CommandDefinition(query.ToString(), parameters));
 		}
 
-		public async Task<Menus> GetMenusAsync(Menus entity)
+		public async Task<Menus?> GetMenusAsync(Menus entity)
 		{
 			// Create string builder for query
 			var query = new StringBuilder();
