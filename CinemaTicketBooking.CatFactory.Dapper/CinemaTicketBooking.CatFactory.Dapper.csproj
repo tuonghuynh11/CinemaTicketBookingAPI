@@ -10,6 +10,13 @@
   <ItemGroup>
     <PackageReference Include="CatFactory.Dapper" Version="1.0.0-beta-sun-build53" />
     <PackageReference Include="CatFactory.PostgreSql" Version="1.0.0-beta-sun-build09" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="7.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="appsettings.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>

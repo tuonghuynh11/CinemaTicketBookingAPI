@@ -1,5 +1,7 @@
-﻿using CatFactory.Dapper;
+﻿using Microsoft.Extensions.Configuration;
+using CatFactory.Dapper;
 using CatFactory.PostgreSql;
+using CatFactory.ObjectRelationalMapping;
 
 namespace CinemaTicketBooking.CatFactory.Dapper
 {
@@ -7,59 +9,64 @@ namespace CinemaTicketBooking.CatFactory.Dapper
 	{
 		static void Main(string[] args)
 		{
-			// Create database factory
-			var databaseFactory = new PostgreSqlDatabaseFactory
+			ConfigurationBuilder configurationBuilder = new();
+			configurationBuilder
+				.SetBasePath(Directory.GetCurrentDirectory())
+				.AddJsonFile(path: "appsettings.json", optional: false, reloadOnChange: true);
+
+			IConfiguration configuration = configurationBuilder.Build();
+
+			DatabaseImportSettings databaseImportSettings = new()
 			{
-				DatabaseImportSettings = new DatabaseImportSettings
-				{
-					ConnectionString = "host=ep-sweet-haze-96588968.ap-southeast-1.aws.neon.tech;database=neondb;username=21520147;password=owKWv8iY5hkz;port=5432;",
-					ImportViews = true,
-					ImportTables = true,
-					ImportSequences = true,
-				}
+				ConnectionString = configuration["ConnectionStrings:DefaultConnection"],
+				ImportViews = true, ImportTables = true, ImportSequences = true,
 			};
 
-			// Import database
-			var database = databaseFactory.Import();
-
-			// Create instance of Dapper Project
-			var project = new DapperProject
+			PostgreSqlDatabaseFactory postgreSqlDatabaseFactory = new()
 			{
-				Name = "CinemaTicketBooking.Scaffold",
+				DatabaseImportSettings = databaseImportSettings,
+			};
+
+			Database database = postgreSqlDatabaseFactory.Import();
+
+			DapperProject dapperProject = new()
+			{
+				Name = "CinemaTicketBooking.Server.Scaffolds.Models",
 				Database = database,
-				OutputDirectory = @"CinemaTicketBooking.Scaffold"
+				OutputDirectory = Path.Combine(TryGetSolutionDirectoryInfo()?.FullName ?? "", "CinemaTicketBooking.Server", "Scaffolds", "Models")
 			};
 
-			// Apply settings for project
-			project.GlobalSelection(settings =>
+			dapperProject.GlobalSelection(dapperProjectSettings =>
 			{
-				settings.ForceOverwrite = true;
-				//	settings.UpdateExclusions = new List<string>
-				//{ "CreationUser", "CreationDateTime", "Timestamp" };
-				//	settings.InsertExclusions = new List<string>
-				//{ "LastUpdateUser", "LastUpdateDateTime", "Timestamp" };
+				dapperProjectSettings.ForceOverwrite = true;
+				dapperProjectSettings.AddPagingForGetAllOperation = true;
 			});
 
-			//project.Selection("Sales.OrderHeader",
-			//				   settings => settings.AddPagingForGetAllOperation = true);
+			//dapperProject.Selection("public.movies",
+			//dapperProjectSettings => dapperProjectSettings.AddPagingForGetAllOperation = true);
 
-			// Build features for project, group all entities by schema into a feature
-			project.BuildFeatures();
+			dapperProject.BuildFeatures();
 
-			// Add event handlers to before and after of scaffold
+			//dapperProject.ScaffoldingDefinition += (source, args) =>
+			//{
+			//};
 
-			project.ScaffoldingDefinition += (source, args) =>
+			//dapperProject.ScaffoldedDefinition  += (source, args) =>
+			//{
+			//};
+
+			dapperProject.ScaffoldEntityLayer().ScaffoldDataLayer();
+		}
+
+		public static DirectoryInfo? TryGetSolutionDirectoryInfo(string? currentPath = null)
+		{
+			DirectoryInfo? directory = new(
+				currentPath ?? Directory.GetCurrentDirectory());
+			while (directory != null && !directory.GetFiles("*.sln").Any())
 			{
-				// Add code to perform operations with code builder instance before to create code file
-			};
-
-			project.ScaffoldedDefinition += (source, args) =>
-			{
-				// Add code to perform operations after of create code file
-			};
-
-			// Scaffolding =^^=
-			project.ScaffoldEntityLayer().ScaffoldDataLayer();
+				directory = directory.Parent;
+			}
+			return directory;
 		}
 	}
 }
