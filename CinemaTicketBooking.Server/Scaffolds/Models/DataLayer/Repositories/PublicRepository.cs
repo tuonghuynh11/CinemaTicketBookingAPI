@@ -34,9 +34,10 @@ namespace CinemaTicketBooking.Server.Scaffolds.Models.DataLayer.Repositories
 			query.Append(" from ");
 			query.Append("  public.seats ");
 			query.Append(" where ");
+			query.Append("  true ");
 			query.Append(" order by ");
 			query.Append("  id ");
-			query.Append(" offset @pageSize * (@pageNumber - 1) rows ");
+			query.Append(" offset (@pageSize * (@pageNumber - 1)) rows ");
 			query.Append(" fetch next @pageSize rows only ");
 			
 			// Create parameters collection
@@ -189,9 +190,10 @@ namespace CinemaTicketBooking.Server.Scaffolds.Models.DataLayer.Repositories
 			query.Append(" from ");
 			query.Append("  public.food_and_drinks ");
 			query.Append(" where ");
+			query.Append("  true ");
 			query.Append(" order by ");
 			query.Append("  id ");
-			query.Append(" offset @pageSize * (@pageNumber - 1) rows ");
+			query.Append(" offset (@pageSize * (@pageNumber - 1)) rows ");
 			query.Append(" fetch next @pageSize rows only ");
 			
 			// Create parameters collection
@@ -348,9 +350,10 @@ namespace CinemaTicketBooking.Server.Scaffolds.Models.DataLayer.Repositories
 			query.Append(" from ");
 			query.Append("  public.auditoriums ");
 			query.Append(" where ");
+			query.Append("  true ");
 			query.Append(" order by ");
 			query.Append("  id ");
-			query.Append(" offset @pageSize * (@pageNumber - 1) rows ");
+			query.Append(" offset (@pageSize * (@pageNumber - 1)) rows ");
 			query.Append(" fetch next @pageSize rows only ");
 			
 			// Create parameters collection
@@ -495,9 +498,10 @@ namespace CinemaTicketBooking.Server.Scaffolds.Models.DataLayer.Repositories
 			query.Append(" from ");
 			query.Append("  public.tickets ");
 			query.Append(" where ");
+			query.Append("  true ");
 			query.Append(" order by ");
 			query.Append("  id ");
-			query.Append(" offset @pageSize * (@pageNumber - 1) rows ");
+			query.Append(" offset (@pageSize * (@pageNumber - 1)) rows ");
 			query.Append(" fetch next @pageSize rows only ");
 			
 			// Create parameters collection
@@ -647,9 +651,10 @@ namespace CinemaTicketBooking.Server.Scaffolds.Models.DataLayer.Repositories
 			query.Append(" from ");
 			query.Append("  public.showtimes ");
 			query.Append(" where ");
+			query.Append("  true ");
 			query.Append(" order by ");
 			query.Append("  id ");
-			query.Append(" offset @pageSize * (@pageNumber - 1) rows ");
+			query.Append(" offset (@pageSize * (@pageNumber - 1)) rows ");
 			query.Append(" fetch next @pageSize rows only ");
 			
 			// Create parameters collection
@@ -824,9 +829,11 @@ namespace CinemaTicketBooking.Server.Scaffolds.Models.DataLayer.Repositories
 			query.Append(" from ");
 			query.Append("  public.reservations ");
 			query.Append(" where ");
+			query.Append("  true ");
 			query.Append(" order by ");
-			query.Append("  showtime_id ");
-			query.Append(" offset @pageSize * (@pageNumber - 1) rows ");
+			query.Append("  showtime_id, ");
+			query.Append("  seat_id ");
+			query.Append(" offset (@pageSize * (@pageNumber - 1)) rows ");
 			query.Append(" fetch next @pageSize rows only ");
 			
 			// Create parameters collection
@@ -976,9 +983,10 @@ namespace CinemaTicketBooking.Server.Scaffolds.Models.DataLayer.Repositories
 			query.Append(" from ");
 			query.Append("  public.users ");
 			query.Append(" where ");
+			query.Append("  true ");
 			query.Append(" order by ");
 			query.Append("  id ");
-			query.Append(" offset @pageSize * (@pageNumber - 1) rows ");
+			query.Append(" offset (@pageSize * (@pageNumber - 1)) rows ");
 			query.Append(" fetch next @pageSize rows only ");
 			
 			// Create parameters collection
@@ -1147,9 +1155,10 @@ namespace CinemaTicketBooking.Server.Scaffolds.Models.DataLayer.Repositories
 			query.Append(" from ");
 			query.Append("  public.movies ");
 			query.Append(" where ");
+			query.Append("  true ");
 			query.Append(" order by ");
-			query.Append("  adult ");
-			query.Append(" offset @pageSize * (@pageNumber - 1) rows ");
+			query.Append("  id ");
+			query.Append(" offset (@pageSize * (@pageNumber - 1)) rows ");
 			query.Append(" fetch next @pageSize rows only ");
 			
 			// Create parameters collection
@@ -1438,9 +1447,10 @@ namespace CinemaTicketBooking.Server.Scaffolds.Models.DataLayer.Repositories
 			query.Append(" from ");
 			query.Append("  public.cinemas ");
 			query.Append(" where ");
+			query.Append("  true ");
 			query.Append(" order by ");
 			query.Append("  id ");
-			query.Append(" offset @pageSize * (@pageNumber - 1) rows ");
+			query.Append(" offset (@pageSize * (@pageNumber - 1)) rows ");
 			query.Append(" fetch next @pageSize rows only ");
 			
 			// Create parameters collection
@@ -1584,9 +1594,11 @@ namespace CinemaTicketBooking.Server.Scaffolds.Models.DataLayer.Repositories
 			query.Append(" from ");
 			query.Append("  public.orders ");
 			query.Append(" where ");
+			query.Append("  true ");
 			query.Append(" order by ");
-			query.Append("  ticket_id ");
-			query.Append(" offset @pageSize * (@pageNumber - 1) rows ");
+			query.Append("  ticket_id, ");
+			query.Append("  food_and_drink_id ");
+			query.Append(" offset (@pageSize * (@pageNumber - 1)) rows ");
 			query.Append(" fetch next @pageSize rows only ");
 			
 			// Create parameters collection
@@ -1732,9 +1744,12 @@ namespace CinemaTicketBooking.Server.Scaffolds.Models.DataLayer.Repositories
 			query.Append(" from ");
 			query.Append("  public.menus ");
 			query.Append(" where ");
+			query.Append("  true ");
 			query.Append(" order by ");
-			query.Append("  cinema_id ");
-			query.Append(" offset @pageSize * (@pageNumber - 1) rows ");
+			query.Append("  cinema_id, ");
+			query.Append("  food_and_drink_id, ");
+			query.Append("  serving_size ");
+			query.Append(" offset (@pageSize * (@pageNumber - 1)) rows ");
 			query.Append(" fetch next @pageSize rows only ");
 			
 			// Create parameters collection

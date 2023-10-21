@@ -57,3 +57,7 @@ namespace CinemaTicketBooking.Server
 		}
 	}
 }
+
+//ensure bracket "(" , ")"
+//ensure not empty where clause
+//ensure order by primary key(s)
