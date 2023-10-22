@@ -1,4 +1,6 @@
 using Npgsql;
+using System.Globalization;
+using Microsoft.AspNetCore.Mvc;
 using CinemaTicketBooking.Server.Scaffolds.Models.EntityLayer;
 using CinemaTicketBooking.Server.Scaffolds.Models.DataLayer.Contracts;
 using CinemaTicketBooking.Server.Scaffolds.Models.DataLayer.Repositories;
@@ -18,10 +20,12 @@ namespace CinemaTicketBooking.Server
 			builder.Services.AddEndpointsApiExplorer();
 			builder.Services.AddSwaggerGen();
 
-			builder.Services.AddScoped<IPublicRepository, PublicRepository>(serviceProvide
+			builder.Services.AddScoped<IPublicRepository, PublicRepository>(serviceProvider
 				=> new PublicRepository(new NpgsqlConnection(builder.Configuration["ConnectionStrings:DefaultConnection"])));
 
 			WebApplication app = builder.Build();
+
+			app.UseRouting();
 
 			// Configure the HTTP request pipeline.
 			if (app.Environment.IsDevelopment())
@@ -34,39 +38,49 @@ namespace CinemaTicketBooking.Server
 
 			app.UseAuthorization();
 
-			app.MapGet("/weatherforecast", async (HttpContext httpContext) =>
+#pragma warning disable ASP0014
+			app.UseEndpoints(endpoints =>
 			{
-				IEnumerable<Movies> movies = await httpContext.RequestServices.GetRequiredService<IPublicRepository>().GetMoviesAsync();
-				IEnumerable<Auditoriums> auditoriums = await httpContext.RequestServices.GetRequiredService<IPublicRepository>().GetAuditoriumsAsync();
-				IEnumerable<Cinemas> cinemas = await httpContext.RequestServices.GetRequiredService<IPublicRepository>().GetCinemasAsync();
-				IEnumerable<FoodAndDrinks> foodAndDrinks = await httpContext.RequestServices.GetRequiredService<IPublicRepository>().GetFoodAndDrinksAsync();
-				IEnumerable<Menus> menus = await httpContext.RequestServices.GetRequiredService<IPublicRepository>().GetMenusAsync();
-				IEnumerable<Orders> orders = await httpContext.RequestServices.GetRequiredService<IPublicRepository>().GetOrdersAsync();
-				IEnumerable<Reservations> reservations = await httpContext.RequestServices.GetRequiredService<IPublicRepository>().GetReservationsAsync();
-				IEnumerable<Seats> seats = await httpContext.RequestServices.GetRequiredService<IPublicRepository>().GetSeatsAsync();
-				IEnumerable<Showtimes> showtimes = await httpContext.RequestServices.GetRequiredService<IPublicRepository>().GetShowtimesAsync();
-				IEnumerable<Tickets> tickets = await httpContext.RequestServices.GetRequiredService<IPublicRepository>().GetTicketsAsync();
-				IEnumerable<Users> users = await httpContext.RequestServices.GetRequiredService<IPublicRepository>().GetUsersAsync();
+				using (IServiceScope scope = endpoints.ServiceProvider.CreateScope())
+				{
+					IPublicRepository publicRepository = scope.ServiceProvider.GetRequiredService<IPublicRepository>();
 
-				Auditoriums? auditoriums1 = await httpContext.RequestServices.GetRequiredService<IPublicRepository>().GetAuditoriumsAsync(new(51));
+					List<(string pattern, Func<int, int, Task<IEnumerable<IEntity>>> getDataMethod)> groups
+					= new()
+					{
+						("/auditoriums", ToGenericAsync<Auditoriums>(publicRepository.GetAuditoriumsAsync)),
+						("/showtimes", ToGenericAsync<Showtimes>(publicRepository.GetShowtimesAsync)),
+						("/users", ToGenericAsync<Users>(publicRepository.GetUsersAsync)),
+						("/seats", ToGenericAsync<Seats>(publicRepository.GetSeatsAsync)),
+						("/menus", ToGenericAsync<Menus>(publicRepository.GetMenusAsync)),
+						("/movies", ToGenericAsync<Movies>(publicRepository.GetMoviesAsync)),
+						("/orders", ToGenericAsync<Orders>(publicRepository.GetOrdersAsync)),
+						("/cinemas", ToGenericAsync<Cinemas>(publicRepository.GetCinemasAsync)),
+						("/tickets", ToGenericAsync<Tickets>(publicRepository.GetTicketsAsync)),
+						("/reservations", ToGenericAsync<Reservations>(publicRepository.GetReservationsAsync)),
+						("/food-and-drinks", ToGenericAsync<FoodAndDrinks>(publicRepository.GetFoodAndDrinksAsync)),
+					};
 
-				return auditoriums1?.Name ?? "Unknown";
-
-				//var forecast = Enumerable.Range(1, 5).Select(index =>
-				//	new WeatherForecast
-				//	{
-				//		Date = DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-				//		TemperatureC = Random.Shared.Next(-20, 55),
-				//		Summary = summaries[Random.Shared.Next(summaries.Length)]
-				//	})
-				//	.ToArray();
-				//return forecast;
-			})
-			.WithName("GetWeatherForecast")
-			.WithOpenApi();
+					foreach ((string pattern, Func<int, int, Task<IEnumerable<IEntity>>> getDataMethod) in groups)
+					{
+						endpoints.MapGet(pattern, async (
+						[FromQuery(Name = "page-size")] int? pageSize, [FromQuery(Name = "page-number")] int? pageNumber) =>
+						{
+							return await getDataMethod(pageSize ?? 10, pageNumber ?? 1);
+						})
+						.WithOpenApi()
+						.WithName($"Get{CultureInfo.CurrentCulture.TextInfo.ToTitleCase(pattern.Remove(startIndex: 0, count: 1))}");
+					}
+				}
+			});
+#pragma warning restore ASP0014
 
 			app.Run();
 		}
+
+		public static Func<int, int, Task<IEnumerable<IEntity>>> ToGenericAsync<T>
+		             (Func<int, int, Task<IEnumerable<T>>> getDataMethod) where T : IEntity =>
+		   async (int pageSize, int pageNumber) => (IEnumerable<IEntity>) await getDataMethod(pageSize, pageNumber);
 	}
 }
 
