@@ -182,7 +182,7 @@ namespace CinemaTicketBooking.Server
 		public static void Map_SELECT_ByMatchingProperties<T>
 		(this IEndpointRouteBuilder endpoints, string pattern, Func<T, Task<T?>> SELECT_ByMatchingPropertiesDataMethod)
 		{
-			endpoints.MapPost($"/select/matching-properties{pattern}", async (T entity) =>
+			endpoints.MapGet($"/select/matching-properties{pattern}", async ([FromBody] T entity) =>
 				await SELECT_ByMatchingPropertiesDataMethod(entity))
 			.WithOpenApi().WithName($"SELECT_ByMatchingProperties{pattern.PatternToTitleCase()}");
 		}
@@ -190,7 +190,7 @@ namespace CinemaTicketBooking.Server
 		public static void Map_INSERT_JustOne<T>
 		(this IEndpointRouteBuilder endpoints, string pattern, Func<T, Task<int>> INSERT_JustOneDataMethod)
 		{
-			endpoints.MapPost($"/insert/just-one{pattern}", async (T entity) =>
+			endpoints.MapPost($"/insert/just-one{pattern}", async ([FromBody] T entity) =>
 				await INSERT_JustOneDataMethod(entity))
 			.WithOpenApi().WithName($"INSERT_JustOne{pattern.PatternToTitleCase()}");
 		}
@@ -198,7 +198,7 @@ namespace CinemaTicketBooking.Server
 		public static void Map_UPDATE_JustOne<T>
 		(this IEndpointRouteBuilder endpoints, string pattern, Func<T, Task<int>> UPDATE_JustOneDataMethod)
 		{
-			endpoints.MapPost($"/update/just-one{pattern}", async (T entity) =>
+			endpoints.MapPut($"/update/just-one{pattern}", async ([FromBody] T entity) =>
 				await UPDATE_JustOneDataMethod(entity))
 			.WithOpenApi().WithName($"UPDATE_JustOne{pattern.PatternToTitleCase()}");
 		}
@@ -206,7 +206,7 @@ namespace CinemaTicketBooking.Server
 		public static void Map_DELETE_JustOne<T>
 		(this IEndpointRouteBuilder endpoints, string pattern, Func<T, Task<int>> DELETE_JustOneDataMethod)
 		{
-			endpoints.MapPost($"/delete/just-one{pattern}", async (T entity) =>
+			endpoints.MapDelete($"/delete/just-one{pattern}", async ([FromBody] T entity) =>
 				await DELETE_JustOneDataMethod(entity))
 			.WithOpenApi().WithName($"DELETE_JustOne{pattern.PatternToTitleCase()}");
 		}
