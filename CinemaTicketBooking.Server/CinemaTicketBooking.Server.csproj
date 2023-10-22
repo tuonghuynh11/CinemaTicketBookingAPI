@@ -10,6 +10,7 @@
     <PackageReference Include="Dapper" Version="2.1.15" />
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="7.0.12" />
     <PackageReference Include="Npgsql" Version="7.0.6" />
+    <PackageReference Include="OneOf" Version="3.0.263" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
   </ItemGroup>
 

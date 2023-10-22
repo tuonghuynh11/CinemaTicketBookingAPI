@@ -45,37 +45,51 @@ namespace CinemaTicketBooking.Server
 				{
 					IPublicRepository publicRepository = scope.ServiceProvider.GetRequiredService<IPublicRepository>();
 
-					List<(string pattern, Func<int, int, Task<IEnumerable<IEntity>>> getDataMethod)> groups
-					= new()
-					{
-						("/auditoriums", ToGenericAsync<Auditoriums>(publicRepository.GetAuditoriumsAsync)),
-						("/showtimes", ToGenericAsync<Showtimes>(publicRepository.GetShowtimesAsync)),
-						("/users", ToGenericAsync<Users>(publicRepository.GetUsersAsync)),
-						("/seats", ToGenericAsync<Seats>(publicRepository.GetSeatsAsync)),
-						("/menus", ToGenericAsync<Menus>(publicRepository.GetMenusAsync)),
-						("/movies", ToGenericAsync<Movies>(publicRepository.GetMoviesAsync)),
-						("/orders", ToGenericAsync<Orders>(publicRepository.GetOrdersAsync)),
-						("/cinemas", ToGenericAsync<Cinemas>(publicRepository.GetCinemasAsync)),
-						("/tickets", ToGenericAsync<Tickets>(publicRepository.GetTicketsAsync)),
-						("/reservations", ToGenericAsync<Reservations>(publicRepository.GetReservationsAsync)),
-						("/food-and-drinks", ToGenericAsync<FoodAndDrinks>(publicRepository.GetFoodAndDrinksAsync)),
-					};
+					Map_SELECT_Entire<Auditoriums>(endpoints, "/auditoriums", publicRepository.GetAuditoriumsAsync);
+					Map_SELECT_Entire<Showtimes>(endpoints, "/showtimes", publicRepository.GetShowtimesAsync);
+					Map_SELECT_Entire<Users>(endpoints, "/users", publicRepository.GetUsersAsync);
+					Map_SELECT_Entire<Seats>(endpoints, "/seats", publicRepository.GetSeatsAsync);
+					Map_SELECT_Entire<Menus>(endpoints, "/menus", publicRepository.GetMenusAsync);
+					Map_SELECT_Entire<Movies>(endpoints, "/movies", publicRepository.GetMoviesAsync);
+					Map_SELECT_Entire<Orders>(endpoints, "/orders", publicRepository.GetOrdersAsync);
+					Map_SELECT_Entire<Cinemas>(endpoints, "/cinemas", publicRepository.GetCinemasAsync);
+					Map_SELECT_Entire<Tickets>(endpoints, "/tickets", publicRepository.GetTicketsAsync);
+					Map_SELECT_Entire<Reservations>(endpoints, "/reservations", publicRepository.GetReservationsAsync);
+					Map_SELECT_Entire<FoodAndDrinks>(endpoints, "/food-and-drinks", publicRepository.GetFoodAndDrinksAsync);
 
-					foreach ((string pattern, Func<int, int, Task<IEnumerable<IEntity>>> getDataMethod) in groups)
-					{
-						endpoints.MapGet(pattern, async (
-						[FromQuery(Name = "page-size")] int? pageSize, [FromQuery(Name = "page-number")] int? pageNumber) =>
-						{
-							return await getDataMethod(pageSize ?? 10, pageNumber ?? 1);
-						})
-						.WithOpenApi()
-						.WithName($"Get{CultureInfo.CurrentCulture.TextInfo.ToTitleCase(pattern.Remove(startIndex: 0, count: 1))}");
-					}
+					Map_SELECT_ByMatchingProperties<Auditoriums>(endpoints, "/auditoriums", publicRepository.GetAuditoriumsAsync);
+					Map_SELECT_ByMatchingProperties<Showtimes>(endpoints, "/showtimes", publicRepository.GetShowtimesAsync);
+					Map_SELECT_ByMatchingProperties<Users>(endpoints, "/users", publicRepository.GetUsersAsync);
+					Map_SELECT_ByMatchingProperties<Seats>(endpoints, "/seats", publicRepository.GetSeatsAsync);
+					Map_SELECT_ByMatchingProperties<Menus>(endpoints, "/menus", publicRepository.GetMenusAsync);
+					Map_SELECT_ByMatchingProperties<Movies>(endpoints, "/movies", publicRepository.GetMoviesAsync);
+					Map_SELECT_ByMatchingProperties<Orders>(endpoints, "/orders", publicRepository.GetOrdersAsync);
+					Map_SELECT_ByMatchingProperties<Cinemas>(endpoints, "/cinemas", publicRepository.GetCinemasAsync);
+					Map_SELECT_ByMatchingProperties<Tickets>(endpoints, "/tickets", publicRepository.GetTicketsAsync);
+					Map_SELECT_ByMatchingProperties<Reservations>(endpoints, "/reservations", publicRepository.GetReservationsAsync);
+					Map_SELECT_ByMatchingProperties<FoodAndDrinks>(endpoints, "/food-and-drinks", publicRepository.GetFoodAndDrinksAsync);
 				}
 			});
 #pragma warning restore ASP0014
 
 			app.Run();
+		}
+
+		public static void Map_SELECT_Entire<T>
+		(IEndpointRouteBuilder endpoints, string pattern, Func<int, int, Task<IEnumerable<T>>> SELECT_EntireDataMethod)
+		{
+			endpoints.MapGet($"/entire{pattern}", async (
+			[FromQuery(Name = "page-size")] int pageSize, [FromQuery(Name = "page-number")] int pageNumber) =>
+			      await SELECT_EntireDataMethod(pageSize, pageNumber))
+			.WithOpenApi()
+			.WithName($"SELECT_Entire{CultureInfo.CurrentCulture.TextInfo.ToTitleCase(pattern.Remove(startIndex: 0, count: 1))}");
+		}
+
+		public static void Map_SELECT_ByMatchingProperties<T>
+		(IEndpointRouteBuilder endpoints, string pattern, Func<T, Task<T?>> SELECT_ByMatchingPropertiesDataMethod)
+		{
+			endpoints.MapPost($"/matching-properties{pattern}", async (T entity) => await SELECT_ByMatchingPropertiesDataMethod(entity))
+			.WithOpenApi().WithName($"SELECT_ByMatchingProperties{CultureInfo.CurrentCulture.TextInfo.ToTitleCase(pattern.Remove(startIndex: 0, count: 1))}");
 		}
 
 		public static Func<int, int, Task<IEnumerable<IEntity>>> ToGenericAsync<T>
