@@ -2,22 +2,22 @@ using System;
 
 namespace CinemaTicketBooking.Server.Scaffolds.Models.EntityLayer
 {
-	public class Cinemas : IEntity
+	public class Feedbacks : IEntity
 	{
-		public Cinemas()
+		public Feedbacks()
 		{
 		}
 
-		public Cinemas(long id)
+		public Feedbacks(long id)
 		{
 			Id = id;
 		}
 
 		public long Id { get; set; }
 
-		public string Name { get; set; } = null!;
+		public long UserId { get; set; }
 
-		public string Address { get; set; } = null!;
+		public string Content { get; set; } = null!;
 
 		public DateTime CreatedTimestamp { get; set; }
 

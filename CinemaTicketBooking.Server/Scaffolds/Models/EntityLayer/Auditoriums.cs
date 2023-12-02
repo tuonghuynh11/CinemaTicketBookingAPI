@@ -8,20 +8,20 @@ namespace CinemaTicketBooking.Server.Scaffolds.Models.EntityLayer
 		{
 		}
 
-		public Auditoriums(long? id)
+		public Auditoriums(long id)
 		{
 			Id = id;
 		}
 
-		public long? Id { get; set; }
+		public long Id { get; set; }
 
-		public string Name { get; set; }
+		public string Name { get; set; } = null!;
 
-		public long? CinemaId { get; set; }
+		public long CinemaId { get; set; }
 
-		public DateTime? UpdatedTimestamp { get; set; }
+		public DateTime UpdatedTimestamp { get; set; }
 
-		public DateTime? CreatedTimestamp { get; set; }
+		public DateTime CreatedTimestamp { get; set; }
 
 	}
 }

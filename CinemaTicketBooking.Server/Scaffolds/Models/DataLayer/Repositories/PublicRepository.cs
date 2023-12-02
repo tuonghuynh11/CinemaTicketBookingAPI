@@ -18,6 +18,154 @@ namespace CinemaTicketBooking.Server.Scaffolds.Models.DataLayer.Repositories
 		{
 		}
 
+		public async Task<IEnumerable<Feedbacks>> GetFeedbacksAsync(int pageSize = 10, int pageNumber = 1)
+		{
+			// Create string builder for query
+			var query = new StringBuilder();
+			
+			// Create sql statement
+			query.Append(" select ");
+			query.Append("  id Id, ");
+			query.Append("  user_id UserId , ");
+			query.Append("  content Content, ");
+			query.Append("  created_timestamp CreatedTimestamp, ");
+			query.Append("  updated_timestamp UpdatedTimestamp  ");
+			query.Append(" from ");
+			query.Append("  public.feedbacks ");
+			query.Append(" where ");
+			query.Append("  true ");
+			query.Append(" order by ");
+			query.Append("  id ");
+			query.Append(" offset (@pageSize * (@pageNumber - 1)) rows ");
+			query.Append(" fetch next @pageSize rows only ");
+			
+			// Create parameters collection
+			var parameters = new DynamicParameters();
+			
+			// Add parameters to collection
+			parameters.Add("@pageSize", pageSize);
+			parameters.Add("@pageNumber", pageNumber);
+			
+			// Retrieve result from database and convert to typed list
+			return await Connection.QueryAsync<Feedbacks>(new CommandDefinition(query.ToString(), parameters));
+		}
+
+		public async Task<Feedbacks?> GetFeedbacksAsync(Feedbacks entity)
+		{
+			// Create string builder for query
+			var query = new StringBuilder();
+			
+			// Create sql statement
+			query.Append(" select ");
+			query.Append("  id Id, ");
+			query.Append("  user_id UserId, ");
+			query.Append("  content Content, ");
+			query.Append("  created_timestamp CreatedTimestamp, ");
+			query.Append("  updated_timestamp UpdatedTimestamp ");
+			query.Append(" from ");
+			query.Append("  public.feedbacks ");
+			query.Append(" where ");
+			query.Append("  id = @id ");
+			
+			// Create parameters collection
+			var parameters = new DynamicParameters();
+			
+			// Add parameters to collection
+			parameters.Add("id", entity.Id);
+			
+			// Retrieve result from database and convert to entity class
+			return await Connection.QueryFirstOrDefaultAsync<Feedbacks>(query.ToString(), parameters);
+		}
+
+		public async Task<int> AddFeedbacksAsync(Feedbacks entity)
+		{
+			// Create string builder for query
+			var query = new StringBuilder();
+			
+			// Create sql statement
+			query.Append(" insert into ");
+			query.Append("  public.feedbacks ");
+			query.Append("  ( ");
+			query.Append("   id, ");
+			query.Append("   user_id, ");
+			query.Append("   content, ");
+			query.Append("   created_timestamp, ");
+			query.Append("   updated_timestamp ");
+			query.Append("  ) ");
+			query.Append(" values ");
+			query.Append(" ( ");
+			query.Append("  @id, ");
+			query.Append("  @userId, ");
+			query.Append("  @content, ");
+			query.Append("  @createdTimestamp, ");
+			query.Append("  @updatedTimestamp ");
+			query.Append(" ) ");
+			
+			// Create parameters collection
+			var parameters = new DynamicParameters();
+			
+			// Add parameters to collection
+			parameters.Add("@id", entity.Id);
+			parameters.Add("@userId", entity.UserId);
+			parameters.Add("@content", entity.Content);
+			parameters.Add("@createdTimestamp", entity.CreatedTimestamp);
+			parameters.Add("@updatedTimestamp", entity.UpdatedTimestamp);
+			
+			// Execute query in database
+			return await Connection.ExecuteAsync(new CommandDefinition(query.ToString(), parameters));
+		}
+
+		public async Task<int> UpdateFeedbacksAsync(Feedbacks entity)
+		{
+			// Create string builder for query
+			var query = new StringBuilder();
+			
+			// Create sql statement
+			query.Append(" update ");
+			query.Append("  public.feedbacks ");
+			query.Append(" set ");
+			query.Append("  user_id = @userId, ");
+			query.Append("  content = @content, ");
+			query.Append("  created_timestamp = @createdTimestamp, ");
+			query.Append("  updated_timestamp = @updatedTimestamp ");
+			query.Append(" where ");
+			query.Append("  id = @id ");
+			
+			// Create parameters collection
+			var parameters = new DynamicParameters();
+			
+			// Add parameters to collection
+			parameters.Add("@userId", entity.UserId);
+			parameters.Add("@content", entity.Content);
+			parameters.Add("@createdTimestamp", entity.CreatedTimestamp);
+			parameters.Add("@updatedTimestamp", entity.UpdatedTimestamp);
+			parameters.Add("@id", entity.Id);
+			
+			// Execute query in database
+			return await Connection.ExecuteAsync(new CommandDefinition(query.ToString(), parameters));
+		}
+
+		public async Task<int> RemoveFeedbacksAsync(Feedbacks entity)
+		{
+			// Create string builder for query
+			var query = new StringBuilder();
+			
+			// Create sql statement
+			query.Append(" delete from ");
+			query.Append("  public.feedbacks ");
+			query.Append(" where ");
+			query.Append("  id = @id ");
+			
+			// Create parameters collection
+			var parameters = new DynamicParameters();
+			
+			// Add parameters to collection
+			parameters.Add("@id", entity.Id);
+			
+			// Execute query in database
+			return await Connection.ExecuteAsync(new CommandDefinition(query.ToString(), parameters));
+		}
+
 		public async Task<IEnumerable<Seats>> GetSeatsAsync(int pageSize = 10, int pageNumber = 1)
 		{
 			// Create string builder for query
@@ -494,7 +642,8 @@ namespace CinemaTicketBooking.Server.Scaffolds.Models.DataLayer.Repositories
 			query.Append("  showtime_id ShowtimeId, ");
 			query.Append("  user_id UserId, ");
 			query.Append("  created_timestamp CreatedTimestamp, ");
-			query.Append("  updated_timestamp UpdatedTimestamp ");
+			query.Append("  updated_timestamp UpdatedTimestamp, ");
+			query.Append("  membership_id MembershipId ");
 			query.Append(" from ");
 			query.Append("  public.tickets ");
 			query.Append(" where ");
@@ -526,7 +675,8 @@ namespace CinemaTicketBooking.Server.Scaffolds.Models.DataLayer.Repositories
 			query.Append("  showtime_id ShowtimeId, ");
 			query.Append("  user_id UserId, ");
 			query.Append("  created_timestamp CreatedTimestamp, ");
-			query.Append("  updated_timestamp UpdatedTimestamp ");
+			query.Append("  updated_timestamp UpdatedTimestamp, ");
+			query.Append("  membership_id MembershipId ");
 			query.Append(" from ");
 			query.Append("  public.tickets ");
 			query.Append(" where ");
@@ -555,7 +705,8 @@ namespace CinemaTicketBooking.Server.Scaffolds.Models.DataLayer.Repositories
 			query.Append("   showtime_id, ");
 			query.Append("   user_id, ");
 			query.Append("   created_timestamp, ");
-			query.Append("   updated_timestamp ");
+			query.Append("   updated_timestamp, ");
+			query.Append("   membership_id ");
 			query.Append("  ) ");
 			query.Append(" values ");
 			query.Append(" ( ");
@@ -563,7 +714,8 @@ namespace CinemaTicketBooking.Server.Scaffolds.Models.DataLayer.Repositories
 			query.Append("  @showtimeId, ");
 			query.Append("  @userId, ");
 			query.Append("  @createdTimestamp, ");
-			query.Append("  @updatedTimestamp ");
+			query.Append("  @updatedTimestamp, ");
+			query.Append("  @membershipId ");
 			query.Append(" ) ");
 			
 			// Create parameters collection
@@ -575,6 +727,7 @@ namespace CinemaTicketBooking.Server.Scaffolds.Models.DataLayer.Repositories
 			parameters.Add("@userId", entity.UserId);
 			parameters.Add("@createdTimestamp", entity.CreatedTimestamp);
 			parameters.Add("@updatedTimestamp", entity.UpdatedTimestamp);
+			parameters.Add("@membershipId", entity.MembershipId);
 			
 			// Execute query in database
 			return await Connection.ExecuteAsync(new CommandDefinition(query.ToString(), parameters));
@@ -592,7 +745,8 @@ namespace CinemaTicketBooking.Server.Scaffolds.Models.DataLayer.Repositories
 			query.Append("  showtime_id = @showtimeId, ");
 			query.Append("  user_id = @userId, ");
 			query.Append("  created_timestamp = @createdTimestamp, ");
-			query.Append("  updated_timestamp = @updatedTimestamp ");
+			query.Append("  updated_timestamp = @updatedTimestamp, ");
+			query.Append("  membership_id = @membershipId ");
 			query.Append(" where ");
 			query.Append("  id = @id ");
 			
@@ -604,6 +758,7 @@ namespace CinemaTicketBooking.Server.Scaffolds.Models.DataLayer.Repositories
 			parameters.Add("@userId", entity.UserId);
 			parameters.Add("@createdTimestamp", entity.CreatedTimestamp);
 			parameters.Add("@updatedTimestamp", entity.UpdatedTimestamp);
+			parameters.Add("@membershipId", entity.MembershipId);
 			parameters.Add("@id", entity.Id);
 			
 			// Execute query in database
@@ -963,6 +1118,146 @@ namespace CinemaTicketBooking.Server.Scaffolds.Models.DataLayer.Repositories
 			// Add parameters to collection
 			parameters.Add("@showtimeId", entity.ShowtimeId);
 			parameters.Add("@seatId", entity.SeatId);
+			
+			// Execute query in database
+			return await Connection.ExecuteAsync(new CommandDefinition(query.ToString(), parameters));
+		}
+
+		public async Task<IEnumerable<Memberships>> GetMembershipsAsync(int pageSize = 10, int pageNumber = 1)
+		{
+			// Create string builder for query
+			var query = new StringBuilder();
+			
+			// Create sql statement
+			query.Append(" select ");
+			query.Append("  id Id, ");
+			query.Append("  name Name, ");
+			query.Append("  created_timestamp CreatedTimestamp, ");
+			query.Append("  updated_timestamp UpdatedTimestamp ");
+			query.Append(" from ");
+			query.Append("  public.memberships ");
+			query.Append(" where ");
+			query.Append(" order by ");
+			query.Append("  id ");
+			query.Append(" offset (@pageSize * (@pageNumber - 1)) rows ");
+			query.Append(" fetch next @pageSize rows only ");
+			
+			// Create parameters collection
+			var parameters = new DynamicParameters();
+			
+			// Add parameters to collection
+			parameters.Add("@pageSize", pageSize);
+			parameters.Add("@pageNumber", pageNumber);
+			
+			// Retrieve result from database and convert to typed list
+			return await Connection.QueryAsync<Memberships>(new CommandDefinition(query.ToString(), parameters));
+		}
+
+		public async Task<Memberships?> GetMembershipsAsync(Memberships entity)
+		{
+			// Create string builder for query
+			var query = new StringBuilder();
+			
+			// Create sql statement
+			query.Append(" select ");
+			query.Append("  id Id, ");
+			query.Append("  name Name, ");
+			query.Append("  created_timestamp CreatedTimestamp, ");
+			query.Append("  updated_timestamp UpdatedTimestamp ");
+			query.Append(" from ");
+			query.Append("  public.memberships ");
+			query.Append(" where ");
+			query.Append("  id = @id ");
+			
+			// Create parameters collection
+			var parameters = new DynamicParameters();
+			
+			// Add parameters to collection
+			parameters.Add("id", entity.Id);
+			
+			// Retrieve result from database and convert to entity class
+			return await Connection.QueryFirstOrDefaultAsync<Memberships>(query.ToString(), parameters);
+		}
+
+		public async Task<int> AddMembershipsAsync(Memberships entity)
+		{
+			// Create string builder for query
+			var query = new StringBuilder();
+			
+			// Create sql statement
+			query.Append(" insert into ");
+			query.Append("  public.memberships ");
+			query.Append("  ( ");
+			query.Append("   id, ");
+			query.Append("   name, ");
+			query.Append("   created_timestamp, ");
+			query.Append("   updated_timestamp ");
+			query.Append("  ) ");
+			query.Append(" values ");
+			query.Append(" ( ");
+			query.Append("  @id, ");
+			query.Append("  @name, ");
+			query.Append("  @createdTimestamp, ");
+			query.Append("  @updatedTimestamp ");
+			query.Append(" ) ");
+			
+			// Create parameters collection
+			var parameters = new DynamicParameters();
+			
+			// Add parameters to collection
+			parameters.Add("@id", entity.Id);
+			parameters.Add("@name", entity.Name);
+			parameters.Add("@createdTimestamp", entity.CreatedTimestamp);
+			parameters.Add("@updatedTimestamp", entity.UpdatedTimestamp);
+			
+			// Execute query in database
+			return await Connection.ExecuteAsync(new CommandDefinition(query.ToString(), parameters));
+		}
+
+		public async Task<int> UpdateMembershipsAsync(Memberships entity)
+		{
+			// Create string builder for query
+			var query = new StringBuilder();
+			
+			// Create sql statement
+			query.Append(" update ");
+			query.Append("  public.memberships ");
+			query.Append(" set ");
+			query.Append("  name = @name, ");
+			query.Append("  created_timestamp = @createdTimestamp, ");
+			query.Append("  updated_timestamp = @updatedTimestamp ");
+			query.Append(" where ");
+			query.Append("  id = @id ");
+			
+			// Create parameters collection
+			var parameters = new DynamicParameters();
+			
+			// Add parameters to collection
+			parameters.Add("@name", entity.Name);
+			parameters.Add("@createdTimestamp", entity.CreatedTimestamp);
+			parameters.Add("@updatedTimestamp", entity.UpdatedTimestamp);
+			parameters.Add("@id", entity.Id);
+			
+			// Execute query in database
+			return await Connection.ExecuteAsync(new CommandDefinition(query.ToString(), parameters));
+		}
+
+		public async Task<int> RemoveMembershipsAsync(Memberships entity)
+		{
+			// Create string builder for query
+			var query = new StringBuilder();
+			
+			// Create sql statement
+			query.Append(" delete from ");
+			query.Append("  public.memberships ");
+			query.Append(" where ");
+			query.Append("  id = @id ");
+			
+			// Create parameters collection
+			var parameters = new DynamicParameters();
+			
+			// Add parameters to collection
+			parameters.Add("@id", entity.Id);
 			
 			// Execute query in database
 			return await Connection.ExecuteAsync(new CommandDefinition(query.ToString(), parameters));

@@ -13,6 +13,16 @@ namespace CinemaTicketBooking.Server.Scaffolds.Models.DataLayer.Contracts
 {
 	public interface IPublicRepository : IRepository
 	{
+		Task<IEnumerable<Feedbacks>> GetFeedbacksAsync(int pageSize = 10, int pageNumber = 1);
+
+		Task<Feedbacks?> GetFeedbacksAsync(Feedbacks entity);
+
+		Task<int> AddFeedbacksAsync(Feedbacks entity);
+
+		Task<int> UpdateFeedbacksAsync(Feedbacks entity);
+
+		Task<int> RemoveFeedbacksAsync(Feedbacks entity);
+
 		Task<IEnumerable<Seats>> GetSeatsAsync(int pageSize = 10, int pageNumber = 1);
 
 		Task<Seats?> GetSeatsAsync(Seats entity);
@@ -72,6 +82,16 @@ namespace CinemaTicketBooking.Server.Scaffolds.Models.DataLayer.Contracts
 		Task<int> UpdateReservationsAsync(Reservations entity);
 
 		Task<int> RemoveReservationsAsync(Reservations entity);
+
+		Task<IEnumerable<Memberships>> GetMembershipsAsync(int pageSize = 10, int pageNumber = 1);
+
+		Task<Memberships?> GetMembershipsAsync(Memberships entity);
+
+		Task<int> AddMembershipsAsync(Memberships entity);
+
+		Task<int> UpdateMembershipsAsync(Memberships entity);
+
+		Task<int> RemoveMembershipsAsync(Memberships entity);
 
 		Task<IEnumerable<Users>> GetUsersAsync(int pageSize = 10, int pageNumber = 1);
 

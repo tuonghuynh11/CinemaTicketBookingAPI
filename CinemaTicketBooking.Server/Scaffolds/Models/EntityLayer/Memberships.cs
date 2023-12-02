@@ -2,15 +2,20 @@ using System;
 
 namespace CinemaTicketBooking.Server.Scaffolds.Models.EntityLayer
 {
-	public class Orders : IEntity
+	public class Memberships : IEntity
 	{
-		public Orders()
+		public Memberships()
 		{
 		}
 
-		public long TicketId { get; set; }
+		public Memberships(long id)
+		{
+			Id = id;
+		}
 
-		public long FoodAndDrinkId { get; set; }
+		public long Id { get; set; }
+
+		public string Name { get; set; } = null!;
 
 		public DateTime CreatedTimestamp { get; set; }
 

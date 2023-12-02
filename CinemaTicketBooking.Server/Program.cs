@@ -108,6 +108,20 @@ namespace CinemaTicketBooking.Server
 					UPDATE_JustOneDataMethod: publicRepository.UpdateTicketsAsync,
 					DELETE_JustOneDataMethod: publicRepository.RemoveTicketsAsync);
 
+					endpoints.MapTogether<Feedbacks>("/feedbacks",
+					SELECT_EntireDataMethod: publicRepository.GetFeedbacksAsync,
+					SELECT_ByMatchingPropertiesDataMethod: publicRepository.GetFeedbacksAsync,
+					INSERT_JustOneDataMethod: publicRepository.AddFeedbacksAsync,
+					UPDATE_JustOneDataMethod: publicRepository.UpdateFeedbacksAsync,
+					DELETE_JustOneDataMethod: publicRepository.RemoveFeedbacksAsync);
+
+					endpoints.MapTogether<Memberships>("/memberships",
+					SELECT_EntireDataMethod: publicRepository.GetMembershipsAsync,
+					SELECT_ByMatchingPropertiesDataMethod: publicRepository.GetMembershipsAsync,
+					INSERT_JustOneDataMethod: publicRepository.AddMembershipsAsync,
+					UPDATE_JustOneDataMethod: publicRepository.UpdateMembershipsAsync,
+					DELETE_JustOneDataMethod: publicRepository.RemoveMembershipsAsync);
+
 					endpoints.MapTogether<Reservations>("/reservations",
 					SELECT_EntireDataMethod: publicRepository.GetReservationsAsync,
 					SELECT_ByMatchingPropertiesDataMethod: publicRepository.GetReservationsAsync,
@@ -213,7 +227,7 @@ namespace CinemaTicketBooking.Server
 
 		public static Func<int, int, Task<IEnumerable<IEntity>>> ToGenericAsync<T>
 					 (Func<int, int, Task<IEnumerable<T>>> getDataMethod) where T : IEntity =>
-		   async (int pageSize, int pageNumber) => (IEnumerable<IEntity>) await getDataMethod(pageSize, pageNumber);
+		   async (int pageSize, int pageNumber) => (IEnumerable<IEntity>)await getDataMethod(pageSize, pageNumber);
 	}
 }
 
