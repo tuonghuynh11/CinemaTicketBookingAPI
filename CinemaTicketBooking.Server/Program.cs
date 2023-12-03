@@ -38,6 +38,8 @@ namespace CinemaTicketBooking.Server
 
             app.UseAuthorization();
 
+            app.MapGet("/", () => "Hello");
+
 #pragma warning disable ASP0014
             app.UseEndpoints(endpoints =>
             {
