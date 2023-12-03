@@ -17,7 +17,7 @@ namespace CinemaTicketBooking.Server
             {
                 string PORT = Environment.GetEnvironmentVariable("PORT")!;
                 builder.WebHost.
-                        UseUrls($"http://*:{PORT}");
+                        UseUrls($"http://0.0.0.0:{PORT}");
             }
 
             // Add services to the container.
