@@ -13,6 +13,13 @@ namespace CinemaTicketBooking.Server
         {
             WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
+            if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")! != "Development")
+            {
+                string PORT = Environment.GetEnvironmentVariable("PORT")!;
+                builder.WebHost.
+                        UseUrls($"http://*:{PORT}");
+            }
+
             // Add services to the container.
             builder.Services.AddAuthorization();
 
