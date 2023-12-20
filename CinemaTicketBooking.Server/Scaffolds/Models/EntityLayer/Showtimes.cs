@@ -1,37 +1,41 @@
 using System;
+using System.Text.Json.Serialization;
 
 namespace CinemaTicketBooking.Server.Scaffolds.Models.EntityLayer
 {
-	public class Showtimes : IEntity
+	public class Showtimes : BaseEntity
 	{
-		public Showtimes()
+		public Showtimes() : base()
 		{
 		}
 
-		public Showtimes(long id)
+		public Showtimes(long id) : base()
 		{
 			Id = id;
 		}
 
-		public long Id { get; set; }
+		[JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+		public long? Id { get; set; }
 
-		public long MovieId { get; set; }
+		[JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+		public long? MovieId { get; set; }
 
-		public object StartTime { get; set; } = null!;
+		[JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+		public TimeSpan? StartTime { get; set; }
 
-		public object CeaseTime { get; set; } = null!;
+		[JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+		public TimeSpan? CeaseTime { get; set; }
 
-		public DateTime Date { get; set; }
+		[JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+		public DateTime? Date { get; set; }
 
-		public long AuditoriumId { get; set; }
+		[JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+		public long? AuditoriumId { get; set; }
 
-		public decimal Price { get; set; }
+		[JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+		public decimal? Price { get; set; }
 
-		public string Status { get; set; } = null!;
-
-		public DateTime CreatedTimestamp { get; set; }
-
-		public DateTime UpdatedTimestamp { get; set; }
-
+		[JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+		public string? Status { get; set; }
 	}
 }
