@@ -2489,26 +2489,35 @@ namespace CinemaTicketBooking.Server.Scaffolds.Models.DataLayer.Repositories
 			return await Connection.ExecuteAsync(new CommandDefinition(query.ToString(), parameters));
 		}
 
-		public async Task<IEnumerable<Menus>> SelectMenusAsync(int pageSize = 10, int pageNumber = 1)
+		public async Task<IEnumerable<ExtendedMenus>> SelectMenusAsync(int pageSize = 10, int pageNumber = 1)
 		{
 			// Create string builder for query
 			var query = new StringBuilder();
 			
 			// Create sql statement
 			query.Append(" select ");
-			query.Append("           cinema_id       CinemaId, ");
-			query.Append("   food_and_drink_id FoodAndDrinkId, ");
-			query.Append("   serving_size ServingSize , ");
-			query.Append("   availability Availability, ");
-			query.Append("   price Price, ");
-			query.Append("   created_timestamp CreatedTimestamp, ");
-			query.Append("   updated_timestamp UpdatedTimestamp  ");
+			query.Append("           m.cinema_id       CinemaId, ");
+			query.Append("   m.food_and_drink_id FoodAndDrinkId, ");
+			query.Append("   m.serving_size ServingSize , ");
+			query.Append("   m.availability Availability, ");
+			query.Append("   m.price Price, ");
+			query.Append("   m.created_timestamp CreatedTimestamp, ");
+			query.Append("   m.updated_timestamp UpdatedTimestamp, ");
+			
+			query.Append("       f.id Id, ");
+			query.Append("   f.name Name, ");
+			query.Append("   f.category Category, ");
+			query.Append("   f.description Description, ");
+			query.Append("   f.created_timestamp CreatedTimestamp, ");
+			query.Append("   f.updated_timestamp UpdatedTimestamp, ");
+			query.Append("   f.image_url ImageUrl ");
+
 			query.Append(" from ");
-			query.Append("   public.menus ");
+			query.Append("   public.menus m left join public.food_and_drinks f on m.food_and_drink_id = f.id ");
 			query.Append(" order by ");
-			query.Append("           cinema_id, ");
-			query.Append("   food_and_drink_id, ");
-			query.Append("   serving_size ");
+			query.Append("           m.cinema_id, ");
+			query.Append("   m.food_and_drink_id, ");
+			query.Append("   m.serving_size ");
 			query.Append(" offset (@pageSize * (@pageNumber - 1)) rows ");
 			query.Append(" fetch next @pageSize rows only ");
 
@@ -2520,36 +2529,50 @@ namespace CinemaTicketBooking.Server.Scaffolds.Models.DataLayer.Repositories
 			parameters.Add("@pageNumber", pageNumber);
 
 			// Retrieve result from database and convert to typed list
-			return await Connection.QueryAsync<Menus>(new CommandDefinition(query.ToString(), parameters));
+			return await Connection.QueryAsync<ExtendedMenus, FoodAndDrinks, ExtendedMenus>
+			(new CommandDefinition(query.ToString(), parameters), (extendedMenu, foodAndDrink) =>
+			{
+				extendedMenu.FoodAndDrink = foodAndDrink;
+				return extendedMenu;
+			}, splitOn: "Id");
 		}
 
-		public async Task<IEnumerable<Menus>> SelectMenusMatchingAsync(Menus entity)
+		public async Task<IEnumerable<ExtendedMenus>> SelectMenusMatchingAsync(Menus entity)
 		{
 			// Create string builder for query
 			var query = new StringBuilder();
 			
 			// Create sql statement
 			query.Append(" select ");
-			query.Append("           cinema_id       CinemaId, ");
-			query.Append("   food_and_drink_id FoodAndDrinkId, ");
-			query.Append("   serving_size ServingSize , ");
-			query.Append("   availability Availability, ");
-			query.Append("   price Price, ");
-			query.Append("   created_timestamp CreatedTimestamp, ");
-			query.Append("   updated_timestamp UpdatedTimestamp ");
+			query.Append("           m.cinema_id       CinemaId, ");
+			query.Append("   m.food_and_drink_id FoodAndDrinkId, ");
+			query.Append("   m.serving_size ServingSize , ");
+			query.Append("   m.availability Availability, ");
+			query.Append("   m.price Price, ");
+			query.Append("   m.created_timestamp CreatedTimestamp, ");
+			query.Append("   m.updated_timestamp UpdatedTimestamp, ");
+
+			query.Append("       f.id Id, ");
+			query.Append("   f.name Name, ");
+			query.Append("   f.category Category, ");
+			query.Append("   f.description Description, ");
+			query.Append("   f.created_timestamp CreatedTimestamp, ");
+			query.Append("   f.updated_timestamp UpdatedTimestamp, ");
+			query.Append("   f.image_url ImageUrl ");
+
 			query.Append(" from ");
-			query.Append("   public.menus ");
+			query.Append("   public.menus m left join public.food_and_drinks f on m.food_and_drink_id = f.id ");
 			query.Append(" where true ");
 			if (entity.      CinemaId != null)
-			query.Append("   and         cinema_id = @cinemaId       ");
+			query.Append("   and         m.cinema_id = @cinemaId       ");
 			if (entity.FoodAndDrinkId != null)
-			query.Append("   and food_and_drink_id = @foodAndDrinkId ");
+			query.Append("   and m.food_and_drink_id = @foodAndDrinkId ");
 			if (entity. ServingSize != null)
-			query.Append("   and serving_size = @servingSize  ");
+			query.Append("   and m.serving_size = @servingSize  ");
 			if (entity.Price != null)
-			query.Append("   and price = @price ");
+			query.Append("   and m.price = @price ");
 			if (entity.Availability != null)
-			query.Append("   and availability = @availability ");
+			query.Append("   and m.availability = @availability ");
 
 			// Create parameters collection
 			var parameters = new DynamicParameters();
@@ -2562,7 +2585,12 @@ namespace CinemaTicketBooking.Server.Scaffolds.Models.DataLayer.Repositories
 			parameters.Add("@availability", entity.Availability);
 
 			// Retrieve result from database and convert to entity class
-			return await Connection.QueryAsync<Menus>(new CommandDefinition(query.ToString(), parameters));
+			return await Connection.QueryAsync<ExtendedMenus, FoodAndDrinks, ExtendedMenus>
+			(new CommandDefinition(query.ToString(), parameters), (extendedMenu, foodAndDrink) =>
+			{
+				extendedMenu.FoodAndDrink = foodAndDrink;
+				return extendedMenu;
+			}, splitOn: "Id");
 		}
 
 		public async Task<int> InsertMenusJustOnceAsync(Menus entity)

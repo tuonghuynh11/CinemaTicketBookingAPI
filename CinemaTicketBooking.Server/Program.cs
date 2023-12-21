@@ -49,9 +49,39 @@ namespace CinemaTicketBooking.Server
 
 			app.MapGet("/", () => "Hello");
 
-			app.MapGet("/showtimes/in-the-next-7-days/", async () =>
+			app.MapGet("/showtimes/in-the-next-7-days-from-today/",
+			async ([FromQuery(Name = "movie-id")] long movieId, [FromServices] IPublicRepository publicRepository) =>
 			{
-
+				DateTime today = DateTime.Now;
+				ShowtimesInTheNext7DaysFromToday showtimesInTheNext7DaysFromToday = new();
+				showtimesInTheNext7DaysFromToday.Result = new();
+				foreach (int daysOffset in Enumerable.Range(0, 7))
+				{
+					ShowtimesInEachDay showtimesInEachDay = new();
+					showtimesInEachDay.Date = DateOnly.FromDateTime(today.AddDays(daysOffset));
+					showtimesInEachDay.Showtimes = (await publicRepository.SelectShowtimesMatchingAsync
+					(new Showtimes() { Date = showtimesInEachDay.Date.ToDateTime(TimeOnly.MinValue), MovieId = movieId, }))
+					.Select<Showtimes, CustomShowtimes>(showtime =>
+					{
+						CustomShowtimes customShowtime = new();
+						customShowtime.Showtime = showtime;
+						customShowtime.Auditorium = publicRepository.SelectAuditoriumsMatchingAsync(new Auditoriums()
+						{
+							Id = showtime.AuditoriumId,
+						}).Result.First();
+						customShowtime.Seats = publicRepository.SelectSeatsMatchingAsync(new Seats()
+						{
+							AuditoriumId = showtime.AuditoriumId,
+						}).Result;
+						customShowtime.Reservations = publicRepository.SelectReservationsMatchingAsync(new Reservations()
+						{
+							ShowtimeId = showtime.Id,
+						}).Result;
+						return customShowtime;
+					});
+					showtimesInTheNext7DaysFromToday.Result.Add(showtimesInEachDay);
+				}
+				return showtimesInTheNext7DaysFromToday;
 			});
 
 #pragma warning disable ASP0014
@@ -61,91 +91,91 @@ namespace CinemaTicketBooking.Server
 				{
 					IPublicRepository publicRepository = scope.ServiceProvider.GetRequiredService<IPublicRepository>();
 
-					endpoints.MapTogether<Auditoriums>("/auditoriums",
+					endpoints.MapTogether<Auditoriums, Auditoriums>("/auditoriums",
 					SELECT_EntireByPageSizeByPageNumberDataMethod: publicRepository.SelectAuditoriumsAsync,
 					SELECT_ByMatchingPropertiesDataMethod: publicRepository.SelectAuditoriumsMatchingAsync,
 					INSERT_JustOneDataMethod: publicRepository.InsertAuditoriumsJustOnceAsync,
 					UPDATE_ByMatchingPropertiesDataMethod: publicRepository.UpdateAuditoriumsMatchingAsync,
 					DELETE_ByMatchingPropertiesDataMethod: publicRepository.RemoveAuditoriumsMatchingAsync);
 
-					endpoints.MapTogether<Showtimes>("/showtimes",
+					endpoints.MapTogether<Showtimes, Showtimes>("/showtimes",
 					SELECT_EntireByPageSizeByPageNumberDataMethod: publicRepository.SelectShowtimesAsync,
 					SELECT_ByMatchingPropertiesDataMethod: publicRepository.SelectShowtimesMatchingAsync,
 					INSERT_JustOneDataMethod: publicRepository.InsertShowtimesJustOnceAsync,
 					UPDATE_ByMatchingPropertiesDataMethod: publicRepository.UpdateShowtimesMatchingAsync,
 					DELETE_ByMatchingPropertiesDataMethod: publicRepository.RemoveShowtimesMatchingAsync);
 
-					endpoints.MapTogether<Users>("/users",
+					endpoints.MapTogether<Users, Users>("/users",
 					SELECT_EntireByPageSizeByPageNumberDataMethod: publicRepository.SelectUsersAsync,
 					SELECT_ByMatchingPropertiesDataMethod: publicRepository.SelectUsersMatchingAsync,
 					INSERT_JustOneDataMethod: publicRepository.InsertUsersJustOnceAsync,
 					UPDATE_ByMatchingPropertiesDataMethod: publicRepository.UpdateUsersMatchingAsync,
 					DELETE_ByMatchingPropertiesDataMethod: publicRepository.RemoveUsersMatchingAsync);
 
-					endpoints.MapTogether<Seats>("/seats",
+					endpoints.MapTogether<Seats, Seats>("/seats",
 					SELECT_EntireByPageSizeByPageNumberDataMethod: publicRepository.SelectSeatsAsync,
 					SELECT_ByMatchingPropertiesDataMethod: publicRepository.SelectSeatsMatchingAsync,
 					INSERT_JustOneDataMethod: publicRepository.InsertSeatsJustOnceAsync,
 					UPDATE_ByMatchingPropertiesDataMethod: publicRepository.UpdateSeatsMatchingAsync,
 					DELETE_ByMatchingPropertiesDataMethod: publicRepository.RemoveSeatsMatchingAsync);
 
-					endpoints.MapTogether<Menus>("/menus",
+					endpoints.MapTogether<Menus, ExtendedMenus>("/menus",
 					SELECT_EntireByPageSizeByPageNumberDataMethod: publicRepository.SelectMenusAsync,
 					SELECT_ByMatchingPropertiesDataMethod: publicRepository.SelectMenusMatchingAsync,
 					INSERT_JustOneDataMethod: publicRepository.InsertMenusJustOnceAsync,
 					UPDATE_ByMatchingPropertiesDataMethod: publicRepository.UpdateMenusMatchingAsync,
 					DELETE_ByMatchingPropertiesDataMethod: publicRepository.RemoveMenusMatchingAsync);
 
-					endpoints.MapTogether<Movies>("/movies",
+					endpoints.MapTogether<Movies, Movies>("/movies",
 					SELECT_EntireByPageSizeByPageNumberDataMethod: publicRepository.SelectMoviesAsync,
 					SELECT_ByMatchingPropertiesDataMethod: publicRepository.SelectMoviesMatchingAsync,
 					INSERT_JustOneDataMethod: publicRepository.InsertMoviesJustOnceAsync,
 					UPDATE_ByMatchingPropertiesDataMethod: publicRepository.UpdateMoviesMatchingAsync,
 					DELETE_ByMatchingPropertiesDataMethod: publicRepository.RemoveMoviesMatchingAsync);
 
-					endpoints.MapTogether<Orders>("/orders",
+					endpoints.MapTogether<Orders, Orders>("/orders",
 					SELECT_EntireByPageSizeByPageNumberDataMethod: publicRepository.SelectOrdersAsync,
 					SELECT_ByMatchingPropertiesDataMethod: publicRepository.SelectOrdersMatchingAsync,
 					INSERT_JustOneDataMethod: publicRepository.InsertOrdersJustOnceAsync,
 					UPDATE_ByMatchingPropertiesDataMethod: publicRepository.UpdateOrdersMatchingAsync,
 					DELETE_ByMatchingPropertiesDataMethod: publicRepository.RemoveOrdersMatchingAsync);
 
-					endpoints.MapTogether<Cinemas>("/cinemas",
+					endpoints.MapTogether<Cinemas, Cinemas>("/cinemas",
 					SELECT_EntireByPageSizeByPageNumberDataMethod: publicRepository.SelectCinemasAsync,
 					SELECT_ByMatchingPropertiesDataMethod: publicRepository.SelectCinemasMatchingAsync,
 					INSERT_JustOneDataMethod: publicRepository.InsertCinemasJustOnceAsync,
 					UPDATE_ByMatchingPropertiesDataMethod: publicRepository.UpdateCinemasMatchingAsync,
 					DELETE_ByMatchingPropertiesDataMethod: publicRepository.RemoveCinemasMatchingAsync);
 
-					endpoints.MapTogether<Tickets>("/tickets",
+					endpoints.MapTogether<Tickets, Tickets>("/tickets",
 					SELECT_EntireByPageSizeByPageNumberDataMethod: publicRepository.SelectTicketsAsync,
 					SELECT_ByMatchingPropertiesDataMethod: publicRepository.SelectTicketsMatchingAsync,
 					INSERT_JustOneDataMethod: publicRepository.InsertTicketsJustOnceAsync,
 					UPDATE_ByMatchingPropertiesDataMethod: publicRepository.UpdateTicketsMatchingAsync,
 					DELETE_ByMatchingPropertiesDataMethod: publicRepository.RemoveTicketsMatchingAsync);
 
-					endpoints.MapTogether<Feedbacks>("/feedbacks",
+					endpoints.MapTogether<Feedbacks, Feedbacks>("/feedbacks",
 					SELECT_EntireByPageSizeByPageNumberDataMethod: publicRepository.SelectFeedbacksAsync,
 					SELECT_ByMatchingPropertiesDataMethod: publicRepository.SelectFeedbacksMatchingAsync,
 					INSERT_JustOneDataMethod: publicRepository.InsertFeedbacksJustOnceAsync,
 					UPDATE_ByMatchingPropertiesDataMethod: publicRepository.UpdateFeedbacksMatchingAsync,
 					DELETE_ByMatchingPropertiesDataMethod: publicRepository.RemoveFeedbacksMatchingAsync);
 
-					endpoints.MapTogether<Memberships>("/memberships",
+					endpoints.MapTogether<Memberships, Memberships>("/memberships",
 					SELECT_EntireByPageSizeByPageNumberDataMethod: publicRepository.SelectMembershipsAsync,
 					SELECT_ByMatchingPropertiesDataMethod: publicRepository.SelectMembershipsMatchingAsync,
 					INSERT_JustOneDataMethod: publicRepository.InsertMembershipsJustOnceAsync,
 					UPDATE_ByMatchingPropertiesDataMethod: publicRepository.UpdateMembershipsMatchingAsync,
 					DELETE_ByMatchingPropertiesDataMethod: publicRepository.RemoveMembershipsMatchingAsync);
 
-					endpoints.MapTogether<Reservations>("/reservations",
+					endpoints.MapTogether<Reservations, Reservations>("/reservations",
 					SELECT_EntireByPageSizeByPageNumberDataMethod: publicRepository.SelectReservationsAsync,
 					SELECT_ByMatchingPropertiesDataMethod: publicRepository.SelectReservationsMatchingAsync,
 					INSERT_JustOneDataMethod: publicRepository.InsertReservationsJustOnceAsync,
 					UPDATE_ByMatchingPropertiesDataMethod: publicRepository.UpdateReservationsMatchingAsync,
 					DELETE_ByMatchingPropertiesDataMethod: publicRepository.RemoveReservationsMatchingAsync);
 
-					endpoints.MapTogether<FoodAndDrinks>("/food-and-drinks",
+					endpoints.MapTogether<FoodAndDrinks, FoodAndDrinks>("/food-and-drinks",
 					SELECT_EntireByPageSizeByPageNumberDataMethod: publicRepository.SelectFoodAndDrinksAsync,
 					SELECT_ByMatchingPropertiesDataMethod: publicRepository.SelectFoodAndDrinksMatchingAsync,
 					INSERT_JustOneDataMethod: publicRepository.InsertFoodAndDrinksJustOnceAsync,
@@ -161,24 +191,24 @@ namespace CinemaTicketBooking.Server
 		public static string PatternToTitleCase(this string pattern) =>
 			CultureInfo.CurrentCulture.TextInfo.ToTitleCase(pattern.Remove(startIndex: 0, count: 1));
 
-		public static void MapTogether<T>(this IEndpointRouteBuilder endpoints, string pattern,
-		Func<int, int, Task<IEnumerable<T>>> SELECT_EntireByPageSizeByPageNumberDataMethod,
-		Func<T, Task<IEnumerable<T>>> SELECT_ByMatchingPropertiesDataMethod,
+		public static void MapTogether<T, E>(this IEndpointRouteBuilder endpoints, string pattern,
+		Func<int, int, Task<IEnumerable<E>>> SELECT_EntireByPageSizeByPageNumberDataMethod,
+		Func<T, Task<IEnumerable<E>>> SELECT_ByMatchingPropertiesDataMethod,
 		Func<T, Task<int>> INSERT_JustOneDataMethod,
 		Func<T, T, Task<int>> UPDATE_ByMatchingPropertiesDataMethod,
 		Func<T,    Task<int>> DELETE_ByMatchingPropertiesDataMethod
-		)
+		) where E : T
 		{
-			endpoints.Map_SELECT_EntireByPageSizeByPageNumber<T>(pattern, SELECT_EntireByPageSizeByPageNumberDataMethod);
-			endpoints.Map_SELECT_ByMatchingProperties<T>(pattern, SELECT_ByMatchingPropertiesDataMethod);
+			endpoints.Map_SELECT_EntireByPageSizeByPageNumber<T, E>(pattern, SELECT_EntireByPageSizeByPageNumberDataMethod);
+			endpoints.Map_SELECT_ByMatchingProperties<T, E>(pattern, SELECT_ByMatchingPropertiesDataMethod);
 			endpoints.Map_INSERT_JustOne<T>(pattern, INSERT_JustOneDataMethod);
 			endpoints.Map_UPDATE_ByMatchingProperties<T>(pattern, UPDATE_ByMatchingPropertiesDataMethod);
 			endpoints.Map_DELETE_ByMatchingProperties<T>(pattern, DELETE_ByMatchingPropertiesDataMethod);
 		}
 
-		public static void Map_SELECT_EntireByPageSizeByPageNumber<T>
-		(this IEndpointRouteBuilder endpoints, string pattern, Func<int, int, Task<IEnumerable<T>>>
-		SELECT_EntireByPageSizeByPageNumberDataMethod)
+		public static void Map_SELECT_EntireByPageSizeByPageNumber<T, E>
+		(this IEndpointRouteBuilder endpoints, string pattern, Func<int, int, Task<IEnumerable<E>>>
+		SELECT_EntireByPageSizeByPageNumberDataMethod) where E : T
 		{
 			endpoints.MapGet($"select/entire{pattern}", async (
 			[FromQuery(Name = "page-size")] int pageSize, [FromQuery(Name = "page-number")] int pageNumber) =>
@@ -187,8 +217,9 @@ namespace CinemaTicketBooking.Server
 			.WithTags(@"Select Entities By Provide Page Size and Page Number");
 		}
 
-		public static void Map_SELECT_ByMatchingProperties<T>
-		(this IEndpointRouteBuilder endpoints, string pattern, Func<T, Task<IEnumerable<T>>> SELECT_ByMatchingPropertiesDataMethod)
+		public static void Map_SELECT_ByMatchingProperties<T, E>
+		(this IEndpointRouteBuilder endpoints, string pattern, Func<T, Task<IEnumerable<E>>> SELECT_ByMatchingPropertiesDataMethod)
+		where E : T
 		{
 			endpoints.MapPost($"/select/matching-properties{pattern}", async ([FromBody] T entity) =>
 				await SELECT_ByMatchingPropertiesDataMethod(entity))
@@ -238,5 +269,24 @@ fields/properties then delete them, no fields/properties included `means` matchi
 	public record struct UpdateMethodBody<T>
 	{
 		public T Matching { get; set; } public T UpdatedValue { get; set; }
+	}
+
+	public record struct CustomShowtimes
+	{
+		public Showtimes Showtime { get; set; }
+		public Auditoriums  Auditorium { get; set; }
+		public IEnumerable<Seats> Seats { get; set; }
+		public IEnumerable<Reservations> Reservations { get; set; }
+	}
+
+	public record struct ShowtimesInEachDay
+	{
+		public DateOnly Date { get; set; }
+		public IEnumerable<CustomShowtimes> Showtimes { get; set; }
+	}
+
+	public record struct ShowtimesInTheNext7DaysFromToday
+	{
+		public List<ShowtimesInEachDay> Result { get; set; }
 	}
 }

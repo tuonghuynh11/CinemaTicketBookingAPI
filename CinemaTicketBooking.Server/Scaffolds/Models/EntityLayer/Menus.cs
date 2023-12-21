@@ -24,4 +24,14 @@ namespace CinemaTicketBooking.Server.Scaffolds.Models.EntityLayer
 		[JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
 		public decimal? Price { get; set; }
 	}
+
+	public class ExtendedMenus : Menus
+	{
+		public ExtendedMenus() : base()
+		{
+		}
+
+		[JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+		public FoodAndDrinks? FoodAndDrink { get; set; }
+	}
 }
