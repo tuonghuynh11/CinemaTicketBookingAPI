@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Dapper;
 using CinemaTicketBooking.Server.Scaffolds.Models.EntityLayer;
 using CinemaTicketBooking.Server.Scaffolds.Models.DataLayer.Contracts;
+using System.Collections;
 
 namespace CinemaTicketBooking.Server.Scaffolds.Models.DataLayer.Repositories
 {
@@ -2711,6 +2712,159 @@ namespace CinemaTicketBooking.Server.Scaffolds.Models.DataLayer.Repositories
 			parameters.Add("@availability", entity.Availability);
 
 			// Execute query in database
+			return await Connection.ExecuteAsync(new CommandDefinition(query.ToString(), parameters));
+		}
+
+		public async Task<IEnumerable<Staffs>> SelectStaffsAsync(int pageSize = 10, int pageNumber = 1)
+		{
+			var query = new StringBuilder();
+
+			query.Append(" select ");
+			query.Append("   email Email, ");
+			query.Append("   role  Role , ");
+			query.Append("   date_of_birth DateOfBirth, ");
+			query.Append("     user_id   UserId, ");
+			query.Append("   cinema_id CinemaId, ");
+			query.Append("   created_timestamp CreatedTimestamp, ");
+			query.Append("   updated_timestamp UpdatedTimestamp, ");
+			query.Append(" from ");
+			query.Append("   public.staffs ");
+			query.Append(" order by ");
+			query.Append("   user_id ");
+			query.Append(" offset (@pageSize * (@pageNumber - 1)) rows ");
+			query.Append(" fetch next @pageSize rows only ");
+
+			var parameters = new DynamicParameters();
+			parameters.Add("@pageSize", pageSize);
+			parameters.Add("@pageNumber", pageNumber);
+
+			return await Connection.QueryAsync<Staffs>(new CommandDefinition(query.ToString(), parameters));
+		}
+
+		public async Task<IEnumerable<Staffs>> SelectStaffsMatchingAsync(Staffs entity)
+		{
+			var query = new StringBuilder();
+
+			query.Append(" select ");
+			query.Append("   email Email, ");
+			query.Append("   role  Role , ");
+			query.Append("   date_of_birth DateOfBirth, ");
+			query.Append("     user_id   UserId, ");
+			query.Append("   cinema_id CinemaId, ");
+			query.Append("   created_timestamp CreatedTimestamp, ");
+			query.Append("   updated_timestamp UpdatedTimestamp, ");
+			query.Append(" from ");
+			query.Append("   public.staffs ");
+			query.Append(" where true ");
+			if (entity.Email != null)
+			query.Append("   and email = @email, ");
+			if (entity.Role != null)
+			query.Append("   and role  = @role , ");
+			if (entity.DateOfBirth != null)
+			query.Append("   and date_of_birth = @dateOfBirth, ");
+			if (entity.  UserId != null)
+			query.Append("   and   user_id =   @userId, ");
+			if (entity.CinemaId != null)
+			query.Append("   and cinema_id = @cinemaId  ");
+	
+			var parameters = new DynamicParameters();
+			parameters.Add("@email", entity.Email);
+			parameters.Add("@role", entity.Role);
+			parameters.Add("@dateOfBirth", entity.DateOfBirth);
+			parameters.Add("@cinemaId", entity.CinemaId);
+			parameters.Add("@userId", entity.UserId);
+
+			return await Connection.QueryAsync<Staffs>(new CommandDefinition(query.ToString(), parameters));
+		}
+
+		public async Task<int> InsertStaffsJustOnceAsync(Staffs entity)
+		{
+			var query = new StringBuilder();
+
+			query.Append(" insert into public.staffs ");
+			query.Append(" ( user_id, date_of_birth, email, role, cinema_id ) ");
+			query.Append(" values ");
+			query.Append(" ( @userId, @dateOfBirth, @email, @role, @cinemaId ) ");
+
+			var parameters = new DynamicParameters();
+			parameters.Add("@email", entity.Email);
+			parameters.Add("@role", entity.Role);
+			parameters.Add("@dateOfBirth", entity.DateOfBirth);
+			parameters.Add("@cinemaId", entity.CinemaId);
+			parameters.Add("@userId", entity.UserId);
+
+			return await Connection.ExecuteAsync(new CommandDefinition(query.ToString(), parameters));
+		}
+
+		public async Task<int> UpdateStaffsMatchingAsync(Staffs entity, Staffs updatedValue)
+		{
+			var query = new StringBuilder();
+
+			query.Append(" update ");
+			query.Append("   public.menus ");
+			query.Append(" set ");
+			query.Append("     created_timestamp = created_timestamp ");
+			if (updatedValue.Email != null)
+			query.Append("   , email = @updatedEmail ");
+			if (updatedValue.Role != null)
+			query.Append("   , role  = @updatedRole  ");
+			if (updatedValue.DateOfBirth != null)
+			query.Append("   , date_of_birth = @updatedDateOfBirth ");
+			if (updatedValue.  UserId != null)
+			query.Append("   ,   user_id =   @updatedUserId ");
+			if (updatedValue.CinemaId != null)
+			query.Append("   , cinema_id = @updatedCinemaId ");
+			query.Append(" where true ");
+			if (entity.Email != null)
+			query.Append("   and email = @email, ");
+			if (entity.Role != null)
+			query.Append("   and role  = @role , ");
+			if (entity.DateOfBirth != null)
+			query.Append("   and date_of_birth = @dateOfBirth, ");
+			if (entity.  UserId != null)
+			query.Append("   and   user_id =   @userId, ");
+			if (entity.CinemaId != null)
+			query.Append("   and cinema_id = @cinemaId  ");
+
+			var parameters = new DynamicParameters();
+			parameters.Add("@email", entity.Email);
+			parameters.Add("@role", entity.Role);
+			parameters.Add("@dateOfBirth", entity.DateOfBirth);
+			parameters.Add("@cinemaId", entity.CinemaId);
+			parameters.Add("@userId", entity.UserId);
+
+			parameters.Add("@updatedEmail", updatedValue.Email);
+			parameters.Add("@updatedRole", updatedValue.Role);
+			parameters.Add("@updatedDateOfBirth", updatedValue.DateOfBirth);
+			parameters.Add("@updatedCinemaId", updatedValue.CinemaId);
+			parameters.Add("@updatedUserId", updatedValue.UserId);
+
+			return await Connection.ExecuteAsync(new CommandDefinition(query.ToString(), parameters));
+		}
+
+		public async Task<int> RemoveStaffsMatchingAsync(Staffs entity)
+		{
+			var query = new StringBuilder();
+
+			query.Append(" delete from public.staffs where true ");
+			if (entity.Email != null)
+			query.Append("   and email = @email, ");
+			if (entity.Role != null)
+			query.Append("   and role  = @role , ");
+			if (entity.DateOfBirth != null)
+			query.Append("   and date_of_birth = @dateOfBirth, ");
+			if (entity.  UserId != null)
+			query.Append("   and   user_id =   @userId, ");
+			if (entity.CinemaId != null)
+			query.Append("   and cinema_id = @cinemaId  ");
+
+			var parameters = new DynamicParameters();
+			parameters.Add("@email", entity.Email);
+			parameters.Add("@role", entity.Role);
+			parameters.Add("@dateOfBirth", entity.DateOfBirth);
+			parameters.Add("@cinemaId", entity.CinemaId);
+			parameters.Add("@userId", entity.UserId);
+
 			return await Connection.ExecuteAsync(new CommandDefinition(query.ToString(), parameters));
 		}
 	}

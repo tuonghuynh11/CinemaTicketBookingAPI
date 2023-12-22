@@ -142,5 +142,15 @@ namespace CinemaTicketBooking.Server.Scaffolds.Models.DataLayer.Contracts
 		Task<int> UpdateMenusMatchingAsync(Menus entity, Menus updatedValue);
 
 		Task<int> RemoveMenusMatchingAsync(Menus entity);
+
+		Task<IEnumerable<Staffs>> SelectStaffsAsync(int pageSize = 10, int pageNumber = 1);
+
+		Task<IEnumerable<Staffs>> SelectStaffsMatchingAsync(Staffs entity);
+
+		Task<int> InsertStaffsJustOnceAsync(Staffs entity);
+
+		Task<int> UpdateStaffsMatchingAsync(Staffs entity, Staffs updatedValue);
+
+		Task<int> RemoveStaffsMatchingAsync(Staffs entity);
 	}
 }

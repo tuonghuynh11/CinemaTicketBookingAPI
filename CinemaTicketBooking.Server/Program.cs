@@ -126,6 +126,13 @@ namespace CinemaTicketBooking.Server
 					UPDATE_ByMatchingPropertiesDataMethod: publicRepository.UpdateMenusMatchingAsync,
 					DELETE_ByMatchingPropertiesDataMethod: publicRepository.RemoveMenusMatchingAsync);
 
+					endpoints.MapTogether<Staffs, Staffs>("/staffs",
+					SELECT_EntireByPageSizeByPageNumberDataMethod: publicRepository.SelectStaffsAsync,
+					SELECT_ByMatchingPropertiesDataMethod: publicRepository.SelectStaffsMatchingAsync,
+					INSERT_JustOneDataMethod: publicRepository.InsertStaffsJustOnceAsync,
+					UPDATE_ByMatchingPropertiesDataMethod: publicRepository.UpdateStaffsMatchingAsync,
+					DELETE_ByMatchingPropertiesDataMethod: publicRepository.RemoveStaffsMatchingAsync);
+
 					endpoints.MapTogether<Movies, Movies>("/movies",
 					SELECT_EntireByPageSizeByPageNumberDataMethod: publicRepository.SelectMoviesAsync,
 					SELECT_ByMatchingPropertiesDataMethod: publicRepository.SelectMoviesMatchingAsync,
