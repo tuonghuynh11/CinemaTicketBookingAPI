@@ -59,30 +59,55 @@ namespace CinemaTicketBooking.Server
 				{
 					ShowtimesInEachDay showtimesInEachDay = new();
 					showtimesInEachDay.Date = DateOnly.FromDateTime(today.AddDays(daysOffset));
-					showtimesInEachDay.Showtimes = (await publicRepository.SelectShowtimesMatchingAsync
-					(new Showtimes() { Date = showtimesInEachDay.Date.ToDateTime(TimeOnly.MinValue), MovieId = movieId, }))
-					.Select<Showtimes, CustomShowtimes>(showtime =>
+					showtimesInEachDay.Cinemas = new();
+					foreach (Cinemas cinema in await publicRepository.SelectCinemasMatchingAsync(new()))
 					{
-						CustomShowtimes customShowtime = new();
-						customShowtime.Showtime = showtime;
-						customShowtime.Auditorium = publicRepository.SelectAuditoriumsMatchingAsync(new Auditoriums()
+						List<CustomShowtimes> customShowtimes = new();
+						foreach (Auditoriums auditorium in await publicRepository.SelectAuditoriumsMatchingAsync(new()))
 						{
-							Id = showtime.AuditoriumId,
-						}).Result.First();
-						customShowtime.Seats = publicRepository.SelectSeatsMatchingAsync(new Seats()
+							IEnumerable<Showtimes> showtimes = await publicRepository.SelectShowtimesMatchingAsync
+							(new()
+							{
+								MovieId = movieId,
+								Date = showtimesInEachDay.Date.ToDateTime(TimeOnly.MinValue)
+							,
+								AuditoriumId = auditorium.Id,
+							});
+							customShowtimes.AddRange(showtimes.Select(showtime => new CustomShowtimes()
+							{
+								AuditoriumId = auditorium.Id,
+								Auditorium = auditorium,
+								Id = showtime.Id,
+								CeaseTime = showtime.CeaseTime,
+								StartTime = showtime.StartTime,
+								Date = showtime.Date,
+								CreatedTimestamp = showtime.CreatedTimestamp,
+								UpdatedTimestamp = showtime.UpdatedTimestamp,
+								MovieId = showtime.MovieId,
+								Price = showtime.Price,
+								Status = showtime.Status,
+								//Reservations = publicRepository.SelectReservationsMatchingAsync
+								//(new() { ShowtimeId = showtime.Id, }).Result.ToList(),
+								//Seats = publicRepository.SelectSeatsMatchingAsync
+								//(new() { AuditoriumId = auditorium.Id, }).Result.ToList(),
+							}));
+						}
+						showtimesInEachDay.Cinemas.Add(new()
 						{
-							AuditoriumId = showtime.AuditoriumId,
-						}).Result;
-						customShowtime.Reservations = publicRepository.SelectReservationsMatchingAsync(new Reservations()
-						{
-							ShowtimeId = showtime.Id,
-						}).Result;
-						return customShowtime;
-					});
+							Id = cinema.Id,
+							Name = cinema.Name,
+							Address = cinema.Address,
+							Showtimes = customShowtimes,
+							CreatedTimestamp = cinema.CreatedTimestamp,
+							UpdatedTimestamp = cinema.UpdatedTimestamp,
+						});
+					}
 					showtimesInTheNext7DaysFromToday.Result.Add(showtimesInEachDay);
 				}
 				return showtimesInTheNext7DaysFromToday;
 			});
+
+
 
 #pragma warning disable ASP0014
 			app.UseEndpoints(endpoints =>
@@ -278,22 +303,26 @@ fields/properties then delete them, no fields/properties included `means` matchi
 		public T Matching { get; set; } public T UpdatedValue { get; set; }
 	}
 
-	public record struct CustomShowtimes
+	public class CustomShowtimes : Showtimes
 	{
-		public Showtimes Showtime { get; set; }
-		public Auditoriums  Auditorium { get; set; }
-		public IEnumerable<Seats> Seats { get; set; }
-		public IEnumerable<Reservations> Reservations { get; set; }
+		public Auditoriums Auditorium { get; set; } = null!;
+		//public List<Seats> Seats { get; set; } = null!;
+		//public List<Reservations> Reservations { get; set; } = null!;
 	}
 
-	public record struct ShowtimesInEachDay
+	public class CustomCinemas : Cinemas
+	{
+		public List<CustomShowtimes> Showtimes { get; set; } = null!;
+	}
+
+	public class ShowtimesInEachDay
 	{
 		public DateOnly Date { get; set; }
-		public IEnumerable<CustomShowtimes> Showtimes { get; set; }
+		public List<CustomCinemas> Cinemas { get; set; } = null!;
 	}
 
-	public record struct ShowtimesInTheNext7DaysFromToday
+	public class ShowtimesInTheNext7DaysFromToday
 	{
-		public List<ShowtimesInEachDay> Result { get; set; }
+		public List<ShowtimesInEachDay> Result { get; set; } = null!;
 	}
 }
