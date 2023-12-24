@@ -83,7 +83,7 @@ namespace CinemaTicketBooking.Server.Scaffolds.Models.DataLayer.Repositories
 			return await Connection.QueryAsync<Feedbacks>(new CommandDefinition(query.ToString(), parameters));
 		}
 
-		public async Task<int> InsertFeedbacksJustOnceAsync(Feedbacks entity)
+		public async Task<long> InsertFeedbacksJustOnceAsync(Feedbacks entity)
 		{
 			// Create string builder for query
 			var query = new StringBuilder();
@@ -111,7 +111,7 @@ namespace CinemaTicketBooking.Server.Scaffolds.Models.DataLayer.Repositories
 			return await Connection.ExecuteAsync(new CommandDefinition(query.ToString(), parameters));
 		}
 
-		public async Task<int> UpdateFeedbacksMatchingAsync(Feedbacks entity, Feedbacks updatedValue)
+		public async Task<long> UpdateFeedbacksMatchingAsync(Feedbacks entity, Feedbacks updatedValue)
 		{
 			// Create string builder for query
 			var query = new StringBuilder();
@@ -151,7 +151,7 @@ namespace CinemaTicketBooking.Server.Scaffolds.Models.DataLayer.Repositories
 			return await Connection.ExecuteAsync(new CommandDefinition(query.ToString(), parameters));
 		}
 
-		public async Task<int> RemoveFeedbacksMatchingAsync(Feedbacks entity)
+		public async Task<long> RemoveFeedbacksMatchingAsync(Feedbacks entity)
 		{
 			// Create string builder for query
 			var query = new StringBuilder();
@@ -246,7 +246,7 @@ namespace CinemaTicketBooking.Server.Scaffolds.Models.DataLayer.Repositories
 			return await Connection.QueryAsync<Seats>(new CommandDefinition(query.ToString(), parameters));
 		}
 
-		public async Task<int> InsertSeatsJustOnceAsync(Seats entity)
+		public async Task<long> InsertSeatsJustOnceAsync(Seats entity)
 		{
 			// Create string builder for query
 			var query = new StringBuilder();
@@ -277,7 +277,7 @@ namespace CinemaTicketBooking.Server.Scaffolds.Models.DataLayer.Repositories
 			return await Connection.ExecuteAsync(new CommandDefinition(query.ToString(), parameters));
 		}
 
-		public async Task<int> UpdateSeatsMatchingAsync(Seats entity, Seats updatedValue)
+		public async Task<long> UpdateSeatsMatchingAsync(Seats entity, Seats updatedValue)
 		{
 			// Create string builder for query
 			var query = new StringBuilder();
@@ -323,7 +323,7 @@ namespace CinemaTicketBooking.Server.Scaffolds.Models.DataLayer.Repositories
 			return await Connection.ExecuteAsync(new CommandDefinition(query.ToString(), parameters));
 		}
 
-		public async Task<int> RemoveSeatsMatchingAsync(Seats entity)
+		public async Task<long> RemoveSeatsMatchingAsync(Seats entity)
 		{
 			// Create string builder for query
 			var query = new StringBuilder();
@@ -426,7 +426,7 @@ namespace CinemaTicketBooking.Server.Scaffolds.Models.DataLayer.Repositories
 			return await Connection.QueryAsync<FoodAndDrinks>(new CommandDefinition(query.ToString(), parameters));
 		}
 
-		public async Task<int> InsertFoodAndDrinksJustOnceAsync(FoodAndDrinks entity)
+		public async Task<long> InsertFoodAndDrinksJustOnceAsync(FoodAndDrinks entity)
 		{
 			// Create string builder for query
 			var query = new StringBuilder();
@@ -460,7 +460,7 @@ namespace CinemaTicketBooking.Server.Scaffolds.Models.DataLayer.Repositories
 			return await Connection.ExecuteAsync(new CommandDefinition(query.ToString(), parameters));
 		}
 
-		public async Task<int> UpdateFoodAndDrinksMatchingAsync(FoodAndDrinks entity, FoodAndDrinks updatedValue)
+		public async Task<long> UpdateFoodAndDrinksMatchingAsync(FoodAndDrinks entity, FoodAndDrinks updatedValue)
 		{
 			// Create string builder for query
 			var query = new StringBuilder();
@@ -512,7 +512,7 @@ namespace CinemaTicketBooking.Server.Scaffolds.Models.DataLayer.Repositories
 			return await Connection.ExecuteAsync(new CommandDefinition(query.ToString(), parameters));
 		}
 
-		public async Task<int> RemoveFoodAndDrinksMatchingAsync(FoodAndDrinks entity)
+		public async Task<long> RemoveFoodAndDrinksMatchingAsync(FoodAndDrinks entity)
 		{
 			// Create string builder for query
 			var query = new StringBuilder();
@@ -608,7 +608,7 @@ namespace CinemaTicketBooking.Server.Scaffolds.Models.DataLayer.Repositories
 			return await Connection.QueryAsync<Auditoriums>(new CommandDefinition(query.ToString(), parameters));
 		}
 
-		public async Task<int> InsertAuditoriumsJustOnceAsync(Auditoriums entity)
+		public async Task<long> InsertAuditoriumsJustOnceAsync(Auditoriums entity)
 		{
 			// Create string builder for query
 			var query = new StringBuilder();
@@ -636,7 +636,7 @@ namespace CinemaTicketBooking.Server.Scaffolds.Models.DataLayer.Repositories
 			return await Connection.ExecuteAsync(new CommandDefinition(query.ToString(), parameters));
 		}
 
-		public async Task<int> UpdateAuditoriumsMatchingAsync(Auditoriums entity, Auditoriums updatedValue)
+		public async Task<long> UpdateAuditoriumsMatchingAsync(Auditoriums entity, Auditoriums updatedValue)
 		{
 			// Create string builder for query
 			var query = new StringBuilder();
@@ -676,7 +676,7 @@ namespace CinemaTicketBooking.Server.Scaffolds.Models.DataLayer.Repositories
 			return await Connection.ExecuteAsync(new CommandDefinition(query.ToString(), parameters));
 		}
 
-		public async Task<int> RemoveAuditoriumsMatchingAsync(Auditoriums entity)
+		public async Task<long> RemoveAuditoriumsMatchingAsync(Auditoriums entity)
 		{
 			// Create string builder for query
 			var query = new StringBuilder();
@@ -711,10 +711,10 @@ namespace CinemaTicketBooking.Server.Scaffolds.Models.DataLayer.Repositories
 			query.Append(" select ");
 			query.Append("            id Id, ");
 			query.Append("   showtime_id ShowtimeId, ");
-			query.Append("   user_id UserId, ");
+			query.Append("   bill_id BillId, ");
 			query.Append("   created_timestamp CreatedTimestamp, ");
 			query.Append("   updated_timestamp UpdatedTimestamp, ");
-			query.Append("   membership_id MembershipId ");
+			query.Append("     price  Price  ");
 			query.Append(" from ");
 			query.Append("   public.tickets ");
 			query.Append(" order by ");
@@ -742,36 +742,36 @@ namespace CinemaTicketBooking.Server.Scaffolds.Models.DataLayer.Repositories
 			query.Append(" select ");
 			query.Append("            id Id, ");
 			query.Append("   showtime_id ShowtimeId, ");
-			query.Append("   user_id UserId, ");
+			query.Append("   bill_id BillId, ");
 			query.Append("   created_timestamp CreatedTimestamp, ");
 			query.Append("   updated_timestamp UpdatedTimestamp, ");
-			query.Append("   membership_id MembershipId ");
+			query.Append("     price  Price  ");
 			query.Append(" from ");
 			query.Append("   public.tickets ");
 			query.Append(" where true ");
-			if (entity.    Id != null)
+			if (entity.Price != null)
+			query.Append("   and      price = @price ");
+			if (entity.        Id != null)
 			query.Append("   and      id = @id ");
 			if (entity.ShowtimeId != null)
 			query.Append("   and showtime_id = @showtimeId ");
-			if (entity.UserId != null)
-			query.Append("   and user_id = @userId ");
-			if (entity.MembershipId != null)
-			query.Append("   and membership_id = @membershipId ");
-			
+			if (entity.    BillId != null)
+			query.Append("   and     bill_id =     @billId ");
+
 			// Create parameters collection
 			var parameters = new DynamicParameters();
-			
+
 			// Add parameters to collection
+			parameters.Add("@price", entity.Price);
 			parameters.Add(          "@id", entity.Id);
 			parameters.Add(  "@showtimeId", entity.ShowtimeId);
-			parameters.Add(      "@userId", entity.UserId);
-			parameters.Add("@membershipId", entity.MembershipId);
+			parameters.Add(      "@billId", entity.BillId);
 
 			// Retrieve result from database and convert to entity class
 			return await Connection.QueryAsync<Tickets>(new CommandDefinition(query.ToString(), parameters));
 		}
 
-		public async Task<int> InsertTicketsJustOnceAsync(Tickets entity)
+		public async Task<long> InsertTicketsJustOnceAsync(Tickets entity)
 		{
 			// Create string builder for query
 			var query = new StringBuilder();
@@ -780,29 +780,29 @@ namespace CinemaTicketBooking.Server.Scaffolds.Models.DataLayer.Repositories
 			query.Append(" insert into public.tickets ");
 			query.Append("   ( ");
 			query.Append("       showtime_id, ");
-			query.Append("           user_id, ");
-			query.Append("     membership_id  ");
+			query.Append("           bill_id, ");
+			query.Append("       price  ");
 			query.Append("   ) ");
 			query.Append(" values ");
 			query.Append("   ( ");
 			query.Append("       @showtimeId, ");
-			query.Append("           @userId, ");
-			query.Append("     @membershipId  ");
+			query.Append("           @billId, ");
+			query.Append("       @price  ");
 			query.Append("   ) ");
 			
 			// Create parameters collection
 			var parameters = new DynamicParameters();
 			
 			// Add parameters to collection
-			parameters.Add(  "@showtimeId", entity.  ShowtimeId);
-			parameters.Add(      "@userId", entity.      UserId);
-			parameters.Add("@membershipId", entity.MembershipId);
-			
+			parameters.Add(  "@showtimeId", entity.ShowtimeId);
+			parameters.Add(      "@billId", entity.    BillId);
+			parameters.Add("@price", entity.Price);
+
 			// Execute query in database
-			return await Connection.ExecuteAsync(new CommandDefinition(query.ToString(), parameters));
+			return await Connection.ExecuteScalarAsync<long>(new CommandDefinition(query.Append(" returning id ").ToString(), parameters));
 		}
 
-		public async Task<int> UpdateTicketsMatchingAsync(Tickets entity, Tickets updatedValue)
+		public async Task<long> UpdateTicketsMatchingAsync(Tickets entity, Tickets updatedValue)
 		{
 			// Create string builder for query
 			var query = new StringBuilder();
@@ -812,63 +812,67 @@ namespace CinemaTicketBooking.Server.Scaffolds.Models.DataLayer.Repositories
 			query.Append("   public.tickets ");
 			query.Append(" set ");
 			query.Append("     created_timestamp = created_timestamp ");
+			if (updatedValue.        Id != null)
 			query.Append("   ,            id =           @updatedId ");
+			if (updatedValue.ShowtimeId != null)
 			query.Append("   ,   showtime_id =   @updatedShowtimeId ");
-			query.Append("   ,       user_id =       @updatedUserId ");
-			query.Append("   , membership_id = @updatedMembershipId ");
+			if (updatedValue.    BillId != null)
+			query.Append("   ,       bill_id =       @updatedBillId ");
+			if (updatedValue.Price != null)
+			query.Append("   ,   price =   @updatedPrice ");
 			query.Append(" where true ");
-			if (entity.    Id != null)
-			query.Append("   and      id = @id ");
+			if (entity.Price != null)
+			query.Append("   and      price = @price ");
+			if (entity.        Id != null)
+			query.Append("   and          id =         @id ");
 			if (entity.ShowtimeId != null)
 			query.Append("   and showtime_id = @showtimeId ");
-			if (entity.UserId != null)
-			query.Append("   and user_id = @userId ");
-			if (entity.MembershipId != null)
-			query.Append("   and membership_id = @membershipId ");
+			if (entity.    BillId != null)
+			query.Append("   and     bill_id =     @billId ");
 						
 			// Create parameters collection
 			var parameters = new DynamicParameters();
 			
 			// Add parameters to collection
 			parameters.Add(  "@showtimeId", entity.  ShowtimeId);
-			parameters.Add(      "@userId", entity.      UserId);
-			parameters.Add("@membershipId", entity.MembershipId);
+			parameters.Add(      "@billId", entity.      BillId);
 			parameters.Add(          "@id", entity.Id);
+			parameters.Add("@price", entity.Price);
 
-			parameters.Add(  "@updatedShowtimeId", updatedValue.  ShowtimeId);
-			parameters.Add(      "@updatedUserId", updatedValue.      UserId);
-			parameters.Add("@updatedMembershipId", updatedValue.MembershipId);
-			parameters.Add("@updatedId", updatedValue.Id);
+			parameters.Add(  "@updatedShowtimeId", updatedValue.ShowtimeId);
+			parameters.Add(      "@updatedBillId", updatedValue.    BillId);
+			parameters.Add("@updatedId"   , updatedValue.Id);
+			parameters.Add("@updatedPrice", updatedValue.Price);
 
 			// Execute query in database
 			return await Connection.ExecuteAsync(new CommandDefinition(query.ToString(), parameters));
 		}
 
-		public async Task<int> RemoveTicketsMatchingAsync(Tickets entity)
+		public async Task<long> RemoveTicketsMatchingAsync(Tickets entity)
 		{
 			// Create string builder for query
 			var query = new StringBuilder();
 			
 			// Create sql statement
 			query.Append(" delete from public.tickets where true ");
+			if (entity. Price != null)
+			query.Append("   and      price = @price ");
 			if (entity.    Id != null)
 			query.Append("   and            id =           @id ");
 			if (entity.ShowtimeId != null)
 			query.Append("   and   showtime_id =   @showtimeId ");
-			if (entity.UserId != null)
-			query.Append("   and       user_id =       @userId ");
-			if (entity.MembershipId != null)
-			query.Append("   and membership_id = @membershipId ");
+			if (entity.    BillId != null)
+			query.Append("   and       bill_id =       @billId ");
 			
 			// Create parameters collection
 			var parameters = new DynamicParameters();
 			
 			// Add parameters to collection
 			parameters.Add(  "@showtimeId", entity.  ShowtimeId);
-			parameters.Add(      "@userId", entity.      UserId);
-			parameters.Add("@membershipId", entity.MembershipId);
+			parameters.Add(      "@billId", entity.      BillId);
 			parameters.Add(          "@id", entity.Id);
-			
+			parameters.Add("@price", entity.Price);
+
 			// Execute query in database
 			return await Connection.ExecuteAsync(new CommandDefinition(query.ToString(), parameters));
 		}
@@ -962,7 +966,7 @@ namespace CinemaTicketBooking.Server.Scaffolds.Models.DataLayer.Repositories
 			return await Connection.QueryAsync<Showtimes>(new CommandDefinition(query.ToString(), parameters));
 		}
 
-		public async Task<int> InsertShowtimesJustOnceAsync(Showtimes entity)
+		public async Task<long> InsertShowtimesJustOnceAsync(Showtimes entity)
 		{
 			// Create string builder for query
 			var query = new StringBuilder();
@@ -1005,7 +1009,7 @@ namespace CinemaTicketBooking.Server.Scaffolds.Models.DataLayer.Repositories
 			return await Connection.ExecuteAsync(new CommandDefinition(query.ToString(), parameters));
 		}
 
-		public async Task<int> UpdateShowtimesMatchingAsync(Showtimes entity, Showtimes updatedValue)
+		public async Task<long> UpdateShowtimesMatchingAsync(Showtimes entity, Showtimes updatedValue)
 		{
 			// Create string builder for query
 			var query = new StringBuilder();
@@ -1075,7 +1079,7 @@ namespace CinemaTicketBooking.Server.Scaffolds.Models.DataLayer.Repositories
 			return await Connection.ExecuteAsync(new CommandDefinition(query.ToString(), parameters));
 		}
 
-		public async Task<int> RemoveShowtimesMatchingAsync(Showtimes entity)
+		public async Task<long> RemoveShowtimesMatchingAsync(Showtimes entity)
 		{
 			// Create string builder for query
 			var query = new StringBuilder();
@@ -1181,7 +1185,7 @@ namespace CinemaTicketBooking.Server.Scaffolds.Models.DataLayer.Repositories
 			return await Connection.QueryAsync<Reservations>(new CommandDefinition(query.ToString(), parameters));
 		}
 
-		public async Task<int> InsertReservationsJustOnceAsync(Reservations entity)
+		public async Task<long> InsertReservationsJustOnceAsync(Reservations entity)
 		{
 			// Create string builder for query
 			var query = new StringBuilder();
@@ -1212,7 +1216,7 @@ namespace CinemaTicketBooking.Server.Scaffolds.Models.DataLayer.Repositories
 			return await Connection.ExecuteAsync(new CommandDefinition(query.ToString(), parameters));
 		}
 
-		public async Task<int> UpdateReservationsMatchingAsync(Reservations entity, Reservations updatedValue)
+		public async Task<long> UpdateReservationsMatchingAsync(Reservations entity, Reservations updatedValue)
 		{
 			// Create string builder for query
 			var query = new StringBuilder();
@@ -1252,7 +1256,7 @@ namespace CinemaTicketBooking.Server.Scaffolds.Models.DataLayer.Repositories
 			return await Connection.ExecuteAsync(new CommandDefinition(query.ToString(), parameters));
 		}
 
-		public async Task<int> RemoveReservationsMatchingAsync(Reservations entity)
+		public async Task<long> RemoveReservationsMatchingAsync(Reservations entity)
 		{
 			// Create string builder for query
 			var query = new StringBuilder();
@@ -1337,7 +1341,7 @@ namespace CinemaTicketBooking.Server.Scaffolds.Models.DataLayer.Repositories
 			return await Connection.QueryAsync<Memberships>(new CommandDefinition(query.ToString(), parameters));
 		}
 
-		public async Task<int> InsertMembershipsJustOnceAsync(Memberships entity)
+		public async Task<long> InsertMembershipsJustOnceAsync(Memberships entity)
 		{
 			// Create string builder for query
 			var query = new StringBuilder();
@@ -1362,7 +1366,7 @@ namespace CinemaTicketBooking.Server.Scaffolds.Models.DataLayer.Repositories
 			return await Connection.ExecuteAsync(new CommandDefinition(query.ToString(), parameters));
 		}
 
-		public async Task<int> UpdateMembershipsMatchingAsync(Memberships entity, Memberships updatedValue)
+		public async Task<long> UpdateMembershipsMatchingAsync(Memberships entity, Memberships updatedValue)
 		{
 			// Create string builder for query
 			var query = new StringBuilder();
@@ -1396,7 +1400,7 @@ namespace CinemaTicketBooking.Server.Scaffolds.Models.DataLayer.Repositories
 			return await Connection.ExecuteAsync(new CommandDefinition(query.ToString(), parameters));
 		}
 
-		public async Task<int> RemoveMembershipsMatchingAsync(Memberships entity)
+		public async Task<long> RemoveMembershipsMatchingAsync(Memberships entity)
 		{
 			// Create string builder for query
 			var query = new StringBuilder();
@@ -1503,7 +1507,7 @@ namespace CinemaTicketBooking.Server.Scaffolds.Models.DataLayer.Repositories
 			return await Connection.QueryAsync<Users>(new CommandDefinition(query.ToString(), parameters));
 		}
 
-		public async Task<int> InsertUsersJustOnceAsync(Users entity)
+		public async Task<long> InsertUsersJustOnceAsync(Users entity)
 		{
 			// Create string builder for query
 			var query = new StringBuilder();
@@ -1543,7 +1547,7 @@ namespace CinemaTicketBooking.Server.Scaffolds.Models.DataLayer.Repositories
 			return await Connection.ExecuteAsync(new CommandDefinition(query.ToString(), parameters));
 		}
 
-		public async Task<int> UpdateUsersMatchingAsync(Users entity, Users updatedValue)
+		public async Task<long> UpdateUsersMatchingAsync(Users entity, Users updatedValue)
 		{
 			// Create string builder for query
 			var query = new StringBuilder();
@@ -1607,7 +1611,7 @@ namespace CinemaTicketBooking.Server.Scaffolds.Models.DataLayer.Repositories
 			return await Connection.ExecuteAsync(new CommandDefinition(query.ToString(), parameters));
 		}
 
-		public async Task<int> RemoveUsersMatchingAsync(Users entity)
+		public async Task<long> RemoveUsersMatchingAsync(Users entity)
 		{
 			// Create string builder for query
 			var query = new StringBuilder();
@@ -1829,7 +1833,7 @@ namespace CinemaTicketBooking.Server.Scaffolds.Models.DataLayer.Repositories
 			return await Connection.QueryAsync<Movies>(new CommandDefinition(query.ToString(), parameters));
 		}
 
-		public async Task<int> InsertMoviesJustOnceAsync(Movies entity)
+		public async Task<long> InsertMoviesJustOnceAsync(Movies entity)
 		{
 			// Create string builder for query
 			var query = new StringBuilder();
@@ -1932,7 +1936,7 @@ namespace CinemaTicketBooking.Server.Scaffolds.Models.DataLayer.Repositories
 			return await Connection.ExecuteAsync(new CommandDefinition(query.ToString(), parameters));
 		}
 
-		public async Task<int> UpdateMoviesMatchingAsync(Movies entity, Movies updatedValue)
+		public async Task<long> UpdateMoviesMatchingAsync(Movies entity, Movies updatedValue)
 		{
 			// Create string builder for query
 			var query = new StringBuilder();
@@ -2090,7 +2094,7 @@ namespace CinemaTicketBooking.Server.Scaffolds.Models.DataLayer.Repositories
 			return await Connection.ExecuteAsync(new CommandDefinition(query.ToString(), parameters));
 		}
 
-		public async Task<int> RemoveMoviesMatchingAsync(Movies entity)
+		public async Task<long> RemoveMoviesMatchingAsync(Movies entity)
 		{
 			// Create string builder for query
 			var query = new StringBuilder();
@@ -2252,7 +2256,7 @@ namespace CinemaTicketBooking.Server.Scaffolds.Models.DataLayer.Repositories
 			return await Connection.QueryAsync<Cinemas>(new CommandDefinition(query.ToString(), parameters));
 		}
 
-		public async Task<int> InsertCinemasJustOnceAsync(Cinemas entity)
+		public async Task<long> InsertCinemasJustOnceAsync(Cinemas entity)
 		{
 			// Create string builder for query
 			var query = new StringBuilder();
@@ -2280,7 +2284,7 @@ namespace CinemaTicketBooking.Server.Scaffolds.Models.DataLayer.Repositories
 			return await Connection.ExecuteAsync(new CommandDefinition(query.ToString(), parameters));
 		}
 
-		public async Task<int> UpdateCinemasMatchingAsync(Cinemas entity, Cinemas updatedValue)
+		public async Task<long> UpdateCinemasMatchingAsync(Cinemas entity, Cinemas updatedValue)
 		{
 			// Create string builder for query
 			var query = new StringBuilder();
@@ -2320,7 +2324,7 @@ namespace CinemaTicketBooking.Server.Scaffolds.Models.DataLayer.Repositories
 			return await Connection.ExecuteAsync(new CommandDefinition(query.ToString(), parameters));
 		}
 
-		public async Task<int> RemoveCinemasMatchingAsync(Cinemas entity)
+		public async Task<long> RemoveCinemasMatchingAsync(Cinemas entity)
 		{
 			// Create string builder for query
 			var query = new StringBuilder();
@@ -2353,15 +2357,18 @@ namespace CinemaTicketBooking.Server.Scaffolds.Models.DataLayer.Repositories
 			
 			// Create sql statement
 			query.Append(" select ");
-			query.Append("           ticket_id         TicketId, ");
+			query.Append("         id Id, ");
+			query.Append("   price Price, ");
+			query.Append("   cinema_id CinemaId, ");
+			query.Append("   serving_size ServingSize, ");
+			query.Append("             bill_id           BillId, ");
 			query.Append("   food_and_drink_id   FoodAndDrinkId, ");
 			query.Append("   created_timestamp CreatedTimestamp, ");
 			query.Append("   updated_timestamp UpdatedTimestamp  ");
 			query.Append(" from ");
 			query.Append("   public.orders ");
 			query.Append(" order by ");
-			query.Append("           ticket_id, ");
-			query.Append("   food_and_drink_id  ");
+			query.Append("   id ");
 			query.Append(" offset (@pageSize * (@pageNumber - 1)) rows ");
 			query.Append(" fetch next @pageSize rows only ");
 			
@@ -2383,30 +2390,46 @@ namespace CinemaTicketBooking.Server.Scaffolds.Models.DataLayer.Repositories
 			
 			// Create sql statement
 			query.Append(" select ");
-			query.Append("           ticket_id         TicketId, ");
+			query.Append("         id Id, ");
+			query.Append("   price Price, ");
+			query.Append("   cinema_id CinemaId, ");
+			query.Append("   serving_size ServingSize, ");
+			query.Append("             bill_id           BillId, ");
 			query.Append("   food_and_drink_id   FoodAndDrinkId, ");
 			query.Append("   created_timestamp CreatedTimestamp, ");
 			query.Append("   updated_timestamp UpdatedTimestamp  ");
 			query.Append(" from ");
 			query.Append("   public.orders ");
 			query.Append(" where true ");
-			if (entity.      TicketId != null)
-			query.Append("   and         ticket_id =       @ticketId ");
+			if (entity.CinemaId != null)
+			query.Append("   and cinema_id = @cinemaId ");
+			if (entity.ServingSize != null)
+			query.Append("   and serving_size = @servingSize ");
+			if (entity.Price != null)
+			query.Append("   and                price =             @price ");
+			if (entity.            Id != null)
+			query.Append("   and                id =             @id ");
+			if (entity.        BillId != null)
+			query.Append("   and           bill_id =         @billId ");
 			if (entity.FoodAndDrinkId != null)
 			query.Append("   and food_and_drink_id = @foodAndDrinkId ");
 			
 			// Create parameters collection
 			var parameters = new DynamicParameters();
-			
+
 			// Add parameters to collection
-			parameters.Add("@ticketId", entity.TicketId);
+			parameters.Add("@id", entity.Id);
+			parameters.Add(        "@billId", entity.        BillId);
 			parameters.Add("@foodAndDrinkId", entity.FoodAndDrinkId);
+			parameters.Add("@price", entity.Price);
+			parameters.Add("@cinemaId", entity.CinemaId);
+			parameters.Add("@servingSize", entity.ServingSize);
 
 			// Retrieve result from database and convert to entity class
 			return await Connection.QueryAsync<Orders>(new CommandDefinition(query.ToString(), parameters));
 		}
 
-		public async Task<int> InsertOrdersJustOnceAsync(Orders entity)
+		public async Task<long> InsertOrdersJustOnceAsync(Orders entity)
 		{
 			// Create string builder for query
 			var query = new StringBuilder();
@@ -2414,27 +2437,36 @@ namespace CinemaTicketBooking.Server.Scaffolds.Models.DataLayer.Repositories
 			// Create sql statement
 			query.Append(" insert into public.orders ");
 			query.Append("   ( ");
-			query.Append("             ticket_id, ");
+			query.Append("     price, ");
+			query.Append("     cinema_id   , ");
+			query.Append("     serving_size, ");
+			query.Append("               bill_id, ");
 			query.Append("     food_and_drink_id  ");
 			query.Append("   ) ");
 			query.Append(" values ");
 			query.Append("   ( ");
-			query.Append("           @ticketId, ");
+			query.Append("     @price, ");
+			query.Append("     @cinemaId   , ");
+			query.Append("     @servingSize, ");
+			query.Append("             @billId, ");
 			query.Append("     @foodAndDrinkId  ");
 			query.Append("   ) ");
 			
 			// Create parameters collection
 			var parameters = new DynamicParameters();
-			
+
 			// Add parameters to collection
-			parameters.Add("@ticketId", entity.TicketId);
+			parameters.Add("@price", entity.Price);
+			parameters.Add(        "@billId", entity.BillId);
 			parameters.Add("@foodAndDrinkId", entity.FoodAndDrinkId);
-			
+			parameters.Add("@cinemaId", entity.CinemaId);
+			parameters.Add("@servingSize", entity.ServingSize);
+
 			// Execute query in database
-			return await Connection.ExecuteAsync(new CommandDefinition(query.ToString(), parameters));
+			return await Connection.ExecuteScalarAsync<long>(new CommandDefinition(query.Append(" returning id ").ToString(), parameters));
 		}
 
-		public async Task<int> UpdateOrdersMatchingAsync(Orders entity, Orders updatedValue)
+		public async Task<long> UpdateOrdersMatchingAsync(Orders entity, Orders updatedValue)
 		{
 			// Create string builder for query
 			var query = new StringBuilder();
@@ -2444,48 +2476,85 @@ namespace CinemaTicketBooking.Server.Scaffolds.Models.DataLayer.Repositories
 			query.Append("   public.orders ");
 			query.Append(" set ");
 			query.Append("     created_timestamp = created_timestamp ");
-			if (updatedValue.      TicketId != null)
-			query.Append("   ,         ticket_id =       @updatedTicketId ");
+			if (updatedValue.Price != null)
+			query.Append("   , price = @updatedPrice ");
+			if (updatedValue.            Id != null)
+			query.Append("   ,                id =             @updatedId ");
+			if (updatedValue.        BillId != null)
+			query.Append("   ,           bill_id =         @updatedBillId ");
 			if (updatedValue.FoodAndDrinkId != null)
 			query.Append("   , food_and_drink_id = @updatedFoodAndDrinkId ");
+			if (updatedValue.CinemaId != null)
+			query.Append("   , cinema_id = @updatedCinemaId ");
+			if (updatedValue.ServingSize != null)
+			query.Append("   , serving_size = @updatedServingSize ");
 			query.Append(" where true ");
-			if (entity.      TicketId != null)
-			query.Append("   and         ticket_id =       @ticketId ");
+			if (entity.Price != null)
+			query.Append("   and                price =             @price ");
+			if (entity.            Id != null)
+			query.Append("   and                id =             @id ");
+			if (entity.        BillId != null)
+			query.Append("   and           bill_id =         @billId ");
 			if (entity.FoodAndDrinkId != null)
 			query.Append("   and food_and_drink_id = @foodAndDrinkId ");
+			if (entity.CinemaId != null)
+			query.Append("   and cinema_id = @cinemaId ");
+			if (entity.ServingSize != null)
+			query.Append("   and serving_size = @servingSize ");
 			
 			// Create parameters collection
 			var parameters = new DynamicParameters();
 			
 			// Add parameters to collection
-			parameters.Add(      "@ticketId", entity.TicketId);
+			parameters.Add("@id", entity.Id);
+			parameters.Add(        "@billId", entity.BillId);
 			parameters.Add("@foodAndDrinkId", entity.FoodAndDrinkId);
-			parameters.Add(      "@updatedTicketId", updatedValue.TicketId);
+			parameters.Add("@price", entity.Price);
+			parameters.Add("@cinemaId", entity.CinemaId);
+			parameters.Add("@servingSize", entity.ServingSize);
+
+			parameters.Add(   "@updatedId", updatedValue.Id);
+			parameters.Add("@updatedPrice", updatedValue.Price);
+			parameters.Add(        "@updatedBillId", updatedValue.BillId);
 			parameters.Add("@updatedFoodAndDrinkId", updatedValue.FoodAndDrinkId);
+			parameters.Add("@updatedCinemaId", updatedValue.CinemaId);
+			parameters.Add("@updatedServingSize", updatedValue.ServingSize);
 
 			// Execute query in database
 			return await Connection.ExecuteAsync(new CommandDefinition(query.ToString(), parameters));
 		}
 
-		public async Task<int> RemoveOrdersMatchingAsync(Orders entity)
+		public async Task<long> RemoveOrdersMatchingAsync(Orders entity)
 		{
 			// Create string builder for query
 			var query = new StringBuilder();
 			
 			// Create sql statement
 			query.Append(" delete from public.orders where true ");
-			if (entity.      TicketId != null)
-			query.Append("   and         ticket_id =       @ticketId ");
+			if (entity.CinemaId != null)
+			query.Append("   and cinema_id = @cinemaId ");
+			if (entity.ServingSize != null)
+			query.Append("   and serving_size = @servingSize ");
+			if (entity.Price != null)
+			query.Append("   and                price =             @price ");
+			if (entity.            Id != null)
+			query.Append("   and                id =             @id ");
+			if (entity.        BillId != null)
+			query.Append("   and           bill_id =         @billId ");
 			if (entity.FoodAndDrinkId != null)
 			query.Append("   and food_and_drink_id = @foodAndDrinkId ");
 			
 			// Create parameters collection
 			var parameters = new DynamicParameters();
-			
+
 			// Add parameters to collection
-			parameters.Add("@ticketId", entity.TicketId);
+			parameters.Add("@id", entity.Id);
+			parameters.Add(        "@billId", entity.BillId);
 			parameters.Add("@foodAndDrinkId", entity.FoodAndDrinkId);
-			
+			parameters.Add("@price", entity.Price);
+			parameters.Add("@cinemaId", entity.CinemaId);
+			parameters.Add("@servingSize", entity.ServingSize);
+
 			// Execute query in database
 			return await Connection.ExecuteAsync(new CommandDefinition(query.ToString(), parameters));
 		}
@@ -2594,7 +2663,7 @@ namespace CinemaTicketBooking.Server.Scaffolds.Models.DataLayer.Repositories
 			}, splitOn: "Id");
 		}
 
-		public async Task<int> InsertMenusJustOnceAsync(Menus entity)
+		public async Task<long> InsertMenusJustOnceAsync(Menus entity)
 		{
 			// Create string builder for query
 			var query = new StringBuilder();
@@ -2631,7 +2700,7 @@ namespace CinemaTicketBooking.Server.Scaffolds.Models.DataLayer.Repositories
 			return await Connection.ExecuteAsync(new CommandDefinition(query.ToString(), parameters));
 		}
 
-		public async Task<int> UpdateMenusMatchingAsync(Menus entity, Menus updatedValue)
+		public async Task<long> UpdateMenusMatchingAsync(Menus entity, Menus updatedValue)
 		{
 			// Create string builder for query
 			var query = new StringBuilder();
@@ -2683,7 +2752,7 @@ namespace CinemaTicketBooking.Server.Scaffolds.Models.DataLayer.Repositories
 			return await Connection.ExecuteAsync(new CommandDefinition(query.ToString(), parameters));
 		}
 
-		public async Task<int> RemoveMenusMatchingAsync(Menus entity)
+		public async Task<long> RemoveMenusMatchingAsync(Menus entity)
 		{
 			// Create string builder for query
 			var query = new StringBuilder();
@@ -2777,7 +2846,7 @@ namespace CinemaTicketBooking.Server.Scaffolds.Models.DataLayer.Repositories
 			return await Connection.QueryAsync<Staffs>(new CommandDefinition(query.ToString(), parameters));
 		}
 
-		public async Task<int> InsertStaffsJustOnceAsync(Staffs entity)
+		public async Task<long> InsertStaffsJustOnceAsync(Staffs entity)
 		{
 			var query = new StringBuilder();
 
@@ -2796,7 +2865,7 @@ namespace CinemaTicketBooking.Server.Scaffolds.Models.DataLayer.Repositories
 			return await Connection.ExecuteAsync(new CommandDefinition(query.ToString(), parameters));
 		}
 
-		public async Task<int> UpdateStaffsMatchingAsync(Staffs entity, Staffs updatedValue)
+		public async Task<long> UpdateStaffsMatchingAsync(Staffs entity, Staffs updatedValue)
 		{
 			var query = new StringBuilder();
 
@@ -2842,7 +2911,7 @@ namespace CinemaTicketBooking.Server.Scaffolds.Models.DataLayer.Repositories
 			return await Connection.ExecuteAsync(new CommandDefinition(query.ToString(), parameters));
 		}
 
-		public async Task<int> RemoveStaffsMatchingAsync(Staffs entity)
+		public async Task<long> RemoveStaffsMatchingAsync(Staffs entity)
 		{
 			var query = new StringBuilder();
 
@@ -2865,6 +2934,348 @@ namespace CinemaTicketBooking.Server.Scaffolds.Models.DataLayer.Repositories
 			parameters.Add("@cinemaId", entity.CinemaId);
 			parameters.Add("@userId", entity.UserId);
 
+			return await Connection.ExecuteAsync(new CommandDefinition(query.ToString(), parameters));
+		}
+
+		public async Task<IEnumerable<Discounts>> SelectDiscountsAsync(int pageSize = 10, int pageNumber = 1)
+		{
+			var query = new StringBuilder();
+
+			query.Append(" select ");
+			query.Append("   id Id, ");
+			query.Append("   name Name, ");
+			query.Append("   percentage  Percentage, ");
+			query.Append("   minimum_invoice  MinimumInvoice , ");
+			query.Append("   maximum_discount MaximumDiscount, ");
+			query.Append("   expire_date ExpireDate, ");
+			query.Append("   created_timestamp CreatedTimestamp, ");
+			query.Append("   updated_timestamp UpdatedTimestamp  ");
+			query.Append(" from ");
+			query.Append("   public.discounts ");
+			query.Append(" order by ");
+			query.Append("   id ");
+			query.Append(" offset (@pageSize * (@pageNumber - 1)) rows ");
+			query.Append(" fetch next @pageSize rows only ");
+
+			var parameters = new DynamicParameters();
+			parameters.Add("@pageSize", pageSize);
+			parameters.Add("@pageNumber", pageNumber);
+
+			return await Connection.QueryAsync<Discounts>(new CommandDefinition(query.ToString(), parameters));
+		}
+
+		public async Task<IEnumerable<Discounts>> SelectDiscountsMatchingAsync(Discounts entity)
+		{
+			var query = new StringBuilder();
+
+			query.Append(" select ");
+			query.Append("   id Id, ");
+			query.Append("   name Name, ");
+			query.Append("   percentage  Percentage, ");
+			query.Append("   minimum_invoice  MinimumInvoice , ");
+			query.Append("   maximum_discount MaximumDiscount, ");
+			query.Append("   expire_date ExpireDate, ");
+			query.Append("   created_timestamp CreatedTimestamp, ");
+			query.Append("   updated_timestamp UpdatedTimestamp  ");
+			query.Append(" from ");
+			query.Append("   public.discounts ");
+			query.Append(" where true ");
+			if (entity.Id != null)
+			query.Append("   and id = @id ");
+			if (entity.Name != null)
+			query.Append("   and name = @name ");
+			if (entity.Percentage != null)
+			query.Append("   and percentage  = @percentage ");
+			if (entity.MinimumInvoice  != null)
+			query.Append("   and minimum_invoice  = @minimumInvoice  ");
+			if (entity.MaximumDiscount != null)
+			query.Append("   and maximum_discount = @maximumDiscount ");
+			if (entity.ExpireDate != null)
+			query.Append("   and expire_date = @expireDate ");
+
+			var parameters = new DynamicParameters();
+			parameters.Add("@id", entity.Id);
+			parameters.Add("@name", entity.Name);
+			parameters.Add("@percentage", entity.Percentage);
+			parameters.Add("@minimumInvoice" , entity.MinimumInvoice );
+			parameters.Add("@maximumDiscount", entity.MaximumDiscount);
+			parameters.Add("@expireDate", entity.ExpireDate);
+
+			return await Connection.QueryAsync<Discounts>(new CommandDefinition(query.ToString(), parameters));
+		}
+
+		public async Task<long> InsertDiscountsJustOnceAsync(Discounts entity)
+		{
+			var query = new StringBuilder();
+
+			query.Append(" insert into public.discounts ");
+			query.Append("   ( name, percentage, minimum_invoice, maximum_discount, expire_date ) ");
+			query.Append(" values");
+			query.Append("   (@name,@percentage, @minimumInvoice, @maximumDiscount, @expireDate ) ");
+
+			var parameters = new DynamicParameters();
+			parameters.Add("@name", entity.Name);
+			parameters.Add("@percentage", entity.Percentage);
+			parameters.Add("@minimumInvoice" , entity.MinimumInvoice );
+			parameters.Add("@maximumDiscount", entity.MaximumDiscount);
+			parameters.Add("@expireDate", entity.ExpireDate);
+
+			return await Connection.ExecuteAsync(new CommandDefinition(query.ToString(), parameters));
+		}
+
+		public async Task<long> UpdateDiscountsMatchingAsync(Discounts entity, Discounts updatedValue)
+		{
+			var query = new StringBuilder();
+
+			query.Append(" update ");
+			query.Append("   public.discounts ");
+			query.Append(" set ");
+			query.Append("     created_timestamp = created_timestamp ");
+			if (updatedValue.Id != null)
+			query.Append("   , id = @updatedId ");
+			if (updatedValue.Name != null)
+			query.Append("   , name = @updatedName ");
+			if (updatedValue.Percentage != null)
+			query.Append("   , percentage  = @percentage ");
+			if (updatedValue.MinimumInvoice  != null)
+			query.Append("   , minimum_invoice  = @minimumInvoice  ");
+			if (updatedValue.MaximumDiscount != null)
+			query.Append("   , maximum_discount = @maximumDiscount ");
+			if (updatedValue.ExpireDate != null)
+			query.Append("   , expire_date = @expireDate ");
+			query.Append(" where true ");
+			if (entity.Id != null)
+			query.Append("   and id = @id ");
+			if (entity.Name != null)
+			query.Append("   and name = @name ");
+			if (entity.Percentage != null)
+			query.Append("   and percentage  = @percentage ");
+			if (entity.MinimumInvoice  != null)
+			query.Append("   and minimum_invoice  = @minimumInvoice  ");
+			if (entity.MaximumDiscount != null)
+			query.Append("   and maximum_discount = @maximumDiscount ");
+			if (entity.ExpireDate != null)
+			query.Append("   and expire_date = @expireDate ");
+
+			var parameters = new DynamicParameters();
+			parameters.Add("@id", entity.Id);
+			parameters.Add("@name", entity.Name);
+			parameters.Add("@percentage", entity.Percentage);
+			parameters.Add("@minimumInvoice" , entity.MinimumInvoice );
+			parameters.Add("@maximumDiscount", entity.MaximumDiscount);
+			parameters.Add("@expireDate", entity.ExpireDate);
+
+			parameters.Add("@updatedId", updatedValue.Id);
+			parameters.Add("@updatedName", updatedValue.Name);
+			parameters.Add("@updatedPercentage", updatedValue.Percentage);
+			parameters.Add("@updatedMinimumInvoice" , updatedValue.MinimumInvoice );
+			parameters.Add("@updatedMaximumDiscount", updatedValue.MaximumDiscount);
+			parameters.Add("@updatedExpireDate", updatedValue.ExpireDate);
+
+			return await Connection.ExecuteAsync(new CommandDefinition(query.ToString(), parameters));
+		}
+
+		public async Task<long> RemoveDiscountsMatchingAsync(Discounts entity)
+		{
+			var query = new StringBuilder();
+
+			query.Append(" delete from public.discounts where true ");
+			if (entity.Id != null)
+			query.Append("   and id = @id ");
+			if (entity.Name != null)
+			query.Append("   and name = @name ");
+			if (entity.Percentage != null)
+			query.Append("   and percentage  = @percentage ");
+			if (entity.MinimumInvoice  != null)
+			query.Append("   and minimum_invoice  = @minimumInvoice  ");
+			if (entity.MaximumDiscount != null)
+			query.Append("   and maximum_discount = @maximumDiscount ");
+			if (entity.ExpireDate != null)
+			query.Append("   and expire_date = @expireDate ");
+
+			var parameters = new DynamicParameters();
+			parameters.Add("@id", entity.Id);
+			parameters.Add("@name", entity.Name);
+			parameters.Add("@percentage", entity.Percentage);
+			parameters.Add("@minimumInvoice" , entity.MinimumInvoice );
+			parameters.Add("@maximumDiscount", entity.MaximumDiscount);
+			parameters.Add("@expireDate", entity.ExpireDate);
+
+			return await Connection.ExecuteAsync(new CommandDefinition(query.ToString(), parameters));
+		}
+
+		public async Task<IEnumerable<Bills>> SelectBillsAsync(int pageSize = 10, int pageNumber = 1)
+		{
+			// Create string builder for query
+			var query = new StringBuilder();
+
+			// Create sql statement
+			query.Append(" select ");
+			query.Append("            id Id, ");
+			query.Append("   user_id UserId, ");
+			query.Append("   created_timestamp CreatedTimestamp, ");
+			query.Append("   updated_timestamp UpdatedTimestamp, ");
+			query.Append("   membership_id MembershipId, ");
+			query.Append("     discount_id   DiscountId  ");
+			query.Append(" from ");
+			query.Append("   public.bills ");
+			query.Append(" order by ");
+			query.Append("   id ");
+			query.Append(" offset (@pageSize * (@pageNumber - 1)) rows ");
+			query.Append(" fetch next @pageSize rows only ");
+
+			// Create parameters collection
+			var parameters = new DynamicParameters();
+
+			// Add parameters to collection
+			parameters.Add("@pageSize", pageSize);
+			parameters.Add("@pageNumber", pageNumber);
+
+			// Retrieve result from database and convert to typed list
+			return await Connection.QueryAsync<Bills>(new CommandDefinition(query.ToString(), parameters));
+		}
+
+		public async Task<IEnumerable<Bills>> SelectBillsMatchingAsync(Bills entity)
+		{
+			// Create string builder for query
+			var query = new StringBuilder();
+			
+			// Create sql statement
+			query.Append(" select ");
+			query.Append("            id Id, ");
+			query.Append("   user_id UserId, ");
+			query.Append("   created_timestamp CreatedTimestamp, ");
+			query.Append("   updated_timestamp UpdatedTimestamp, ");
+			query.Append("   membership_id MembershipId, ");
+			query.Append("     discount_id   DiscountId  ");
+			query.Append(" from ");
+			query.Append("   public.bills ");
+			query.Append(" where true ");
+			if (entity.    Id != null)
+			query.Append("   and      id = @id ");
+			if (entity.UserId != null)
+			query.Append("   and user_id = @userId ");
+			if (entity.MembershipId != null)
+			query.Append("   and membership_id = @membershipId ");
+			if (entity.DiscountId != null)
+			query.Append("   and discount_id = @discountId ");
+
+			// Create parameters collection
+			var parameters = new DynamicParameters();
+			
+			// Add parameters to collection
+			parameters.Add(          "@id", entity.Id);
+			parameters.Add(      "@userId", entity.UserId);
+			parameters.Add("@membershipId", entity.MembershipId);
+			parameters.Add(  "@discountId", entity.DiscountId);
+
+			// Retrieve result from database and convert to entity class
+			return await Connection.QueryAsync<Bills>(new CommandDefinition(query.ToString(), parameters));
+		}
+
+		public async Task<long> InsertBillsJustOnceAsync(Bills entity)
+		{
+			// Create string builder for query
+			var query = new StringBuilder();
+			
+			// Create sql statement
+			query.Append(" insert into public.bills ");
+			query.Append("   ( ");
+			query.Append("           user_id, ");
+			query.Append("     membership_id, ");
+			query.Append("       discount_id  ");
+			query.Append("   ) ");
+			query.Append(" values ");
+			query.Append("   ( ");
+			query.Append("           @userId, ");
+			query.Append("     @membershipId, ");
+			query.Append("       @discountId  ");
+			query.Append("   ) ");
+			
+			// Create parameters collection
+			var parameters = new DynamicParameters();
+			
+			// Add parameters to collection
+			parameters.Add(      "@userId", entity.      UserId);
+			parameters.Add("@membershipId", entity.MembershipId);
+			parameters.Add(  "@discountId", entity.  DiscountId);
+
+			// Execute query in database
+			return await Connection.ExecuteScalarAsync<long>(new CommandDefinition(query.Append(" returning id ").ToString(), parameters));
+		}
+
+		public async Task<long> UpdateBillsMatchingAsync(Bills entity, Bills updatedValue)
+		{
+			// Create string builder for query
+			var query = new StringBuilder();
+			
+			// Create sql statement
+			query.Append(" update ");
+			query.Append("   public.bills ");
+			query.Append(" set ");
+			query.Append("     created_timestamp = created_timestamp ");
+			if (updatedValue.        Id != null)
+			query.Append("   ,            id =           @updatedId ");
+			if (updatedValue.    UserId != null)
+			query.Append("   ,       user_id =       @updatedUserId ");
+			if (updatedValue.MembershipId != null)
+			query.Append("   , membership_id = @updatedMembershipId ");
+			if (updatedValue.DiscountId != null)
+			query.Append("   ,   discount_id =   @updatedDiscountId ");
+			query.Append(" where true ");
+			if (entity.    Id != null)
+			query.Append("   and      id = @id ");
+			if (entity.UserId != null)
+			query.Append("   and user_id = @userId ");
+			if (entity.MembershipId != null)
+			query.Append("   and membership_id = @membershipId ");
+			if (entity.DiscountId != null)
+			query.Append("   and discount_id = @discountId ");
+						
+			// Create parameters collection
+			var parameters = new DynamicParameters();
+			
+			// Add parameters to collection
+			parameters.Add(      "@userId", entity.      UserId);
+			parameters.Add("@membershipId", entity.MembershipId);
+			parameters.Add(          "@id", entity.Id);
+			parameters.Add(  "@discountId", entity.  DiscountId);
+
+			parameters.Add(      "@updatedUserId", updatedValue.      UserId);
+			parameters.Add("@updatedMembershipId", updatedValue.MembershipId);
+			parameters.Add("@updatedId", updatedValue.Id);
+			parameters.Add(  "@updatedDiscountId", updatedValue.  DiscountId);
+
+			// Execute query in database
+			return await Connection.ExecuteAsync(new CommandDefinition(query.ToString(), parameters));
+		}
+
+		public async Task<long> RemoveBillsMatchingAsync(Bills entity)
+		{
+			// Create string builder for query
+			var query = new StringBuilder();
+			
+			// Create sql statement
+			query.Append(" delete from public.bills where true ");
+			if (entity.    Id != null)
+			query.Append("   and            id =           @id ");
+			if (entity.UserId != null)
+			query.Append("   and       user_id =       @userId ");
+			if (entity.MembershipId != null)
+			query.Append("   and membership_id = @membershipId ");
+			if (entity.DiscountId != null)
+			query.Append("   and   discount_id =   @discountId ");
+			
+			// Create parameters collection
+			var parameters = new DynamicParameters();
+			
+			// Add parameters to collection
+			parameters.Add(      "@userId", entity.      UserId);
+			parameters.Add("@membershipId", entity.MembershipId);
+			parameters.Add(          "@id", entity.Id);
+			parameters.Add(  "@discountId", entity.  DiscountId);
+			
+			// Execute query in database
 			return await Connection.ExecuteAsync(new CommandDefinition(query.ToString(), parameters));
 		}
 	}
