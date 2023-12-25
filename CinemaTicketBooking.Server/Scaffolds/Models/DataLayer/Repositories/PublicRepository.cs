@@ -49,7 +49,7 @@ namespace CinemaTicketBooking.Server.Scaffolds.Models.DataLayer.Repositories
 			return await Connection.QueryAsync<Feedbacks>(new CommandDefinition(query.ToString(), parameters));
 		}
 
-		public async Task<IEnumerable<Feedbacks>> SelectFeedbacksMatchingAsync(Feedbacks entity, string? additionalWhere = null)
+		public async Task<IEnumerable<Feedbacks>> SelectFeedbacksMatchingAsync(Feedbacks entity, string? additionalWhere = null, params (string parameterName, object? parameterValue)[] additionalParameters)
 		{
 			// Create string builder for query
 			var query = new StringBuilder();
@@ -208,7 +208,7 @@ namespace CinemaTicketBooking.Server.Scaffolds.Models.DataLayer.Repositories
 			return await Connection.QueryAsync<Seats>(new CommandDefinition(query.ToString(), parameters));
 		}
 
-		public async Task<IEnumerable<Seats>> SelectSeatsMatchingAsync(Seats entity, string? additionalWhere = null)
+		public async Task<IEnumerable<Seats>> SelectSeatsMatchingAsync(Seats entity, string? additionalWhere = null, params (string parameterName, object? parameterValue)[] additionalParameters)
 		{
 			// Create string builder for query
 			var query = new StringBuilder();
@@ -384,7 +384,7 @@ namespace CinemaTicketBooking.Server.Scaffolds.Models.DataLayer.Repositories
 			return await Connection.QueryAsync<FoodAndDrinks>(new CommandDefinition(query.ToString(), parameters));
 		}
 
-		public async Task<IEnumerable<FoodAndDrinks>> SelectFoodAndDrinksMatchingAsync(FoodAndDrinks entity, string? additionalWhere = null)
+		public async Task<IEnumerable<FoodAndDrinks>> SelectFoodAndDrinksMatchingAsync(FoodAndDrinks entity, string? additionalWhere = null, params (string parameterName, object? parameterValue)[] additionalParameters)
 		{
 			// Create string builder for query
 			var query = new StringBuilder();
@@ -574,7 +574,7 @@ namespace CinemaTicketBooking.Server.Scaffolds.Models.DataLayer.Repositories
 			return await Connection.QueryAsync<Auditoriums>(new CommandDefinition(query.ToString(), parameters));
 		}
 
-		public async Task<IEnumerable<Auditoriums>> SelectAuditoriumsMatchingAsync(Auditoriums entity, string? additionalWhere = null)
+		public async Task<IEnumerable<Auditoriums>> SelectAuditoriumsMatchingAsync(Auditoriums entity, string? additionalWhere = null, params (string parameterName, object? parameterValue)[] additionalParameters)
 		{
 			// Create string builder for query
 			var query = new StringBuilder();
@@ -733,7 +733,7 @@ namespace CinemaTicketBooking.Server.Scaffolds.Models.DataLayer.Repositories
 			return await Connection.QueryAsync<Tickets>(new CommandDefinition(query.ToString(), parameters));
 		}
 
-		public async Task<IEnumerable<Tickets>> SelectTicketsMatchingAsync(Tickets entity, string? additionalWhere = null)
+		public async Task<IEnumerable<Tickets>> SelectTicketsMatchingAsync(Tickets entity, string? additionalWhere = null, params (string parameterName, object? parameterValue)[] additionalParameters)
 		{
 			// Create string builder for query
 			var query = new StringBuilder();
@@ -912,7 +912,7 @@ namespace CinemaTicketBooking.Server.Scaffolds.Models.DataLayer.Repositories
 			return await Connection.QueryAsync<Showtimes>(new CommandDefinition(query.ToString(), parameters));
 		}
 
-		public async Task<IEnumerable<Showtimes>> SelectShowtimesMatchingAsync(Showtimes entity, string? additionalWhere = null)
+		public async Task<IEnumerable<Showtimes>> SelectShowtimesMatchingAsync(Showtimes entity, string? additionalWhere = null, params (string parameterName, object? parameterValue)[] additionalParameters)
 		{
 			// Create string builder for query
 			var query = new StringBuilder();
@@ -963,6 +963,10 @@ namespace CinemaTicketBooking.Server.Scaffolds.Models.DataLayer.Repositories
 			parameters.Add("@auditoriumId", entity.AuditoriumId);
 			parameters.Add("@price" , entity.Price );
 			parameters.Add("@status", entity.Status);
+			foreach ((string parameterName, object? parameterValue) in additionalParameters)
+			{
+				parameters.Add(parameterName, parameterValue);
+			}
 
 			// Retrieve result from database and convert to entity class
 			return await Connection.QueryAsync<Showtimes>(new CommandDefinition(query.ToString(), parameters));
@@ -1153,7 +1157,7 @@ namespace CinemaTicketBooking.Server.Scaffolds.Models.DataLayer.Repositories
 			return await Connection.QueryAsync<Reservations>(new CommandDefinition(query.ToString(), parameters));
 		}
 
-		public async Task<IEnumerable<Reservations>> SelectReservationsMatchingAsync(Reservations entity, string? additionalWhere = null)
+		public async Task<IEnumerable<Reservations>> SelectReservationsMatchingAsync(Reservations entity, string? additionalWhere = null, params (string parameterName, object? parameterValue)[] additionalParameters)
 		{
 			// Create string builder for query
 			var query = new StringBuilder();
@@ -1313,7 +1317,7 @@ namespace CinemaTicketBooking.Server.Scaffolds.Models.DataLayer.Repositories
 			return await Connection.QueryAsync<Memberships>(new CommandDefinition(query.ToString(), parameters));
 		}
 
-		public async Task<IEnumerable<Memberships>> SelectMembershipsMatchingAsync(Memberships entity, string? additionalWhere = null)
+		public async Task<IEnumerable<Memberships>> SelectMembershipsMatchingAsync(Memberships entity, string? additionalWhere = null, params (string parameterName, object? parameterValue)[] additionalParameters)
 		{
 			// Create string builder for query
 			var query = new StringBuilder();
@@ -1459,7 +1463,7 @@ namespace CinemaTicketBooking.Server.Scaffolds.Models.DataLayer.Repositories
 			return await Connection.QueryAsync<Users>(new CommandDefinition(query.ToString(), parameters));
 		}
 
-		public async Task<IEnumerable<Users>> SelectUsersMatchingAsync(Users entity, string? additionalWhere = null)
+		public async Task<IEnumerable<Users>> SelectUsersMatchingAsync(Users entity, string? additionalWhere = null, params (string parameterName, object? parameterValue)[] additionalParameters)
 		{
 			// Create string builder for query
 			var query = new StringBuilder();
@@ -1705,7 +1709,7 @@ namespace CinemaTicketBooking.Server.Scaffolds.Models.DataLayer.Repositories
 			return await Connection.QueryAsync<Movies>(new CommandDefinition(query.ToString(), parameters));
 		}
 
-		public async Task<IEnumerable<Movies>> SelectMoviesMatchingAsync(Movies entity, string? additionalWhere = null)
+		public async Task<IEnumerable<Movies>> SelectMoviesMatchingAsync(Movies entity, string? additionalWhere = null, params (string parameterName, object? parameterValue)[] additionalParameters)
 		{
 			// Create string builder for query
 			var query = new StringBuilder();
@@ -1798,6 +1802,8 @@ namespace CinemaTicketBooking.Server.Scaffolds.Models.DataLayer.Repositories
 			query.Append("   and casting = @casting ");
 			if (entity.Directors != null)
 			query.Append("   and directors  = @directors ");
+			if (additionalWhere != null)
+			query.Append($"  and {additionalWhere} ");
 
 			// Create parameters collection
 			var parameters = new DynamicParameters();
@@ -1830,6 +1836,10 @@ namespace CinemaTicketBooking.Server.Scaffolds.Models.DataLayer.Repositories
 			parameters.Add("@voteCount", entity.VoteCount);
 			parameters.Add("@casting", entity.Casting);
 			parameters.Add("@directors", entity.Directors);
+			foreach ((string parameterName, object? parameterValue) in additionalParameters)
+			{
+				parameters.Add(parameterName, parameterValue);
+			}
 
 			// Retrieve result from database and convert to entity class
 			return await Connection.QueryAsync<Movies>(new CommandDefinition(query.ToString(), parameters));
@@ -2224,7 +2234,7 @@ namespace CinemaTicketBooking.Server.Scaffolds.Models.DataLayer.Repositories
 			return await Connection.QueryAsync<Cinemas>(new CommandDefinition(query.ToString(), parameters));
 		}
 
-		public async Task<IEnumerable<Cinemas>> SelectCinemasMatchingAsync(Cinemas entity, string? additionalWhere = null)
+		public async Task<IEnumerable<Cinemas>> SelectCinemasMatchingAsync(Cinemas entity, string? additionalWhere = null, params (string parameterName, object? parameterValue)[] additionalParameters)
 		{
 			// Create string builder for query
 			var query = new StringBuilder();
@@ -2385,7 +2395,7 @@ namespace CinemaTicketBooking.Server.Scaffolds.Models.DataLayer.Repositories
 			return await Connection.QueryAsync<Orders>(new CommandDefinition(query.ToString(), parameters));
 		}
 
-		public async Task<IEnumerable<Orders>> SelectOrdersMatchingAsync(Orders entity, string? additionalWhere = null)
+		public async Task<IEnumerable<Orders>> SelectOrdersMatchingAsync(Orders entity, string? additionalWhere = null, params (string parameterName, object? parameterValue)[] additionalParameters)
 		{
 			// Create string builder for query
 			var query = new StringBuilder();
@@ -2609,7 +2619,7 @@ namespace CinemaTicketBooking.Server.Scaffolds.Models.DataLayer.Repositories
 			}, splitOn: "Id");
 		}
 
-		public async Task<IEnumerable<ExtendedMenus>> SelectMenusMatchingAsync(Menus entity, string? additionalWhere = null)
+		public async Task<IEnumerable<ExtendedMenus>> SelectMenusMatchingAsync(Menus entity, string? additionalWhere = null, params (string parameterName, object? parameterValue)[] additionalParameters)
 		{
 			// Create string builder for query
 			var query = new StringBuilder();
@@ -2812,7 +2822,7 @@ namespace CinemaTicketBooking.Server.Scaffolds.Models.DataLayer.Repositories
 			return await Connection.QueryAsync<Staffs>(new CommandDefinition(query.ToString(), parameters));
 		}
 
-		public async Task<IEnumerable<Staffs>> SelectStaffsMatchingAsync(Staffs entity, string? additionalWhere = null)
+		public async Task<IEnumerable<Staffs>> SelectStaffsMatchingAsync(Staffs entity, string? additionalWhere = null, params (string parameterName, object? parameterValue)[] additionalParameters)
 		{
 			var query = new StringBuilder();
 
@@ -2966,7 +2976,7 @@ namespace CinemaTicketBooking.Server.Scaffolds.Models.DataLayer.Repositories
 			return await Connection.QueryAsync<Discounts>(new CommandDefinition(query.ToString(), parameters));
 		}
 
-		public async Task<IEnumerable<Discounts>> SelectDiscountsMatchingAsync(Discounts entity, string? additionalWhere = null)
+		public async Task<IEnumerable<Discounts>> SelectDiscountsMatchingAsync(Discounts entity, string? additionalWhere = null, params (string parameterName, object? parameterValue)[] additionalParameters)
 		{
 			var query = new StringBuilder();
 
@@ -3137,7 +3147,7 @@ namespace CinemaTicketBooking.Server.Scaffolds.Models.DataLayer.Repositories
 			return await Connection.QueryAsync<Bills>(new CommandDefinition(query.ToString(), parameters));
 		}
 
-		public async Task<IEnumerable<Bills>> SelectBillsMatchingAsync(Bills entity, string? additionalWhere = null)
+		public async Task<IEnumerable<Bills>> SelectBillsMatchingAsync(Bills entity, string? additionalWhere = null, params (string parameterName, object? parameterValue)[] additionalParameters)
 		{
 			// Create string builder for query
 			var query = new StringBuilder();
