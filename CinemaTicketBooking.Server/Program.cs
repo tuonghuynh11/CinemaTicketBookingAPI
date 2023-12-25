@@ -59,15 +59,19 @@ namespace CinemaTicketBooking.Server
 				IEnumerable<Showtimes> showtimesNext7DaysFromTodayShowtimes = await publicRepository.SelectShowtimesMatchingAsync
 				(new(), @"date between current_date and current_date + interval '7 days'");
 
+				IEnumerable<Cinemas> cinemas = await publicRepository.SelectCinemasMatchingAsync(new());
+
+				IEnumerable<Auditoriums> auditoriums = await publicRepository.SelectAuditoriumsMatchingAsync(new());
+
 				foreach (int daysOffset in Enumerable.Range(0, 7))
 				{
 					ShowtimesInEachDay showtimesInEachDay = new();
 					showtimesInEachDay.Date = DateOnly.FromDateTime(today.AddDays(daysOffset));
 					showtimesInEachDay.Cinemas = new();
-					foreach (Cinemas cinema in await publicRepository.SelectCinemasMatchingAsync(new()))
+					foreach (Cinemas cinema in cinemas)
 					{
 						List<CustomShowtimes> customShowtimes = new();
-						foreach (Auditoriums auditorium in await publicRepository.SelectAuditoriumsMatchingAsync(new()))
+						foreach (Auditoriums auditorium in auditoriums.Where(auditorium => auditorium.CinemaId == cinema.Id))
 						{
 							IEnumerable<Showtimes> showtimesForThisMovieInThisAuditoriumOnThisDay =
 							showtimesNext7DaysFromTodayShowtimes.Where(showtime =>
@@ -77,23 +81,23 @@ namespace CinemaTicketBooking.Server
 							);
 							customShowtimes.AddRange(showtimesForThisMovieInThisAuditoriumOnThisDay
 								.Select(showtime => new CustomShowtimes()
-							{
-								AuditoriumId = auditorium.Id,
-								Auditorium = auditorium,
-								Id = showtime.Id,
-								CeaseTime = showtime.CeaseTime,
-								StartTime = showtime.StartTime,
-								Date = showtime.Date,
-								CreatedTimestamp = showtime.CreatedTimestamp,
-								UpdatedTimestamp = showtime.UpdatedTimestamp,
-								MovieId = showtime.MovieId,
-								Price = showtime.Price,
-								Status = showtime.Status,
-								//Reservations = publicRepository.SelectReservationsMatchingAsync
-								//(new() { ShowtimeId = showtime.Id, }).Result.ToList(),
-								//Seats = publicRepository.SelectSeatsMatchingAsync
-								//(new() { AuditoriumId = auditorium.Id, }).Result.ToList(),
-							}));
+								{
+									AuditoriumId = auditorium.Id,
+									Auditorium = auditorium,
+									Id = showtime.Id,
+									CeaseTime = showtime.CeaseTime,
+									StartTime = showtime.StartTime,
+									Date = showtime.Date,
+									CreatedTimestamp = showtime.CreatedTimestamp,
+									UpdatedTimestamp = showtime.UpdatedTimestamp,
+									MovieId = showtime.MovieId,
+									Price = showtime.Price,
+									Status = showtime.Status,
+									//Reservations = publicRepository.SelectReservationsMatchingAsync
+									//(new() { ShowtimeId = showtime.Id, }).Result.ToList(),
+									//Seats = publicRepository.SelectSeatsMatchingAsync
+									//(new() { AuditoriumId = auditorium.Id, }).Result.ToList(),
+								}));
 						}
 						showtimesInEachDay.Cinemas.Add(new()
 						{
