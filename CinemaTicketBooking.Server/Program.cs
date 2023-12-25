@@ -55,6 +55,10 @@ namespace CinemaTicketBooking.Server
 				DateTime today = DateTime.Now;
 				ShowtimesInTheNext7DaysFromToday showtimesInTheNext7DaysFromToday = new();
 				showtimesInTheNext7DaysFromToday.Result = new();
+
+				IEnumerable<Showtimes> showtimesNext7DaysFromTodayShowtimes = await publicRepository.SelectShowtimesMatchingAsync
+				(new(), @"date between current_date and current_date + interval '7 days'");
+
 				foreach (int daysOffset in Enumerable.Range(0, 7))
 				{
 					ShowtimesInEachDay showtimesInEachDay = new();
@@ -65,15 +69,14 @@ namespace CinemaTicketBooking.Server
 						List<CustomShowtimes> customShowtimes = new();
 						foreach (Auditoriums auditorium in await publicRepository.SelectAuditoriumsMatchingAsync(new()))
 						{
-							IEnumerable<Showtimes> showtimes = await publicRepository.SelectShowtimesMatchingAsync
-							(new()
-							{
-								MovieId = movieId,
-								Date = showtimesInEachDay.Date.ToDateTime(TimeOnly.MinValue)
-							,
-								AuditoriumId = auditorium.Id,
-							});
-							customShowtimes.AddRange(showtimes.Select(showtime => new CustomShowtimes()
+							IEnumerable<Showtimes> showtimesForThisMovieInThisAuditoriumOnThisDay =
+							showtimesNext7DaysFromTodayShowtimes.Where(showtime =>
+								showtime.MovieId == movieId &&
+								showtime.Date == showtimesInEachDay.Date.ToDateTime(TimeOnly.MinValue) &&
+								showtime.AuditoriumId == auditorium.Id
+							);
+							customShowtimes.AddRange(showtimesForThisMovieInThisAuditoriumOnThisDay
+								.Select(showtime => new CustomShowtimes()
 							{
 								AuditoriumId = auditorium.Id,
 								Auditorium = auditorium,
@@ -304,7 +307,7 @@ namespace CinemaTicketBooking.Server
 
 		public static void MapTogether<T, E>(this IEndpointRouteBuilder endpoints, string pattern,
 		Func<int, int, Task<IEnumerable<E>>> SELECT_EntireByPageSizeByPageNumberDataMethod,
-		Func<T, Task<IEnumerable<E>>> SELECT_ByMatchingPropertiesDataMethod,
+		Func<T, string?, Task<IEnumerable<E>>> SELECT_ByMatchingPropertiesDataMethod,
 		Func<T, Task<long>> INSERT_JustOneDataMethod,
 		Func<T, T, Task<long>> UPDATE_ByMatchingPropertiesDataMethod,
 		Func<T,    Task<long>> DELETE_ByMatchingPropertiesDataMethod
@@ -329,11 +332,12 @@ namespace CinemaTicketBooking.Server
 		}
 
 		public static void Map_SELECT_ByMatchingProperties<T, E>
-		(this IEndpointRouteBuilder endpoints, string pattern, Func<T, Task<IEnumerable<E>>> SELECT_ByMatchingPropertiesDataMethod)
+		(this IEndpointRouteBuilder endpoints, string pattern, Func<T, string?, Task<IEnumerable<E>>>
+			SELECT_ByMatchingPropertiesDataMethod)
 		where E : T
 		{
 			endpoints.MapPost($"/select/matching-properties{pattern}", async ([FromBody] T entity) =>
-				await SELECT_ByMatchingPropertiesDataMethod(entity))
+				await SELECT_ByMatchingPropertiesDataMethod(entity, null))
 			.WithTags(@"Select Entities By Matching Properties
 (could omit any fields/properties in the body if the request does not wish to search for entities with that matching
 fields/properties, no fields/properties included `means` matching all rows)");
