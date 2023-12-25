@@ -16,7 +16,6 @@ namespace CinemaTicketBooking.Server.Controller
 
         private readonly IConfiguration _configuration;
         private readonly IUserRepository userRepository;
-        public Users user = new Users();
 
         public AuthController(IUserRepository userRepository, IConfiguration configuration)
         {
@@ -26,7 +25,7 @@ namespace CinemaTicketBooking.Server.Controller
 
         // Endpoint for registration: api/auth/register
         [HttpPost("register")]
-        public async Task<IActionResult> Register([FromBody] RegistrationRequestModel model)
+        public ActionResult<Users> Register(RegistrationRequestModel model)
         {
             try
             {
@@ -84,13 +83,20 @@ namespace CinemaTicketBooking.Server.Controller
 
         // Endpoint for login: api/auth/login
         [HttpPost("login")]
-        public async Task<IActionResult> Login([FromBody] LoginRequestModel model)
+        public ActionResult<Users> Login(LoginRequestModel model)
         {
             try
+ 
             {
                 // Find user in the database
                 var user = userRepository.FindByUsername(model.Username);
-                if (user == null)
+
+                // Kiểm tra xem người dùng có được tìm thấy hay không
+                if (user != null)
+                {
+                    Console.WriteLine($"User found in repository: {user.Username}");
+                }
+                else
                 {
                     return BadRequest("User not found !");
                 }
