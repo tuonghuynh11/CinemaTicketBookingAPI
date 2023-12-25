@@ -3,12 +3,11 @@ using CinemaTicketBooking.Server.Scaffolds.Models.EntityLayer;
 
 public class UserRepository : IUserRepository
 {
-    private readonly List<Users> _users;
+    private static readonly List<Users> _users = new List<Users>();
     private readonly ILogger<UserRepository> _logger;
 
     public UserRepository(ILogger<UserRepository> logger)
     {
-        _users = new List<Users>();
         _logger = logger;
     }
 

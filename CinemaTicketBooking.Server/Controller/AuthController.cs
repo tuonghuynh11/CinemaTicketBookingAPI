@@ -86,7 +86,6 @@ namespace CinemaTicketBooking.Server.Controller
         public ActionResult<Users> Login(LoginRequestModel model)
         {
             try
- 
             {
                 // Find user in the database
                 var user = userRepository.FindByUsername(model.Username);
@@ -98,17 +97,27 @@ namespace CinemaTicketBooking.Server.Controller
                 }
                 else
                 {
-                    return BadRequest("User not found !");
+                    return BadRequest("User not found!");
                 }
 
-                // Check the password
-                if (!BCrypt.Net.BCrypt.Verify(model.Password, user.Password))
+                // Check the password using BCrypt.Verify
+                if (model.Password == user.Password)
+                {
+                    string token = GenerateJwtToken(user);
+                    //Console.WriteLine(token);
+                    //Console.WriteLine("Login successful");
+                    return Ok(new
+                    {
+                        message = "Login successful",
+                        username = user.Username,
+                        token = token
+                    }
+                    );
+                }
+                else
                 {
                     return BadRequest("Wrong Password");
                 }
-
-                string token = GenerateJwtToken(user);
-                return Ok(token);
             }
             catch (Exception ex)
             {
@@ -119,6 +128,7 @@ namespace CinemaTicketBooking.Server.Controller
                 return StatusCode(500, "Internal Server Error");
             }
         }
+
 
         private string GenerateJwtToken(Users user)
         {
