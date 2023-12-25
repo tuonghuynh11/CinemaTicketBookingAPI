@@ -5,6 +5,9 @@ using Microsoft.AspNetCore.Mvc;
 using CinemaTicketBooking.Server.Scaffolds.Models.EntityLayer;
 using CinemaTicketBooking.Server.Scaffolds.Models.DataLayer.Contracts;
 using CinemaTicketBooking.Server.Scaffolds.Models.DataLayer.Repositories;
+using Microsoft.AspNetCore.Components;
+using System.Diagnostics;
+using System.IO;
 
 namespace CinemaTicketBooking.Server
 {
@@ -48,6 +51,100 @@ namespace CinemaTicketBooking.Server
 			app.UseAuthorization();
 
 			app.MapGet("/", () => "Hello");
+
+			app.MapGet("/showtimes/in-the-next-7-days-from-today-of-one-cinema/",
+			async ([FromQuery(Name = "cinema-id")] long cinemaId, [FromServices] IPublicRepository publicRepository) =>
+			{
+				Cinemas cinema = (await publicRepository.SelectCinemasMatchingAsync(new() { Id = cinemaId, })).First();
+				DateTime today = DateTime.Now;
+				ResponseBodyShowtimesInTheNext7DaysFromTodayOfOneCinema responseBodyShowtimesInTheNext7DaysFromTodayOfOneCinema
+				= new();
+				responseBodyShowtimesInTheNext7DaysFromTodayOfOneCinema.CinemaName = cinema.Name!;
+				responseBodyShowtimesInTheNext7DaysFromTodayOfOneCinema.Result = new();
+				IEnumerable<Auditoriums> auditoriums = await publicRepository.SelectAuditoriumsMatchingAsync
+				(new() { CinemaId = cinemaId, });
+
+				//Debug.WriteLine(auditoriums.Count());
+
+				IEnumerable<Showtimes> showtimes = await publicRepository.SelectShowtimesMatchingAsync
+				(new(),
+				additionalWhere: @"auditorium_id = any(@auditoriumIds) 
+and date between current_date and current_date + interval '7 days'",
+				additionalParameters: (parameterName: "@auditoriumIds", parameterValue:
+				auditoriums.Select(auditorium => auditorium.Id).ToArray()));
+
+				//Debug.WriteLine(showtimes.Count());
+
+				IEnumerable<long?> movieIds = showtimes.Select(showtime => showtime.MovieId).Distinct();
+
+				//Debug.WriteLine(movieIds.Count());
+
+				IEnumerable<Movies> movies = await publicRepository.SelectMoviesMatchingAsync
+				(new(),
+				additionalWhere: @"id = any(@ids)",
+				additionalParameters: (parameterName: "@ids", parameterValue: movieIds.Select
+				(_movieId_=>_movieId_!.Value).ToArray()));
+
+				//Debug.WriteLine(movies.Count());
+
+				foreach (int daysOffset in Enumerable.Range(0, 7))
+				{
+					ShowtimesInEachDayOfOneCinema showtimesInEachDayOfOneCinema = new();
+					showtimesInEachDayOfOneCinema.Date = DateOnly.FromDateTime(today.AddDays(daysOffset));
+
+					IEnumerable<Showtimes> showtimesOnThisDay = showtimes.Where
+					(showtime => showtime.Date == showtimesInEachDayOfOneCinema.Date.ToDateTime(TimeOnly.MinValue));
+
+					//Debug.WriteLine(showtimesOnThisDay.Count());
+
+					IEnumerable<CustomMovies> moviesOnThisDay = showtimesOnThisDay.GroupBy
+					(showtimeOnThisDay => showtimeOnThisDay.MovieId, showtimeOnThisDay
+						=> showtimeOnThisDay, (_movieId_, _showtimesOfThisMovie_) =>
+						{
+							Movies thisMovie = movies.First(movie => movie.Id == _movieId_);
+							Debug.WriteLine($"{daysOffset}:{thisMovie.Title}:{_showtimesOfThisMovie_.Count()}");
+							return new CustomMovies()
+							{
+								Showtimes = _showtimesOfThisMovie_.ToList(),
+								Adult = thisMovie.Adult,
+								BackdropPath = thisMovie.BackdropPath,
+								BelongsToCollection = thisMovie.BelongsToCollection,
+								Budget = thisMovie.Budget,
+								Genres = thisMovie.Genres,
+								Homepage = thisMovie.Homepage,
+								Id = thisMovie.Id,
+								ImdbId = thisMovie.ImdbId,
+								OriginalLanguage = thisMovie.OriginalLanguage,
+								OriginalTitle = thisMovie.OriginalTitle,
+								Overview = thisMovie.Overview,
+								Popularity = thisMovie.Popularity,
+								PosterPath = thisMovie.PosterPath,
+								ProductionCompanies = thisMovie.ProductionCompanies,
+								ProductionCountries = thisMovie.ProductionCountries,
+								ReleaseDate = thisMovie.ReleaseDate,
+								Revenue = thisMovie.Revenue,
+								Runtime = thisMovie.Runtime,
+								SpokenLanguages = thisMovie.SpokenLanguages,
+								Status = thisMovie.Status,
+								Tagline = thisMovie.Tagline,
+								Title = thisMovie.Title,
+								Video = thisMovie.Video,
+								VoteAverage = thisMovie.VoteAverage,
+								VoteCount = thisMovie.VoteCount,
+								Casting = thisMovie.Casting,
+								Directors = thisMovie.Directors,
+								CreatedTimestamp = thisMovie.CreatedTimestamp,
+								UpdatedTimestamp = thisMovie.UpdatedTimestamp,
+							};
+						});
+
+					showtimesInEachDayOfOneCinema.Movies = moviesOnThisDay.ToList();
+
+					responseBodyShowtimesInTheNext7DaysFromTodayOfOneCinema.Result.Add(showtimesInEachDayOfOneCinema);
+				}
+
+				return responseBodyShowtimesInTheNext7DaysFromTodayOfOneCinema;
+			});
 
 			app.MapGet("/showtimes/in-the-next-7-days-from-today/",
 			async ([FromQuery(Name = "movie-id")] long movieId, [FromServices] IPublicRepository publicRepository) =>
@@ -311,7 +408,7 @@ namespace CinemaTicketBooking.Server
 
 		public static void MapTogether<T, E>(this IEndpointRouteBuilder endpoints, string pattern,
 		Func<int, int, Task<IEnumerable<E>>> SELECT_EntireByPageSizeByPageNumberDataMethod,
-		Func<T, string?, Task<IEnumerable<E>>> SELECT_ByMatchingPropertiesDataMethod,
+		Func<T, string?, (string parameterName, object? parameterValue)[], Task<IEnumerable<E>>> SELECT_ByMatchingPropertiesDataMethod,
 		Func<T, Task<long>> INSERT_JustOneDataMethod,
 		Func<T, T, Task<long>> UPDATE_ByMatchingPropertiesDataMethod,
 		Func<T,    Task<long>> DELETE_ByMatchingPropertiesDataMethod
@@ -336,12 +433,14 @@ namespace CinemaTicketBooking.Server
 		}
 
 		public static void Map_SELECT_ByMatchingProperties<T, E>
-		(this IEndpointRouteBuilder endpoints, string pattern, Func<T, string?, Task<IEnumerable<E>>>
+		(this IEndpointRouteBuilder endpoints, string pattern,
+			Func<T, string?, (string parameterName, object? parameterValue)[], Task<IEnumerable<E>>>
 			SELECT_ByMatchingPropertiesDataMethod)
 		where E : T
 		{
 			endpoints.MapPost($"/select/matching-properties{pattern}", async ([FromBody] T entity) =>
-				await SELECT_ByMatchingPropertiesDataMethod(entity, null))
+				await SELECT_ByMatchingPropertiesDataMethod(entity, null,
+				Array.Empty<(string parameterName, object? parameterValue)>()))
 			.WithTags(@"Select Entities By Matching Properties
 (could omit any fields/properties in the body if the request does not wish to search for entities with that matching
 fields/properties, no fields/properties included `means` matching all rows)");
@@ -444,5 +543,24 @@ fields/properties then delete them, no fields/properties included `means` matchi
 		public decimal TicketsCost { get; set; }
 		public Showtimes Showtime { get; set; } = null!;
 		public List<Seats> Seats { get; set; } = null!;
+	}
+
+
+	public class CustomMovies : Movies
+	{
+		public List<Showtimes> Showtimes { get; set; } = null!;
+	}
+
+	public class ShowtimesInEachDayOfOneCinema
+	{
+		public DateOnly Date { get; set; }
+		public List<CustomMovies> Movies { get; set; } = null!;
+	}
+
+	public class ResponseBodyShowtimesInTheNext7DaysFromTodayOfOneCinema
+	{
+		public string CinemaName { get; set; } = null!;
+		public List<ShowtimesInEachDayOfOneCinema> Result { get; set; } = null!;
+
 	}
 }

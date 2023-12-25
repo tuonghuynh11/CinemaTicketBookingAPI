@@ -15,7 +15,7 @@ namespace CinemaTicketBooking.Server.Scaffolds.Models.DataLayer.Contracts
 	{
 		Task<IEnumerable<Feedbacks>> SelectFeedbacksAsync(int pageSize = 10, int pageNumber = 1);
 
-		Task<IEnumerable<Feedbacks>> SelectFeedbacksMatchingAsync(Feedbacks entity, string? additionalWhere = null);
+		Task<IEnumerable<Feedbacks>> SelectFeedbacksMatchingAsync(Feedbacks entity, string? additionalWhere = null, params (string parameterName, object? parameterValue)[] additionalParameters);
 
 		Task<long> InsertFeedbacksJustOnceAsync(Feedbacks entity);
 
@@ -25,7 +25,7 @@ namespace CinemaTicketBooking.Server.Scaffolds.Models.DataLayer.Contracts
 
 		Task<IEnumerable<Seats>> SelectSeatsAsync(int pageSize = 10, int pageNumber = 1);
 
-		Task<IEnumerable<Seats>> SelectSeatsMatchingAsync(Seats entity, string? additionalWhere = null);
+		Task<IEnumerable<Seats>> SelectSeatsMatchingAsync(Seats entity, string? additionalWhere = null, params (string parameterName, object? parameterValue)[] additionalParameters);
 
 		Task<long> InsertSeatsJustOnceAsync(Seats entity);
 
@@ -35,7 +35,7 @@ namespace CinemaTicketBooking.Server.Scaffolds.Models.DataLayer.Contracts
 
 		Task<IEnumerable<FoodAndDrinks>> SelectFoodAndDrinksAsync(int pageSize = 10, int pageNumber = 1);
 
-		Task<IEnumerable<FoodAndDrinks>> SelectFoodAndDrinksMatchingAsync(FoodAndDrinks entity, string? additionalWhere = null);
+		Task<IEnumerable<FoodAndDrinks>> SelectFoodAndDrinksMatchingAsync(FoodAndDrinks entity, string? additionalWhere = null, params (string parameterName, object? parameterValue)[] additionalParameters);
 
 		Task<long> InsertFoodAndDrinksJustOnceAsync(FoodAndDrinks entity);
 
@@ -45,7 +45,7 @@ namespace CinemaTicketBooking.Server.Scaffolds.Models.DataLayer.Contracts
 
 		Task<IEnumerable<Auditoriums>> SelectAuditoriumsAsync(int pageSize = 10, int pageNumber = 1);
 
-		Task<IEnumerable<Auditoriums>> SelectAuditoriumsMatchingAsync(Auditoriums entity, string? additionalWhere = null);
+		Task<IEnumerable<Auditoriums>> SelectAuditoriumsMatchingAsync(Auditoriums entity, string? additionalWhere = null, params (string parameterName, object? parameterValue)[] additionalParameters);
 
 		Task<long> InsertAuditoriumsJustOnceAsync(Auditoriums entity);
 
@@ -55,7 +55,7 @@ namespace CinemaTicketBooking.Server.Scaffolds.Models.DataLayer.Contracts
 
 		Task<IEnumerable<Tickets>> SelectTicketsAsync(int pageSize = 10, int pageNumber = 1);
 
-		Task<IEnumerable<Tickets>> SelectTicketsMatchingAsync(Tickets entity, string? additionalWhere = null);
+		Task<IEnumerable<Tickets>> SelectTicketsMatchingAsync(Tickets entity, string? additionalWhere = null, params (string parameterName, object? parameterValue)[] additionalParameters);
 
 		Task<long> InsertTicketsJustOnceAsync(Tickets entity);
 
@@ -65,7 +65,7 @@ namespace CinemaTicketBooking.Server.Scaffolds.Models.DataLayer.Contracts
 
 		Task<IEnumerable<Showtimes>> SelectShowtimesAsync(int pageSize = 10, int pageNumber = 1);
 
-		Task<IEnumerable<Showtimes>> SelectShowtimesMatchingAsync(Showtimes entity, string? additionalWhere = null);
+		Task<IEnumerable<Showtimes>> SelectShowtimesMatchingAsync(Showtimes entity, string? additionalWhere = null, params (string parameterName, object? parameterValue)[] additionalParameters);
 
 		Task<long> InsertShowtimesJustOnceAsync(Showtimes entity);
 
@@ -75,7 +75,7 @@ namespace CinemaTicketBooking.Server.Scaffolds.Models.DataLayer.Contracts
 
 		Task<IEnumerable<Reservations>> SelectReservationsAsync(int pageSize = 10, int pageNumber = 1);
 
-		Task<IEnumerable<Reservations>> SelectReservationsMatchingAsync(Reservations entity, string? additionalWhere = null);
+		Task<IEnumerable<Reservations>> SelectReservationsMatchingAsync(Reservations entity, string? additionalWhere = null, params (string parameterName, object? parameterValue)[] additionalParameters);
 
 		Task<long> InsertReservationsJustOnceAsync(Reservations entity);
 
@@ -85,7 +85,7 @@ namespace CinemaTicketBooking.Server.Scaffolds.Models.DataLayer.Contracts
 
 		Task<IEnumerable<Memberships>> SelectMembershipsAsync(int pageSize = 10, int pageNumber = 1);
 
-		Task<IEnumerable<Memberships>> SelectMembershipsMatchingAsync(Memberships entity, string? additionalWhere = null);
+		Task<IEnumerable<Memberships>> SelectMembershipsMatchingAsync(Memberships entity, string? additionalWhere = null, params (string parameterName, object? parameterValue)[] additionalParameters);
 
 		Task<long> InsertMembershipsJustOnceAsync(Memberships entity);
 
@@ -95,7 +95,7 @@ namespace CinemaTicketBooking.Server.Scaffolds.Models.DataLayer.Contracts
 
 		Task<IEnumerable<Users>> SelectUsersAsync(int pageSize = 10, int pageNumber = 1);
 
-		Task<IEnumerable<Users>> SelectUsersMatchingAsync(Users entity, string? additionalWhere = null);
+		Task<IEnumerable<Users>> SelectUsersMatchingAsync(Users entity, string? additionalWhere = null, params (string parameterName, object? parameterValue)[] additionalParameters);
 
 		Task<long> InsertUsersJustOnceAsync(Users entity);
 
@@ -105,7 +105,7 @@ namespace CinemaTicketBooking.Server.Scaffolds.Models.DataLayer.Contracts
 
 		Task<IEnumerable<Movies>> SelectMoviesAsync(int pageSize = 10, int pageNumber = 1);
 
-		Task<IEnumerable<Movies>> SelectMoviesMatchingAsync(Movies entity, string? additionalWhere = null);
+		Task<IEnumerable<Movies>> SelectMoviesMatchingAsync(Movies entity, string? additionalWhere = null, params (string parameterName, object? parameterValue)[] additionalParameters);
 
 		Task<long> InsertMoviesJustOnceAsync(Movies entity);
 
@@ -115,7 +115,7 @@ namespace CinemaTicketBooking.Server.Scaffolds.Models.DataLayer.Contracts
 
 		Task<IEnumerable<Cinemas>> SelectCinemasAsync(int pageSize = 10, int pageNumber = 1);
 
-		Task<IEnumerable<Cinemas>> SelectCinemasMatchingAsync(Cinemas entity, string? additionalWhere = null);
+		Task<IEnumerable<Cinemas>> SelectCinemasMatchingAsync(Cinemas entity, string? additionalWhere = null, params (string parameterName, object? parameterValue)[] additionalParameters);
 
 		Task<long> InsertCinemasJustOnceAsync(Cinemas entity);
 
@@ -125,7 +125,7 @@ namespace CinemaTicketBooking.Server.Scaffolds.Models.DataLayer.Contracts
 
 		Task<IEnumerable<Orders>> SelectOrdersAsync(int pageSize = 10, int pageNumber = 1);
 
-		Task<IEnumerable<Orders>> SelectOrdersMatchingAsync(Orders entity, string? additionalWhere = null);
+		Task<IEnumerable<Orders>> SelectOrdersMatchingAsync(Orders entity, string? additionalWhere = null, params (string parameterName, object? parameterValue)[] additionalParameters);
 
 		Task<long> InsertOrdersJustOnceAsync(Orders entity);
 
@@ -135,7 +135,7 @@ namespace CinemaTicketBooking.Server.Scaffolds.Models.DataLayer.Contracts
 
 		Task<IEnumerable<ExtendedMenus>> SelectMenusAsync(int pageSize = 10, int pageNumber = 1);
 
-		Task<IEnumerable<ExtendedMenus>> SelectMenusMatchingAsync(Menus entity, string? additionalWhere = null);
+		Task<IEnumerable<ExtendedMenus>> SelectMenusMatchingAsync(Menus entity, string? additionalWhere = null, params (string parameterName, object? parameterValue)[] additionalParameters);
 
 		Task<long> InsertMenusJustOnceAsync(Menus entity);
 
@@ -145,7 +145,7 @@ namespace CinemaTicketBooking.Server.Scaffolds.Models.DataLayer.Contracts
 
 		Task<IEnumerable<Staffs>> SelectStaffsAsync(int pageSize = 10, int pageNumber = 1);
 
-		Task<IEnumerable<Staffs>> SelectStaffsMatchingAsync(Staffs entity, string? additionalWhere = null);
+		Task<IEnumerable<Staffs>> SelectStaffsMatchingAsync(Staffs entity, string? additionalWhere = null, params (string parameterName, object? parameterValue)[] additionalParameters);
 
 		Task<long> InsertStaffsJustOnceAsync(Staffs entity);
 
@@ -155,7 +155,7 @@ namespace CinemaTicketBooking.Server.Scaffolds.Models.DataLayer.Contracts
 
 		Task<IEnumerable<Discounts>> SelectDiscountsAsync(int pageSize = 10, int pageNumber = 1);
 
-		Task<IEnumerable<Discounts>> SelectDiscountsMatchingAsync(Discounts entity, string? additionalWhere = null);
+		Task<IEnumerable<Discounts>> SelectDiscountsMatchingAsync(Discounts entity, string? additionalWhere = null, params (string parameterName, object? parameterValue)[] additionalParameters);
 
 		Task<long> InsertDiscountsJustOnceAsync(Discounts entity);
 
@@ -165,7 +165,7 @@ namespace CinemaTicketBooking.Server.Scaffolds.Models.DataLayer.Contracts
 
 		Task<IEnumerable<Bills>> SelectBillsAsync(int pageSize = 10, int pageNumber = 1);
 
-		Task<IEnumerable<Bills>> SelectBillsMatchingAsync(Bills entity, string? additionalWhere = null);
+		Task<IEnumerable<Bills>> SelectBillsMatchingAsync(Bills entity, string? additionalWhere = null, params (string parameterName, object? parameterValue)[] additionalParameters);
 
 		Task<long> InsertBillsJustOnceAsync(Bills entity);
 
