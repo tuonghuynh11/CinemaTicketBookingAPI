@@ -13,134 +13,164 @@ namespace CinemaTicketBooking.Server.Scaffolds.Models.DataLayer.Contracts
 {
 	public interface IPublicRepository : IRepository
 	{
-		Task<IEnumerable<Feedbacks>> GetFeedbacksAsync(int pageSize = 10, int pageNumber = 1);
+		Task<IEnumerable<Feedbacks>> SelectFeedbacksAsync(int pageSize = 10, int pageNumber = 1);
 
-		Task<Feedbacks?> GetFeedbacksAsync(Feedbacks entity);
+		Task<IEnumerable<Feedbacks>> SelectFeedbacksMatchingAsync(Feedbacks entity, string? additionalWhere = null);
 
-		Task<int> AddFeedbacksAsync(Feedbacks entity);
+		Task<long> InsertFeedbacksJustOnceAsync(Feedbacks entity);
 
-		Task<int> UpdateFeedbacksAsync(Feedbacks entity);
+		Task<long> UpdateFeedbacksMatchingAsync(Feedbacks entity, Feedbacks updatedValue);
 
-		Task<int> RemoveFeedbacksAsync(Feedbacks entity);
+		Task<long> RemoveFeedbacksMatchingAsync(Feedbacks entity);
 
-		Task<IEnumerable<Seats>> GetSeatsAsync(int pageSize = 10, int pageNumber = 1);
+		Task<IEnumerable<Seats>> SelectSeatsAsync(int pageSize = 10, int pageNumber = 1);
 
-		Task<Seats?> GetSeatsAsync(Seats entity);
+		Task<IEnumerable<Seats>> SelectSeatsMatchingAsync(Seats entity, string? additionalWhere = null);
 
-		Task<int> AddSeatsAsync(Seats entity);
+		Task<long> InsertSeatsJustOnceAsync(Seats entity);
 
-		Task<int> UpdateSeatsAsync(Seats entity);
+		Task<long> UpdateSeatsMatchingAsync(Seats entity, Seats updatedValue);
 
-		Task<int> RemoveSeatsAsync(Seats entity);
+		Task<long> RemoveSeatsMatchingAsync(Seats entity);
 
-		Task<IEnumerable<FoodAndDrinks>> GetFoodAndDrinksAsync(int pageSize = 10, int pageNumber = 1);
+		Task<IEnumerable<FoodAndDrinks>> SelectFoodAndDrinksAsync(int pageSize = 10, int pageNumber = 1);
 
-		Task<FoodAndDrinks?> GetFoodAndDrinksAsync(FoodAndDrinks entity);
+		Task<IEnumerable<FoodAndDrinks>> SelectFoodAndDrinksMatchingAsync(FoodAndDrinks entity, string? additionalWhere = null);
 
-		Task<int> AddFoodAndDrinksAsync(FoodAndDrinks entity);
+		Task<long> InsertFoodAndDrinksJustOnceAsync(FoodAndDrinks entity);
 
-		Task<int> UpdateFoodAndDrinksAsync(FoodAndDrinks entity);
+		Task<long> UpdateFoodAndDrinksMatchingAsync(FoodAndDrinks entity, FoodAndDrinks updatedValue);
 
-		Task<int> RemoveFoodAndDrinksAsync(FoodAndDrinks entity);
+		Task<long> RemoveFoodAndDrinksMatchingAsync(FoodAndDrinks entity);
 
-		Task<IEnumerable<Auditoriums>> GetAuditoriumsAsync(int pageSize = 10, int pageNumber = 1);
+		Task<IEnumerable<Auditoriums>> SelectAuditoriumsAsync(int pageSize = 10, int pageNumber = 1);
 
-		Task<Auditoriums?> GetAuditoriumsAsync(Auditoriums entity);
+		Task<IEnumerable<Auditoriums>> SelectAuditoriumsMatchingAsync(Auditoriums entity, string? additionalWhere = null);
 
-		Task<int> AddAuditoriumsAsync(Auditoriums entity);
+		Task<long> InsertAuditoriumsJustOnceAsync(Auditoriums entity);
 
-		Task<int> UpdateAuditoriumsAsync(Auditoriums entity);
+		Task<long> UpdateAuditoriumsMatchingAsync(Auditoriums entity, Auditoriums updatedValue);
 
-		Task<int> RemoveAuditoriumsAsync(Auditoriums entity);
+		Task<long> RemoveAuditoriumsMatchingAsync(Auditoriums entity);
 
-		Task<IEnumerable<Tickets>> GetTicketsAsync(int pageSize = 10, int pageNumber = 1);
+		Task<IEnumerable<Tickets>> SelectTicketsAsync(int pageSize = 10, int pageNumber = 1);
 
-		Task<Tickets?> GetTicketsAsync(Tickets entity);
+		Task<IEnumerable<Tickets>> SelectTicketsMatchingAsync(Tickets entity, string? additionalWhere = null);
 
-		Task<int> AddTicketsAsync(Tickets entity);
+		Task<long> InsertTicketsJustOnceAsync(Tickets entity);
 
-		Task<int> UpdateTicketsAsync(Tickets entity);
+		Task<long> UpdateTicketsMatchingAsync(Tickets entity, Tickets updatedValue);
 
-		Task<int> RemoveTicketsAsync(Tickets entity);
+		Task<long> RemoveTicketsMatchingAsync(Tickets entity);
 
-		Task<IEnumerable<Showtimes>> GetShowtimesAsync(int pageSize = 10, int pageNumber = 1);
+		Task<IEnumerable<Showtimes>> SelectShowtimesAsync(int pageSize = 10, int pageNumber = 1);
 
-		Task<Showtimes?> GetShowtimesAsync(Showtimes entity);
+		Task<IEnumerable<Showtimes>> SelectShowtimesMatchingAsync(Showtimes entity, string? additionalWhere = null);
 
-		Task<int> AddShowtimesAsync(Showtimes entity);
+		Task<long> InsertShowtimesJustOnceAsync(Showtimes entity);
 
-		Task<int> UpdateShowtimesAsync(Showtimes entity);
+		Task<long> UpdateShowtimesMatchingAsync(Showtimes entity, Showtimes updatedValue);
 
-		Task<int> RemoveShowtimesAsync(Showtimes entity);
+		Task<long> RemoveShowtimesMatchingAsync(Showtimes entity);
 
-		Task<IEnumerable<Reservations>> GetReservationsAsync(int pageSize = 10, int pageNumber = 1);
+		Task<IEnumerable<Reservations>> SelectReservationsAsync(int pageSize = 10, int pageNumber = 1);
 
-		Task<Reservations?> GetReservationsAsync(Reservations entity);
+		Task<IEnumerable<Reservations>> SelectReservationsMatchingAsync(Reservations entity, string? additionalWhere = null);
 
-		Task<int> AddReservationsAsync(Reservations entity);
+		Task<long> InsertReservationsJustOnceAsync(Reservations entity);
 
-		Task<int> UpdateReservationsAsync(Reservations entity);
+		Task<long> UpdateReservationsMatchingAsync(Reservations entity, Reservations updatedValue);
 
-		Task<int> RemoveReservationsAsync(Reservations entity);
+		Task<long> RemoveReservationsMatchingAsync(Reservations entity);
 
-		Task<IEnumerable<Memberships>> GetMembershipsAsync(int pageSize = 10, int pageNumber = 1);
+		Task<IEnumerable<Memberships>> SelectMembershipsAsync(int pageSize = 10, int pageNumber = 1);
 
-		Task<Memberships?> GetMembershipsAsync(Memberships entity);
+		Task<IEnumerable<Memberships>> SelectMembershipsMatchingAsync(Memberships entity, string? additionalWhere = null);
 
-		Task<int> AddMembershipsAsync(Memberships entity);
+		Task<long> InsertMembershipsJustOnceAsync(Memberships entity);
 
-		Task<int> UpdateMembershipsAsync(Memberships entity);
+		Task<long> UpdateMembershipsMatchingAsync(Memberships entity, Memberships updatedValue);
 
-		Task<int> RemoveMembershipsAsync(Memberships entity);
+		Task<long> RemoveMembershipsMatchingAsync(Memberships entity);
 
-		Task<IEnumerable<Users>> GetUsersAsync(int pageSize = 10, int pageNumber = 1);
+		Task<IEnumerable<Users>> SelectUsersAsync(int pageSize = 10, int pageNumber = 1);
 
-		Task<Users?> GetUsersAsync(Users entity);
+		Task<IEnumerable<Users>> SelectUsersMatchingAsync(Users entity, string? additionalWhere = null);
 
-		Task<int> AddUsersAsync(Users entity);
+		Task<long> InsertUsersJustOnceAsync(Users entity);
 
-		Task<int> UpdateUsersAsync(Users entity);
+		Task<long> UpdateUsersMatchingAsync(Users entity, Users updatedValue);
 
-		Task<int> RemoveUsersAsync(Users entity);
+		Task<long> RemoveUsersMatchingAsync(Users entity);
 
-		Task<IEnumerable<Movies>> GetMoviesAsync(int pageSize = 10, int pageNumber = 1);
+		Task<IEnumerable<Movies>> SelectMoviesAsync(int pageSize = 10, int pageNumber = 1);
 
-		Task<Movies?> GetMoviesAsync(Movies entity);
+		Task<IEnumerable<Movies>> SelectMoviesMatchingAsync(Movies entity, string? additionalWhere = null);
 
-		Task<int> AddMoviesAsync(Movies entity);
+		Task<long> InsertMoviesJustOnceAsync(Movies entity);
 
-		Task<int> UpdateMoviesAsync(Movies entity);
+		Task<long> UpdateMoviesMatchingAsync(Movies entity, Movies updatedValue);
 
-		Task<int> RemoveMoviesAsync(Movies entity);
+		Task<long> RemoveMoviesMatchingAsync(Movies entity);
 
-		Task<IEnumerable<Cinemas>> GetCinemasAsync(int pageSize = 10, int pageNumber = 1);
+		Task<IEnumerable<Cinemas>> SelectCinemasAsync(int pageSize = 10, int pageNumber = 1);
 
-		Task<Cinemas?> GetCinemasAsync(Cinemas entity);
+		Task<IEnumerable<Cinemas>> SelectCinemasMatchingAsync(Cinemas entity, string? additionalWhere = null);
 
-		Task<int> AddCinemasAsync(Cinemas entity);
+		Task<long> InsertCinemasJustOnceAsync(Cinemas entity);
 
-		Task<int> UpdateCinemasAsync(Cinemas entity);
+		Task<long> UpdateCinemasMatchingAsync(Cinemas entity, Cinemas updatedValue);
 
-		Task<int> RemoveCinemasAsync(Cinemas entity);
+		Task<long> RemoveCinemasMatchingAsync(Cinemas entity);
 
-		Task<IEnumerable<Orders>> GetOrdersAsync(int pageSize = 10, int pageNumber = 1);
+		Task<IEnumerable<Orders>> SelectOrdersAsync(int pageSize = 10, int pageNumber = 1);
 
-		Task<Orders?> GetOrdersAsync(Orders entity);
+		Task<IEnumerable<Orders>> SelectOrdersMatchingAsync(Orders entity, string? additionalWhere = null);
 
-		Task<int> AddOrdersAsync(Orders entity);
+		Task<long> InsertOrdersJustOnceAsync(Orders entity);
 
-		Task<int> UpdateOrdersAsync(Orders entity);
+		Task<long> UpdateOrdersMatchingAsync(Orders entity, Orders updatedValue);
 
-		Task<int> RemoveOrdersAsync(Orders entity);
+		Task<long> RemoveOrdersMatchingAsync(Orders entity);
 
-		Task<IEnumerable<Menus>> GetMenusAsync(int pageSize = 10, int pageNumber = 1);
+		Task<IEnumerable<ExtendedMenus>> SelectMenusAsync(int pageSize = 10, int pageNumber = 1);
 
-		Task<Menus?> GetMenusAsync(Menus entity);
+		Task<IEnumerable<ExtendedMenus>> SelectMenusMatchingAsync(Menus entity, string? additionalWhere = null);
 
-		Task<int> AddMenusAsync(Menus entity);
+		Task<long> InsertMenusJustOnceAsync(Menus entity);
 
-		Task<int> UpdateMenusAsync(Menus entity);
+		Task<long> UpdateMenusMatchingAsync(Menus entity, Menus updatedValue);
 
-		Task<int> RemoveMenusAsync(Menus entity);
+		Task<long> RemoveMenusMatchingAsync(Menus entity);
+
+		Task<IEnumerable<Staffs>> SelectStaffsAsync(int pageSize = 10, int pageNumber = 1);
+
+		Task<IEnumerable<Staffs>> SelectStaffsMatchingAsync(Staffs entity, string? additionalWhere = null);
+
+		Task<long> InsertStaffsJustOnceAsync(Staffs entity);
+
+		Task<long> UpdateStaffsMatchingAsync(Staffs entity, Staffs updatedValue);
+
+		Task<long> RemoveStaffsMatchingAsync(Staffs entity);
+
+		Task<IEnumerable<Discounts>> SelectDiscountsAsync(int pageSize = 10, int pageNumber = 1);
+
+		Task<IEnumerable<Discounts>> SelectDiscountsMatchingAsync(Discounts entity, string? additionalWhere = null);
+
+		Task<long> InsertDiscountsJustOnceAsync(Discounts entity);
+
+		Task<long> UpdateDiscountsMatchingAsync(Discounts entity, Discounts updatedValue);
+
+		Task<long> RemoveDiscountsMatchingAsync(Discounts entity);
+
+		Task<IEnumerable<Bills>> SelectBillsAsync(int pageSize = 10, int pageNumber = 1);
+
+		Task<IEnumerable<Bills>> SelectBillsMatchingAsync(Bills entity, string? additionalWhere = null);
+
+		Task<long> InsertBillsJustOnceAsync(Bills entity);
+
+		Task<long> UpdateBillsMatchingAsync(Bills entity, Bills updatedValue);
+
+		Task<long> RemoveBillsMatchingAsync(Bills entity);
 	}
 }

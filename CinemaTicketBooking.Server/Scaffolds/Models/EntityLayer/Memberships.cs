@@ -1,25 +1,23 @@
 using System;
+using System.Text.Json.Serialization;
 
 namespace CinemaTicketBooking.Server.Scaffolds.Models.EntityLayer
 {
-	public class Memberships : IEntity
+	public class Memberships : BaseEntity
 	{
-		public Memberships()
+		public Memberships() : base()
 		{
 		}
 
-		public Memberships(long id)
+		public Memberships(long id) : base()
 		{
 			Id = id;
 		}
 
-		public long Id { get; set; }
+		[JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+		public long? Id { get; set; }
 
-		public string Name { get; set; } = null!;
-
-		public DateTime CreatedTimestamp { get; set; }
-
-		public DateTime UpdatedTimestamp { get; set; }
-
+		[JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+		public string? Name { get; set; }
 	}
 }
