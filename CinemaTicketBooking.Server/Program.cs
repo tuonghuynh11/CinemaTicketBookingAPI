@@ -45,14 +45,16 @@ namespace CinemaTicketBooking.Server
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
 			builder.Services.AddSwaggerGen();
-
-			builder.Services.AddScoped<IPublicRepository, PublicRepository>(serviceProvider
+            // Add services to the container.
+            builder.Services.AddControllers();
+			builder.Services.AddLogging();
+            builder.Services.AddScoped<IPublicRepository, PublicRepository>(serviceProvider
 			=> new PublicRepository(new NpgsqlConnection(builder.Configuration["ConnectionStrings:DefaultConnection"])));
-
+			builder.Services.AddScoped<IUserRepository, UserRepository>();
 			WebApplication app = builder.Build();
 
 			app.UseRouting();
-
+			
 			// Configure the HTTP request pipeline.
 			if (app.Environment.IsDevelopment() || app.Environment.IsProduction())
 			{
@@ -319,7 +321,8 @@ namespace CinemaTicketBooking.Server
 					UPDATE_ByMatchingPropertiesDataMethod: publicRepository.UpdateFoodAndDrinksMatchingAsync,
 					DELETE_ByMatchingPropertiesDataMethod: publicRepository.RemoveFoodAndDrinksMatchingAsync);
 				}
-			});
+				{ endpoints.MapControllers(); };
+            });
 #pragma warning restore ASP0014
 
 			app.Run();
@@ -403,7 +406,6 @@ fields/properties then delete them, no fields/properties included `means` matchi
 					 (Func<int, int, Task<IEnumerable<T>>> getDataMethod) where T : IEntity =>
 		   async (int pageSize, int pageNumber) => (IEnumerable<IEntity>) await getDataMethod(pageSize, pageNumber);
 	}
-
 	public record struct UpdateMethodBody<T>
 	{
 		public T Matching { get; set; } public T UpdatedValue { get; set; }
@@ -464,4 +466,5 @@ fields/properties then delete them, no fields/properties included `means` matchi
 		public Showtimes Showtime { get; set; } = null!;
 		public List<Seats> Seats { get; set; } = null!;
 	}
+
 }

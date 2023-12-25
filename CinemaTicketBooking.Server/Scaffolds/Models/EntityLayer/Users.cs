@@ -34,5 +34,16 @@ namespace CinemaTicketBooking.Server.Scaffolds.Models.EntityLayer
 
 		[JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
 		public string? Sex { get; set; }
-	}
+
+
+        public void SetPassword(string password)
+        {
+            Password = BCrypt.Net.BCrypt.HashPassword(password);
+        }
+
+        public bool VerifyPassword(string password)
+        {
+            return BCrypt.Net.BCrypt.Verify(password, this.Password);
+        }
+    }
 }
