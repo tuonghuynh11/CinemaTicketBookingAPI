@@ -4,6 +4,9 @@ using Microsoft.AspNetCore.Mvc;
 using CinemaTicketBooking.Server.Scaffolds.Models.EntityLayer;
 using CinemaTicketBooking.Server.Scaffolds.Models.DataLayer.Contracts;
 using CinemaTicketBooking.Server.Scaffolds.Models.DataLayer.Repositories;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 namespace CinemaTicketBooking.Server
 {
@@ -20,11 +23,26 @@ namespace CinemaTicketBooking.Server
 						UseUrls($"http://0.0.0.0:{PORT}");
 			}
 
-			// Add services to the container.
-			builder.Services.AddAuthorization();
+            // Add authentication services
+            builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                .AddJwtBearer(options =>
+                {
+                    options.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        // Configure your token validation parameters here
+                        ValidateIssuerSigningKey = true,
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("your-secret-key")), // Use a secret key from your configuration
+                        ValidateIssuer = false,
+                        ValidateAudience = false,
+                        // Set other token validation parameters as needed
+                    };
+                });
 
-			// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-			builder.Services.AddEndpointsApiExplorer();
+            // Add authorization services
+            builder.Services.AddAuthorization();
+
+            // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+            builder.Services.AddEndpointsApiExplorer();
 			builder.Services.AddSwaggerGen();
 
 			builder.Services.AddScoped<IPublicRepository, PublicRepository>(serviceProvider
@@ -44,9 +62,10 @@ namespace CinemaTicketBooking.Server
 
 			app.UseHttpsRedirection();
 
-			app.UseAuthorization();
+            app.UseAuthentication();
+            app.UseAuthorization();
 
-			app.MapGet("/", () => "Hello");
+            app.MapGet("/", () => "Hello");
 
 #pragma warning disable ASP0014
 			app.UseEndpoints(endpoints =>
