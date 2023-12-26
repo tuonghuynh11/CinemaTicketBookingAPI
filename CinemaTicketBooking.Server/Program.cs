@@ -81,6 +81,40 @@ namespace CinemaTicketBooking.Server
 
             app.MapGet("/", () => "Hello");
 
+			app.MapGet("/seats/available",
+			async ([FromQuery(Name = "showtime-id")] long showtimeId, [FromServices] IPublicRepository publicRepository) =>
+			{
+				ResponseBodyAvailableSeats responseBodyAvailableSeats = new();
+				responseBodyAvailableSeats.ShowtimeId = showtimeId;
+
+				Showtimes showtime = (await publicRepository.SelectShowtimesMatchingAsync
+				(new() { Id = showtimeId, })).First();
+				Auditoriums auditorium = (await publicRepository.SelectAuditoriumsMatchingAsync
+				(new() { Id = showtime.AuditoriumId })).First();
+
+				responseBodyAvailableSeats.AuditoriumId = auditorium.Id!.Value;
+				responseBodyAvailableSeats.AuditoriumName = auditorium.Name!;
+
+				IEnumerable<Seats> seats = await publicRepository.SelectSeatsMatchingAsync
+				(new() { AuditoriumId = auditorium.Id, });
+				IEnumerable<Reservations> reservations = await publicRepository.SelectReservationsMatchingAsync
+				(new() { ShowtimeId = showtime.Id, });
+				IEnumerable<long> notAvailableSeatIds = reservations.Select(reservation => reservation.SeatId!.Value);
+
+				responseBodyAvailableSeats.Seats = seats.Select(seat => new CustomSeats()
+				{
+					Id = seat.Id,
+					RowNumber = seat.RowNumber,
+					ColNumber = seat.ColNumber,
+					AuditoriumId = seat.AuditoriumId,
+					CreatedTimestamp = seat.CreatedTimestamp,
+					UpdatedTimestamp = seat.UpdatedTimestamp,
+					Available = !notAvailableSeatIds.Contains(seat.Id!.Value),
+				}).ToList();
+
+				return responseBodyAvailableSeats;
+			});
+
 			app.MapGet("/showtimes/in-the-next-7-days-from-today-of-one-cinema/",
 			async ([FromQuery(Name = "cinema-id")] long cinemaId, [FromServices] IPublicRepository publicRepository) =>
 			{
@@ -590,6 +624,19 @@ fields/properties then delete them, no fields/properties included `means` matchi
 		public string CinemaName { get; set; } = null!;
 		public List<ShowtimesInEachDayOfOneCinema> Result { get; set; } = null!;
 
+	}
+
+	public class CustomSeats : Seats
+	{
+		public bool Available { get; set; }
+	}
+
+	public class ResponseBodyAvailableSeats
+	{
+		public long ShowtimeId { get; set; }
+		public long AuditoriumId { get; set; }
+		public string AuditoriumName { get; set; } = null!;
+		public List<CustomSeats> Seats { get; set; } = null!;
 	}
 
 }
