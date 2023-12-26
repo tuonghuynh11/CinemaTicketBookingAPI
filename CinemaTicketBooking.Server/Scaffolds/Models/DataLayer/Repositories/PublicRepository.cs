@@ -1563,7 +1563,7 @@ namespace CinemaTicketBooking.Server.Scaffolds.Models.DataLayer.Repositories
 			parameters.Add("@phoneNumber", entity.PhoneNumber);
 			parameters.Add("@address", entity.Address);
 			parameters.Add("@sex", entity.Sex);
-      parameters.Add("@role", entity.Role)
+			parameters.Add("@role", entity.Role);
 			parameters.Add("@email", entity.Email);
 			return await Connection.ExecuteScalarAsync<long>(new CommandDefinition(query.Append(" returning id ").ToString(), parameters));
 		}
@@ -3332,129 +3332,129 @@ namespace CinemaTicketBooking.Server.Scaffolds.Models.DataLayer.Repositories
 			return await Connection.ExecuteAsync(new CommandDefinition(query.ToString(), parameters));
 		}
 
-		public async Task<IEnumerable<DiscountsUsers>> SelectDiscountsUsersAsync(int pageSize = 10, int pageNumber = 1)
-		{
-			var query = new StringBuilder();
+        public async Task<IEnumerable<DiscountsUsers>> SelectDiscountsUsersAsync(int pageSize = 10, int pageNumber = 1)
+        {
+            var query = new StringBuilder();
 
-			query.Append(" select ");
-			query.Append("   discount_id DiscountId, ");
-			query.Append("       user_id     UserId, ");
-			query.Append("   usage Usage, ");
-			query.Append("   created_timestamp CreatedTimestamp, ");
-			query.Append("   updated_timestamp UpdatedTimestamp  ");
-			query.Append(" from ");
-			query.Append("   public.discounts_users ");
-			query.Append(" order by ");
-			query.Append("   user_id, discount_id ");
-			query.Append(" offset (@pageSize * (@pageNumber - 1)) rows ");
-			query.Append(" fetch next @pageSize rows only ");
+            query.Append(" select ");
+            query.Append("   discount_id DiscountId, ");
+            query.Append("       user_id     UserId, ");
+            query.Append("   usage Usage, ");
+            query.Append("   created_timestamp CreatedTimestamp, ");
+            query.Append("   updated_timestamp UpdatedTimestamp  ");
+            query.Append(" from ");
+            query.Append("   public.discounts_users ");
+            query.Append(" order by ");
+            query.Append("   user_id, discount_id ");
+            query.Append(" offset (@pageSize * (@pageNumber - 1)) rows ");
+            query.Append(" fetch next @pageSize rows only ");
 
-			var parameters = new DynamicParameters();
-			parameters.Add("@pageSize", pageSize);
-			parameters.Add("@pageNumber", pageNumber);
+            var parameters = new DynamicParameters();
+            parameters.Add("@pageSize", pageSize);
+            parameters.Add("@pageNumber", pageNumber);
 
-			return await Connection.QueryAsync<DiscountsUsers>(new CommandDefinition(query.ToString(), parameters));
-		}
+            return await Connection.QueryAsync<DiscountsUsers>(new CommandDefinition(query.ToString(), parameters));
+        }
 
-		public async Task<IEnumerable<DiscountsUsers>> SelectDiscountsUsersMatchingAsync(DiscountsUsers entity, string? additionalWhere = null, params (string parameterName, object? parameterValue)[] additionalParameters)
-		{
-			var query = new StringBuilder();
+        public async Task<IEnumerable<DiscountsUsers>> SelectDiscountsUsersMatchingAsync(DiscountsUsers entity, string? additionalWhere = null, params (string parameterName, object? parameterValue)[] additionalParameters)
+        {
+            var query = new StringBuilder();
 
-			query.Append(" select ");
-			query.Append("   discount_id DiscountId, ");
-			query.Append("       user_id     UserId, ");
-			query.Append("   usage Usage, ");
-			query.Append("   created_timestamp CreatedTimestamp, ");
-			query.Append("   updated_timestamp UpdatedTimestamp  ");
-			query.Append(" from ");
-			query.Append("   public.discounts_users ");
-			query.Append(" where true ");
-			if (entity.DiscountId != null)
-			query.Append("   and discount_id = @discountId ");
-			if (entity.    UserId != null)
-			query.Append("   and     user_id =     @userId ");
-			if (entity.Usage != null)
-			query.Append("   and usage = @usage ");
-			query.Append(" order by ");
-			query.Append("   user_id, discount_id ");
+            query.Append(" select ");
+            query.Append("   discount_id DiscountId, ");
+            query.Append("       user_id     UserId, ");
+            query.Append("   usage Usage, ");
+            query.Append("   created_timestamp CreatedTimestamp, ");
+            query.Append("   updated_timestamp UpdatedTimestamp  ");
+            query.Append(" from ");
+            query.Append("   public.discounts_users ");
+            query.Append(" where true ");
+            if (entity.DiscountId != null)
+                query.Append("   and discount_id = @discountId ");
+            if (entity.UserId != null)
+                query.Append("   and     user_id =     @userId ");
+            if (entity.Usage != null)
+                query.Append("   and usage = @usage ");
+            query.Append(" order by ");
+            query.Append("   user_id, discount_id ");
 
-			var parameters = new DynamicParameters();
-			parameters.Add("@discountId", entity.DiscountId);
-			parameters.Add("@userId", entity.UserId);
-			parameters.Add("@usage", entity.Usage);
+            var parameters = new DynamicParameters();
+            parameters.Add("@discountId", entity.DiscountId);
+            parameters.Add("@userId", entity.UserId);
+            parameters.Add("@usage", entity.Usage);
 
-			return await Connection.QueryAsync<DiscountsUsers>(new CommandDefinition(query.ToString(), parameters));
-		}
+            return await Connection.QueryAsync<DiscountsUsers>(new CommandDefinition(query.ToString(), parameters));
+        }
 
-		public async Task<long> InsertDiscountsUsersJustOnceAsync(DiscountsUsers entity)
-		{
-			var query = new StringBuilder();
+        public async Task<long> InsertDiscountsUsersJustOnceAsync(DiscountsUsers entity)
+        {
+            var query = new StringBuilder();
 
-			query.Append(" insert into public.discounts_users ");
-			query.Append("   ( discount_id, user_id, usage ) ");
-			query.Append(" values ");
-			query.Append("   ( @discountId, @userId, @usage ) ");
+            query.Append(" insert into public.discounts_users ");
+            query.Append("   ( discount_id, user_id, usage ) ");
+            query.Append(" values ");
+            query.Append("   ( @discountId, @userId, @usage ) ");
 
-			var parameters = new DynamicParameters();
-			parameters.Add("@discountId", entity.DiscountId);
-			parameters.Add("@userId", entity.UserId);
-			parameters.Add("@usage", entity.Usage);
+            var parameters = new DynamicParameters();
+            parameters.Add("@discountId", entity.DiscountId);
+            parameters.Add("@userId", entity.UserId);
+            parameters.Add("@usage", entity.Usage);
 
-			return await Connection.ExecuteAsync(new CommandDefinition(query.ToString(), parameters));
-		}
+            return await Connection.ExecuteAsync(new CommandDefinition(query.ToString(), parameters));
+        }
 
-		public async Task<long> UpdateDiscountsUsersMatchingAsync(DiscountsUsers entity, DiscountsUsers updatedValue)
-		{
-			var query = new StringBuilder();
+        public async Task<long> UpdateDiscountsUsersMatchingAsync(DiscountsUsers entity, DiscountsUsers updatedValue)
+        {
+            var query = new StringBuilder();
 
-			query.Append(" update ");
-			query.Append("   public.discounts_users ");
-			query.Append(" set ");
-			query.Append("     created_timestamp = created_timestamp ");
-			if (updatedValue.DiscountId != null)
-			query.Append("   , discount_id = @updatedDiscountId ");
-			if (updatedValue.    UserId != null)
-			query.Append("   ,     user_id =     @updatedUserId ");
-			if (updatedValue.Usage != null)
-			query.Append("   , usage = @updatedUsage ");
-			query.Append(" where true ");
-			if (entity.DiscountId != null)
-			query.Append("   and discount_id = @discountId ");
-			if (entity.    UserId != null)
-			query.Append("   and     user_id =     @userId ");
-			if (entity.Usage != null)
-			query.Append("   and usage = @usage ");
+            query.Append(" update ");
+            query.Append("   public.discounts_users ");
+            query.Append(" set ");
+            query.Append("     created_timestamp = created_timestamp ");
+            if (updatedValue.DiscountId != null)
+                query.Append("   , discount_id = @updatedDiscountId ");
+            if (updatedValue.UserId != null)
+                query.Append("   ,     user_id =     @updatedUserId ");
+            if (updatedValue.Usage != null)
+                query.Append("   , usage = @updatedUsage ");
+            query.Append(" where true ");
+            if (entity.DiscountId != null)
+                query.Append("   and discount_id = @discountId ");
+            if (entity.UserId != null)
+                query.Append("   and     user_id =     @userId ");
+            if (entity.Usage != null)
+                query.Append("   and usage = @usage ");
 
-			var parameters = new DynamicParameters();
-			parameters.Add("@discountId", entity.DiscountId);
-			parameters.Add("@userId", entity.UserId);
-			parameters.Add("@usage", entity.Usage);
+            var parameters = new DynamicParameters();
+            parameters.Add("@discountId", entity.DiscountId);
+            parameters.Add("@userId", entity.UserId);
+            parameters.Add("@usage", entity.Usage);
 
-			parameters.Add("@updatedDiscountId", updatedValue.DiscountId);
-			parameters.Add("@updatedUserId", updatedValue.UserId);
-			parameters.Add("@updatedUsage", updatedValue.Usage);
+            parameters.Add("@updatedDiscountId", updatedValue.DiscountId);
+            parameters.Add("@updatedUserId", updatedValue.UserId);
+            parameters.Add("@updatedUsage", updatedValue.Usage);
 
-			return await Connection.ExecuteAsync(new CommandDefinition(query.ToString(), parameters));
-		}
+            return await Connection.ExecuteAsync(new CommandDefinition(query.ToString(), parameters));
+        }
 
-		public async Task<long> RemoveDiscountsUsersMatchingAsync(DiscountsUsers entity)
-		{
-			var query = new StringBuilder();
+        public async Task<long> RemoveDiscountsUsersMatchingAsync(DiscountsUsers entity)
+        {
+            var query = new StringBuilder();
 
-			query.Append(" delete from public.discounts_users where true ");
-			if (entity.DiscountId != null)
-			query.Append("   and discount_id = @discountId ");
-			if (entity.    UserId != null)
-			query.Append("   and     user_id =     @userId ");
-			if (entity.Usage != null)
-			query.Append("   and usage = @usage ");
+            query.Append(" delete from public.discounts_users where true ");
+            if (entity.DiscountId != null)
+                query.Append("   and discount_id = @discountId ");
+            if (entity.UserId != null)
+                query.Append("   and     user_id =     @userId ");
+            if (entity.Usage != null)
+                query.Append("   and usage = @usage ");
 
-			var parameters = new DynamicParameters();
-			parameters.Add("@discountId", entity.DiscountId);
-			parameters.Add("@userId", entity.UserId);
-			parameters.Add("@usage", entity.Usage);
+            var parameters = new DynamicParameters();
+            parameters.Add("@discountId", entity.DiscountId);
+            parameters.Add("@userId", entity.UserId);
+            parameters.Add("@usage", entity.Usage);
 
-			return await Connection.ExecuteAsync(new CommandDefinition(query.ToString(), parameters));
-		}
-	}
+            return await Connection.ExecuteAsync(new CommandDefinition(query.ToString(), parameters));
+        }
+    }
 }
