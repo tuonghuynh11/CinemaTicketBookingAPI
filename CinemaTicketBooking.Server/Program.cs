@@ -58,8 +58,10 @@ namespace CinemaTicketBooking.Server
                 return new NpgsqlConnection(builder.Configuration["ConnectionStrings:DefaultConnection"]);
             });
 
-            builder.Services.AddScoped<IPublicRepository, PublicRepository>();
-            builder.Services.AddScoped<IUserRepository, UserRepository>();
+			builder.Services.AddScoped<IPublicRepository, PublicRepository>(serviceProvider
+			=> new PublicRepository(new NpgsqlConnection(builder.Configuration["ConnectionStrings:DefaultConnection"])));
+
+			builder.Services.AddScoped<IUserRepository, UserRepository>();
 
             WebApplication app = builder.Build();
 
