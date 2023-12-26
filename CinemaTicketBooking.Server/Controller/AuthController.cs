@@ -169,13 +169,13 @@ namespace CinemaTicketBooking.Server.Controller
                     //Console.WriteLine("Login successful");
                     return Ok(new
                     {
-                        message = "Login successful",
+                        message = "Login Successful",
                         username = user.Username,
                         user_id = user.Id,
                         user_role = user.Role,
+                        login_as = (user.Role == "1") ? "Login as customer" : "Login as employee",
                         token = token
-                    }
-                    );
+                    });
                 }
                 else
                 {
