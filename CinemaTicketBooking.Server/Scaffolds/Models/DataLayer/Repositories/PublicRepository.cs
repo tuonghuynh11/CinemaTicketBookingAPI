@@ -1527,7 +1527,8 @@ namespace CinemaTicketBooking.Server.Scaffolds.Models.DataLayer.Repositories
 			query.Append("     phone_number, ");
 			query.Append("     address, ");
 			query.Append("     sex ");
-			query.Append("   ) ");
+            query.Append("     role ");
+            query.Append("   ) ");
 			query.Append(" values ");
 			query.Append("   ( ");
 			query.Append("     @username, ");
@@ -1536,7 +1537,8 @@ namespace CinemaTicketBooking.Server.Scaffolds.Models.DataLayer.Repositories
 			query.Append("     @phoneNumber, ");
 			query.Append("     @address, ");
 			query.Append("     @sex ");
-			query.Append("   ) ");
+            query.Append("     @role ");
+            query.Append("   ) ");
 			
 			// Create parameters collection
 			var parameters = new DynamicParameters();
@@ -1548,9 +1550,10 @@ namespace CinemaTicketBooking.Server.Scaffolds.Models.DataLayer.Repositories
 			parameters.Add("@phoneNumber", entity.PhoneNumber);
 			parameters.Add("@address", entity.Address);
 			parameters.Add("@sex", entity.Sex);
+            parameters.Add("@role", entity.Role);
 
-			// Execute query in database
-			return await Connection.ExecuteAsync(new CommandDefinition(query.ToString(), parameters));
+            // Execute query in database
+            return await Connection.ExecuteAsync(new CommandDefinition(query.ToString(), parameters));
 		}
 
 		public async Task<long> UpdateUsersMatchingAsync(Users entity, Users updatedValue)
