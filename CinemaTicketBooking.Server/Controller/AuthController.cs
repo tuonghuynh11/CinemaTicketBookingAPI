@@ -24,8 +24,8 @@ namespace CinemaTicketBooking.Server.Controller
         }
 
         // Endpoint for registration: api/auth/register
-        [HttpPost("register")]
-        public async Task<ActionResult<Users>> RegisterAsync(RegistrationRequestModel model)
+        [HttpPost("registerCustomer")]
+        public async Task<ActionResult<Users>> RegisterAsyncCustomer(RegistrationRequestModel model)
         {
             try
             {
@@ -60,6 +60,7 @@ namespace CinemaTicketBooking.Server.Controller
                     PhoneNumber = model.PhoneNumber,
                     Address = model.Address,
                     Sex = model.Sex,
+                    Role = "1"
                 };
 
                 // Optionally, hash the password before storing it
@@ -68,7 +69,67 @@ namespace CinemaTicketBooking.Server.Controller
                 userRepository.Add(newUser); // Save the user to the database
 
                 // Optionally, you can return additional information or a success status
-                return Ok(new { message = "Registration successful", username = newUser.Username });
+                return Ok(new { message = "Registration successful", username = newUser.Username, role = newUser.Role });
+            }
+            catch (Exception ex)
+            {
+                // Log the exception for debugging purposes
+                Console.WriteLine(ex.Message);
+
+                // Return a generic error message to the client
+                return StatusCode(500, "Internal Server Error");
+            }
+        }
+        [HttpPost("registerEmployee")]
+        public async Task<ActionResult<Users>> RegisterAsyncEmployee(RegistrationRequestModel model)
+        {
+            try
+            {
+                if (userRepository == null)
+                {
+                    Console.WriteLine("userRepository is null");
+                    return StatusCode(500, "Internal Server Error");
+                }
+                // Check if the request is valid
+                if (string.IsNullOrWhiteSpace(model.Username) ||
+                    string.IsNullOrWhiteSpace(model.Password) ||
+                    string.IsNullOrWhiteSpace(model.Fullname) ||
+                    string.IsNullOrWhiteSpace(model.PhoneNumber) ||
+                    string.IsNullOrWhiteSpace(model.Address) ||
+                    string.IsNullOrWhiteSpace(model.Sex))
+                {
+                    return BadRequest("Please fill in all required fields.");
+                }
+
+                // Check if the username already exists
+                var existingUser = await userRepository.FindByUsername(model.Username);
+                var existingPhoneNumber = await userRepository.FindByPhoneNumber(model.PhoneNumber);
+                if (existingUser != null )
+                {
+                    return BadRequest("Username already exists.");
+                }
+                if( existingPhoneNumber != null)
+                {
+                    return BadRequest("Phone Number already exists.");
+                }    
+                var newUser = new Users
+                {
+                    Username = model.Username,
+                    Password = model.Password, // Note: In a production environment, you should hash the password
+                    FullName = model.Fullname,
+                    PhoneNumber = model.PhoneNumber,
+                    Address = model.Address,
+                    Sex = model.Sex,
+                    Role = "2"
+                };
+
+                // Optionally, hash the password before storing it
+                // newUser.SetPassword(model.Password);
+
+                userRepository.Add(newUser); // Save the user to the database
+
+                // Optionally, you can return additional information or a success status
+                return Ok(new { message = "Registration successful", username = newUser.Username, role = newUser.Role });
             }
             catch (Exception ex)
             {
@@ -88,9 +149,8 @@ namespace CinemaTicketBooking.Server.Controller
             try
             {
                 // Find user in the database
-                var user = await userRepository.FindByUsername(model.Username);
-
-
+                var user = await userRepository.FindByUsernameOrPhoneNumber(model.Username);
+ 
                 // Kiểm tra xem người dùng có được tìm thấy hay không
                 if (user != null)
                 {
@@ -98,7 +158,7 @@ namespace CinemaTicketBooking.Server.Controller
                 }
                 else
                 {
-                    return BadRequest("User not found!");
+                    return BadRequest("User or Phone Number not found!");
                 }
 
                 // Check the password using BCrypt.Verify
@@ -109,11 +169,13 @@ namespace CinemaTicketBooking.Server.Controller
                     //Console.WriteLine("Login successful");
                     return Ok(new
                     {
-                        message = "Login successful",
+                        message = "Login Successful",
                         username = user.Username,
+                        user_id = user.Id,
+                        user_role = user.Role,
+                        login_as = (user.Role == "1") ? "Login as customer" : "Login as employee",
                         token = token
-                    }
-                    );
+                    });
                 }
                 else
                 {
@@ -135,7 +197,8 @@ namespace CinemaTicketBooking.Server.Controller
         {
             List<Claim> claims = new List<Claim>
             {
-                new Claim(ClaimTypes.Name, user.Username)
+                new Claim(ClaimTypes.Name, user.Username),
+                new Claim(ClaimTypes.Role, user.Role.ToString())
             };
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration.GetSection("AppSettings:Token").Value!));
 

@@ -1539,7 +1539,8 @@ namespace CinemaTicketBooking.Server.Scaffolds.Models.DataLayer.Repositories
 			query.Append("     address, ");
 			query.Append("     email, ");
 			query.Append("     sex ");
-			query.Append("   ) ");
+            query.Append("     role ");
+            query.Append("   ) ");
 			query.Append(" values ");
 			query.Append("   ( ");
 			query.Append("     @username, ");
@@ -1549,7 +1550,8 @@ namespace CinemaTicketBooking.Server.Scaffolds.Models.DataLayer.Repositories
 			query.Append("     @address, ");
 			query.Append("     @email, ");
 			query.Append("     @sex ");
-			query.Append("   ) ");
+            query.Append("     @role ");
+            query.Append("   ) ");
 			
 			// Create parameters collection
 			var parameters = new DynamicParameters();
@@ -1561,9 +1563,8 @@ namespace CinemaTicketBooking.Server.Scaffolds.Models.DataLayer.Repositories
 			parameters.Add("@phoneNumber", entity.PhoneNumber);
 			parameters.Add("@address", entity.Address);
 			parameters.Add("@sex", entity.Sex);
+      parameters.Add("@role", entity.Role)
 			parameters.Add("@email", entity.Email);
-
-			// Execute query in database
 			return await Connection.ExecuteScalarAsync<long>(new CommandDefinition(query.Append(" returning id ").ToString(), parameters));
 		}
 
