@@ -35,8 +35,8 @@ namespace CinemaTicketBooking.Server.Scaffolds.Models.EntityLayer
 		[JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
 		public string? Sex { get; set; }
 
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
-    public string Role { get; set; }
+		[JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+		public string Role { get; set; }
     
 		[JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
 		public string? Email { get; set; }

@@ -12,7 +12,7 @@ public class UserRepository : Repository, IUserRepository
 
     public async Task Add(Users user)
     {
-        var query = "INSERT INTO public.users (username, password, full_name, phone_number, address, sex, role) VALUES (@Username, @Password, @FullName, @PhoneNumber, @Address, @Sex, @Role)";
+        var query = "INSERT INTO public.users (username, password, full_name, phone_number, address, sex, email, role) VALUES (@Username, @Password, @FullName, @PhoneNumber, @Address, @Sex, @Email, @Role)";
         await Connection.ExecuteAsync(query, user);
     }
 

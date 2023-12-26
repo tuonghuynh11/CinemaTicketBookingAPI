@@ -15,6 +15,7 @@ namespace CinemaTicketBooking.Server.Scaffolds.Models
 
         public string Address { get; set; }
 
+        public string Email { get; set; }
         public string Sex { get; set; }
     }
 }
