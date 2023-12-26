@@ -16,10 +16,17 @@ public class UserRepository : Repository, IUserRepository
         await Connection.ExecuteAsync(query, user);
     }
 
-    public async Task<Users> FindByUsername(string username)
+
+    public async Task<Users> FindByUsernameOrPhoneNumber(string identifier)
+    {
+        var query = "SELECT * FROM public.users WHERE username = @Identifier OR phone_number = @Identifier";
+        return await Connection.QueryFirstOrDefaultAsync<Users>(query, new { Identifier = identifier });
+    }
+    public async Task<Users> FindByUsername (string username)
     {
         var query = "SELECT * FROM public.users WHERE username = @Username";
         return await Connection.QueryFirstOrDefaultAsync<Users>(query, new { Username = username });
     }
+
 }
 

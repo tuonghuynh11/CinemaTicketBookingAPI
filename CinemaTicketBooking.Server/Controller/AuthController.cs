@@ -60,6 +60,7 @@ namespace CinemaTicketBooking.Server.Controller
                     PhoneNumber = model.PhoneNumber,
                     Address = model.Address,
                     Sex = model.Sex,
+                    Role = model.Role,
                 };
 
                 // Optionally, hash the password before storing it
@@ -88,9 +89,8 @@ namespace CinemaTicketBooking.Server.Controller
             try
             {
                 // Find user in the database
-                var user = await userRepository.FindByUsername(model.Username);
-
-
+                var user = await userRepository.FindByUsernameOrPhoneNumber(model.Username);
+ 
                 // Kiểm tra xem người dùng có được tìm thấy hay không
                 if (user != null)
                 {
@@ -98,7 +98,7 @@ namespace CinemaTicketBooking.Server.Controller
                 }
                 else
                 {
-                    return BadRequest("User not found!");
+                    return BadRequest("User or Phone Number not found!");
                 }
 
                 // Check the password using BCrypt.Verify
@@ -111,6 +111,8 @@ namespace CinemaTicketBooking.Server.Controller
                     {
                         message = "Login successful",
                         username = user.Username,
+                        user_id = user.Id,
+                        user_role = user.Role,
                         token = token
                     }
                     );
