@@ -60,6 +60,7 @@ namespace CinemaTicketBooking.Server.Controller
                     PhoneNumber = model.PhoneNumber,
                     Address = model.Address,
                     Sex = model.Sex,
+                    Email = model.Email,
                     Role = "1"
                 };
 
@@ -120,6 +121,7 @@ namespace CinemaTicketBooking.Server.Controller
                     PhoneNumber = model.PhoneNumber,
                     Address = model.Address,
                     Sex = model.Sex,
+                    Email = model.Email,
                     Role = "2"
                 };
 
