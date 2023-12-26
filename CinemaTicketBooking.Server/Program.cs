@@ -12,6 +12,8 @@ using Microsoft.AspNetCore.Components;
 using System.Diagnostics;
 using System.IO;
 using System.Data;
+using System;
+using System.Xml.Linq;
 
 
 namespace CinemaTicketBooking.Server
@@ -58,8 +60,10 @@ namespace CinemaTicketBooking.Server
                 return new NpgsqlConnection(builder.Configuration["ConnectionStrings:DefaultConnection"]);
             });
 
-            builder.Services.AddScoped<IPublicRepository, PublicRepository>();
-            builder.Services.AddScoped<IUserRepository, UserRepository>();
+			builder.Services.AddScoped<IPublicRepository, PublicRepository>(serviceProvider
+			=> new PublicRepository(new NpgsqlConnection(builder.Configuration["ConnectionStrings:DefaultConnection"])));
+
+			builder.Services.AddScoped<IUserRepository, UserRepository>();
 
             WebApplication app = builder.Build();
 
@@ -79,7 +83,220 @@ namespace CinemaTicketBooking.Server
             app.UseAuthentication();
             app.UseAuthorization();
 
-            app.MapGet("/", () => "Hello");
+			app.MapGet("/", () => "Hello");
+
+			app.MapGet("/statistic/revenue-12-months-of-year",
+			async ([FromQuery(Name = "cinema-id")] long cinemaId, [FromQuery(Name = "year")] int year,
+			[FromServices] IPublicRepository publicRepository) =>
+			{
+				Cinemas cinema = (await publicRepository.SelectCinemasMatchingAsync
+				(new() { Id = cinemaId, })).First();
+
+				ResponseBodyStatisticRevenue12MonthsOfYear responseBodyStatisticRevenue12Months = new();
+				responseBodyStatisticRevenue12Months.Year = year;
+				responseBodyStatisticRevenue12Months.CinemaId = cinema.Id!.Value;
+				responseBodyStatisticRevenue12Months.CinemaName = cinema.Name!;
+
+				IEnumerable<Auditoriums> auditoriums = await publicRepository.SelectAuditoriumsMatchingAsync
+				(new() { CinemaId = cinemaId, });
+
+				IEnumerable<Showtimes> showtimes = await publicRepository.SelectShowtimesMatchingAsync
+				(new(),
+				@"auditorium_id = any(@auditoriumIds)
+				and (extract year from date) = @year",
+				("@auditoriumIds", auditoriums.Select(auditorium => auditorium.Id).ToArray()),
+				("@year", year));
+
+				IEnumerable<Tickets> tickets = await publicRepository.SelectTicketsMatchingAsync
+				(new(),
+				@"showtime_id = any(@showtimeIds)",
+				(parameterName: "@showtimeIds", parameterValue: showtimes.Select(showtime
+				=> showtime.Id).ToArray()));
+
+				IEnumerable<Movies> movies = await publicRepository.SelectMoviesMatchingAsync
+				(new(),
+				@"id = any(@ids)",
+				("@ids", showtimes.Select(showtime => showtime.MovieId).Distinct().ToArray()));
+
+				IEnumerable<IGrouping<int, Showtimes>> _ = showtimes.GroupBy(showtime => showtime.Date!.Value.Month,
+				showtime => showtime);
+
+				responseBodyStatisticRevenue12Months.RevenueEachMonths = new();
+
+				foreach (IGrouping<int, Showtimes> group in _)
+				{
+					StatisticRevenueEachMonth statisticRevenueEachMonth = new();
+					statisticRevenueEachMonth.Month = group.Key;
+					statisticRevenueEachMonth.RevenueEachMovies = new();
+
+					IEnumerable<IGrouping<long, Showtimes>> __ =
+					group.GroupBy(showtime => showtime.MovieId!.Value, showtime => showtime);
+
+					foreach (IGrouping<long, Showtimes> subgroup in __)
+					{
+						Movies movie = movies.First(movie => movie.Id == subgroup.Key);
+						IEnumerable<Tickets> ticketsOfThisMovie = tickets.Where(ticket =>
+						subgroup.Any(showtime => showtime.Id == ticket.ShowtimeId));
+						statisticRevenueEachMonth.RevenueEachMovies.Add(new()
+						{
+							MovieId = movie.Id!.Value,
+							MovieTitle = movie.Title!,
+							PremiereDate = movie.ReleaseDate!,
+							NumberOfViews = ticketsOfThisMovie.Count(),
+							Revenue = ticketsOfThisMovie.Select(ticketOfThisMovie => ticketOfThisMovie.Price!.Value).Sum(),
+						});
+					}
+
+					statisticRevenueEachMonth.TotalRevenue = statisticRevenueEachMonth.RevenueEachMovies
+					.Select(revenueEachMovie => revenueEachMovie.Revenue).Sum();
+
+					responseBodyStatisticRevenue12Months.RevenueEachMonths.Add(statisticRevenueEachMonth);
+				}
+
+				responseBodyStatisticRevenue12Months.TotalRevenue = responseBodyStatisticRevenue12Months
+				.RevenueEachMonths.Select(revenueEachMonth => revenueEachMonth.TotalRevenue).Sum();
+
+				return responseBodyStatisticRevenue12Months;
+			});
+
+			app.MapGet("/movies/top-10/month-of-year",
+			async ([FromQuery(Name = "month")] int month, [FromQuery(Name = "year")] int year,
+			[FromServices] IPublicRepository publicRepository) =>
+			{
+				IEnumerable<Showtimes> showtimes = await publicRepository.SelectShowtimesMatchingAsync
+				(new(),
+				@"extract(month from date) = @month and extract(year from date) = @year",
+				("@month", month), ("@year", year));
+
+				IEnumerable<Tickets> tickets = await publicRepository.SelectTicketsMatchingAsync
+				(new(),
+				@"showtime_id = any(@showtimeIds)",
+				("@showtimeIds", showtimes.Select(showtime => showtime.Id).ToArray()));
+
+				IEnumerable<IGrouping<long, long>> showtimeIdsGroupByMovieIds =
+				showtimes.GroupBy(showtime => showtime.MovieId!.Value, showtime => showtime.Id!.Value);
+
+				ResponseBodyTop10MoviesMonthOfYear responseBodyTop10MoviesMonthOfYear = new();
+				responseBodyTop10MoviesMonthOfYear.Result = new();
+				responseBodyTop10MoviesMonthOfYear.Month = month;
+				responseBodyTop10MoviesMonthOfYear.Year = year;
+
+				foreach (IGrouping<long, long> group in showtimeIdsGroupByMovieIds)
+				{
+					long _movieId_ = group.Key;
+					IEnumerable<long> _showtimeIds_ = group;
+					Movies movie = (await publicRepository.SelectMoviesMatchingAsync
+					(new() { Id = _movieId_, })).First();
+					IEnumerable<Tickets> ticketsOfThisMovie = tickets.Where(ticket => _showtimeIds_.Any(_showtimeId_
+						=> ticket.ShowtimeId == _showtimeId_));
+					responseBodyTop10MoviesMonthOfYear.Result.Add(new()
+					{
+						MovieId = _movieId_,
+						MovieTitle = movie.Title!,
+						PremiereDate = movie.ReleaseDate!,
+						NumberOfViews = ticketsOfThisMovie.Count(),
+						Revenue = ticketsOfThisMovie.Select(ticketOfThisMovie => ticketOfThisMovie.Price!.Value).Sum(),
+					});
+				}
+
+				return responseBodyTop10MoviesMonthOfYear;
+			});
+
+			app.MapGet("/movies/top-10/year",
+			async ([FromQuery(Name = "year")] int year,
+			[FromServices] IPublicRepository publicRepository) =>
+			{
+				IEnumerable<Showtimes> showtimes = await publicRepository.SelectShowtimesMatchingAsync
+				(new(),
+				@"extract(year from date) = @year",
+				("@year", year));
+
+				IEnumerable<Tickets> tickets = await publicRepository.SelectTicketsMatchingAsync
+				(new(),
+				@"showtime_id = any(@showtimeIds)",
+				("@showtimeIds", showtimes.Select(showtime => showtime.Id).ToArray()));
+
+				IEnumerable<IGrouping<long, long>> showtimeIdsGroupByMovieIds =
+				showtimes.GroupBy(showtime => showtime.MovieId!.Value, showtime => showtime.Id!.Value);
+
+				ResponseBodyTop10MoviesYear responseBodyTop10MoviesYear = new();
+				responseBodyTop10MoviesYear.Result = new();
+				responseBodyTop10MoviesYear.Year = year;
+
+				foreach (IGrouping<long, long> group in showtimeIdsGroupByMovieIds)
+				{
+					long _movieId_ = group.Key;
+					IEnumerable<long> _showtimeIds_ = group;
+					Movies movie = (await publicRepository.SelectMoviesMatchingAsync
+					(new() { Id = _movieId_, })).First();
+					IEnumerable<Tickets> ticketsOfThisMovie = tickets.Where(ticket => _showtimeIds_.Any(_showtimeId_
+						=> ticket.ShowtimeId == _showtimeId_));
+					responseBodyTop10MoviesYear.Result.Add(new()
+					{
+						MovieId = _movieId_,
+						MovieTitle = movie.Title!,
+						PremiereDate = movie.ReleaseDate!,
+						NumberOfViews = ticketsOfThisMovie.Count(),
+						Revenue = ticketsOfThisMovie.Select(ticketOfThisMovie => ticketOfThisMovie.Price!.Value).Sum(),
+					});
+				}
+
+				return responseBodyTop10MoviesYear;
+			});
+
+			app.MapGet("/exist/email",
+			async ([FromQuery(Name = "email")] string email, [FromServices] IPublicRepository publicRepository) =>
+			{
+				return new ResponseBodyExistEmail()
+				{
+					Email = email,
+					Exist = (await publicRepository.SelectUsersMatchingAsync(new() { Email = email, })).Any(),
+				};
+			});
+
+			app.MapGet("/exist/phone-number",
+			async ([FromQuery(Name = "phone-number")] string phoneNumber, [FromServices] IPublicRepository publicRepository) =>
+			{
+				return new ResponseBodyExistPhoneNumber()
+				{
+					PhoneNumber = phoneNumber,
+					Exist = (await publicRepository.SelectUsersMatchingAsync(new() { PhoneNumber = phoneNumber, })).Any(),
+				};
+			});
+
+			app.MapGet("/seats/available",
+			async ([FromQuery(Name = "showtime-id")] long showtimeId, [FromServices] IPublicRepository publicRepository) =>
+			{
+				ResponseBodyAvailableSeats responseBodyAvailableSeats = new();
+				responseBodyAvailableSeats.ShowtimeId = showtimeId;
+
+				Showtimes showtime = (await publicRepository.SelectShowtimesMatchingAsync
+				(new() { Id = showtimeId, })).First();
+				Auditoriums auditorium = (await publicRepository.SelectAuditoriumsMatchingAsync
+				(new() { Id = showtime.AuditoriumId })).First();
+
+				responseBodyAvailableSeats.AuditoriumId = auditorium.Id!.Value;
+				responseBodyAvailableSeats.AuditoriumName = auditorium.Name!;
+
+				IEnumerable<Seats> seats = await publicRepository.SelectSeatsMatchingAsync
+				(new() { AuditoriumId = auditorium.Id, });
+				IEnumerable<Reservations> reservations = await publicRepository.SelectReservationsMatchingAsync
+				(new() { ShowtimeId = showtime.Id, });
+				IEnumerable<long> notAvailableSeatIds = reservations.Select(reservation => reservation.SeatId!.Value);
+
+				responseBodyAvailableSeats.Seats = seats.Select(seat => new CustomSeats()
+				{
+					Id = seat.Id,
+					RowNumber = seat.RowNumber,
+					ColNumber = seat.ColNumber,
+					AuditoriumId = seat.AuditoriumId,
+					CreatedTimestamp = seat.CreatedTimestamp,
+					UpdatedTimestamp = seat.UpdatedTimestamp,
+					Available = !notAvailableSeatIds.Contains(seat.Id!.Value),
+				}).ToList();
+
+				return responseBodyAvailableSeats;
+			});
 
 			app.MapGet("/showtimes/in-the-next-7-days-from-today-of-one-cinema/",
 			async ([FromQuery(Name = "cinema-id")] long cinemaId, [FromServices] IPublicRepository publicRepository) =>
@@ -241,12 +458,15 @@ and date between current_date and current_date + interval '7 days'",
 			});
 
 			app.MapPost("/bills/new", async ([FromBody] BillNewRequestBody request,
-				[FromServices] PublicRepository publicRepository) =>
+				[FromServices] IPublicRepository publicRepository) =>
 			{
+				BillNewResponseBody billNewResponseBody = new();
+				billNewResponseBody.TicketIds = new();
 				Bills newBill = new()
 				{
 					UserId = request.UserId,
 					DiscountId = request.DiscountId,
+					Paid = false,
 					//MembershipId = request.MembershipId,
 				};
 				long newBillId = await publicRepository.InsertBillsJustOnceAsync(newBill);
@@ -258,6 +478,7 @@ and date between current_date and current_date + interval '7 days'",
 					(new() { BillId = newBillId, ShowtimeId = chosenShowtime.Id, Price = chosenShowtime.Price, });
 					await publicRepository.InsertReservationsJustOnceAsync(new()
 					{ TicketId = newTicketId, ShowtimeId = chosenShowtime.Id, SeatId = request.SeatIds[i], });
+					billNewResponseBody.TicketIds.Add(newTicketId);
 				}
 				foreach (CustomMenus customMenu in request.Menus)
 				{
@@ -277,11 +498,12 @@ and date between current_date and current_date + interval '7 days'",
 						Price = chosenMenu.Price,
 					});
 				}
-				return new BillNewResponseBody() { BillId = newBillId, };
+				billNewResponseBody.BillId = newBillId;
+				return billNewResponseBody;
 			});
 
 			app.MapGet("/bills/old", async ([FromQuery] int billId,
-				[FromServices] PublicRepository publicRepository) =>
+				[FromServices] IPublicRepository publicRepository) =>
 			{
 				BillOldResponseBody billOldResponseBody = new();
 				Bills bill = (await publicRepository.SelectBillsMatchingAsync(new() { Id = billId, })).First();
@@ -291,6 +513,7 @@ and date between current_date and current_date + interval '7 days'",
 					(new() { Id = bill.DiscountId, })).First();
 				IEnumerable<Tickets> tickets = await publicRepository.SelectTicketsMatchingAsync
 				(new() { BillId = billId, });
+				billOldResponseBody.TicketIds = tickets.Select(ticket => ticket.Id!.Value).ToList();
 				billOldResponseBody.TicketsCost = tickets.Sum(ticket => ticket.Price)!.Value;
 				billOldResponseBody.OrdersCost = (await publicRepository.SelectOrdersMatchingAsync
 				(new() { BillId = billId, })).Sum(order => order.Price)!.Value;
@@ -412,6 +635,13 @@ and date between current_date and current_date + interval '7 days'",
 					UPDATE_ByMatchingPropertiesDataMethod: publicRepository.UpdateMembershipsMatchingAsync,
 					DELETE_ByMatchingPropertiesDataMethod: publicRepository.RemoveMembershipsMatchingAsync);
 
+					endpoints.MapTogether<DiscountsUsers, DiscountsUsers>("/discounts-users",
+					SELECT_EntireByPageSizeByPageNumberDataMethod: publicRepository.SelectDiscountsUsersAsync,
+					SELECT_ByMatchingPropertiesDataMethod: publicRepository.SelectDiscountsUsersMatchingAsync,
+					INSERT_JustOneDataMethod: publicRepository.InsertDiscountsUsersJustOnceAsync,
+					UPDATE_ByMatchingPropertiesDataMethod: publicRepository.UpdateDiscountsUsersMatchingAsync,
+					DELETE_ByMatchingPropertiesDataMethod: publicRepository.RemoveDiscountsUsersMatchingAsync);
+
 					endpoints.MapTogether<Reservations, Reservations>("/reservations",
 					SELECT_EntireByPageSizeByPageNumberDataMethod: publicRepository.SelectReservationsAsync,
 					SELECT_ByMatchingPropertiesDataMethod: publicRepository.SelectReservationsMatchingAsync,
@@ -490,7 +720,7 @@ automatically generate and handle it - except `movies`)");
 		(this IEndpointRouteBuilder endpoints, string pattern, Func<T, T, Task<long>> UPDATE_ByMatchingPropertiesDataMethod)
 		{
 			endpoints.MapPut
-			($"/Update/matching-properties{pattern}", async ([FromBody] UpdateMethodBody<T> updateMethodBody) =>
+			($"/update/matching-properties{pattern}", async ([FromBody] UpdateMethodBody<T> updateMethodBody) =>
 				await UPDATE_ByMatchingPropertiesDataMethod(updateMethodBody.Matching,  updateMethodBody.UpdatedValue))
 			.WithTags(@"Update Entities By Matching Properties
 (could omit any fields/properties in the matching part of the body if the request does not wish to search for entities with
@@ -561,6 +791,7 @@ fields/properties then delete them, no fields/properties included `means` matchi
 	public class BillNewResponseBody
 	{
 		public long BillId { get; set; }
+		public List<long> TicketIds { get; set; } = null!;
 	}
 
 	public class BillOldResponseBody
@@ -572,6 +803,7 @@ fields/properties then delete them, no fields/properties included `means` matchi
 		public decimal TicketsCost { get; set; }
 		public Showtimes Showtime { get; set; } = null!;
 		public List<Seats> Seats { get; set; } = null!;
+		public List<long> TicketIds { get; set; } = null!;
 	}
 
 	public class CustomMovies : Movies
@@ -592,4 +824,71 @@ fields/properties then delete them, no fields/properties included `means` matchi
 
 	}
 
+	public class CustomSeats : Seats
+	{
+		public bool Available { get; set; }
+	}
+
+	public class ResponseBodyAvailableSeats
+	{
+		public long ShowtimeId { get; set; }
+		public long AuditoriumId { get; set; }
+		public string AuditoriumName { get; set; } = null!;
+		public List<CustomSeats> Seats { get; set; } = null!;
+	}
+
+	public class ResponseBodyExistEmail
+	{
+		public string Email { get; set; } = null!;
+		public bool Exist { get; set; }
+	}
+
+	public class ResponseBodyExistPhoneNumber
+	{
+		public string PhoneNumber { get; set; } = null!;
+		public bool Exist { get; set; }
+	}
+
+	public class TopMovie
+	{
+		public long MovieId { get; set; }
+		public string MovieTitle { get; set; } = null!;
+		public decimal Revenue { get; set; }
+		public string PremiereDate { get; set; } = null!;
+		public int NumberOfViews { get; set; }
+	}
+
+	public class ResponseBodyTop10MoviesMonthOfYear
+	{
+		public int Month { get; set; }
+		public int Year { get; set; }
+		public List<TopMovie> Result { get; set; } = null!;
+	}
+
+	public class ResponseBodyTop10MoviesYear
+	{
+		public int Year { get; set; }
+		public List<TopMovie> Result { get; set; } = null!;
+	}
+
+	public class RevenueEachMovie : TopMovie
+	{
+
+	}
+
+	public class StatisticRevenueEachMonth
+	{
+		public int Month { get; set; }
+		public decimal TotalRevenue { get; set; }
+		public List<RevenueEachMovie> RevenueEachMovies { get; set; } = null!;
+	}
+
+	public class ResponseBodyStatisticRevenue12MonthsOfYear
+	{
+		public int Year { get; set; }
+		public long CinemaId { get; set; }
+		public string CinemaName { get; set; } = null!;
+		public decimal TotalRevenue { get; set; }
+		public List<StatisticRevenueEachMonth> RevenueEachMonths { get; set; } = null!;
+	}
 }
