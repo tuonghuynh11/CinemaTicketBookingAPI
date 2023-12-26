@@ -11,22 +11,22 @@ using System.Text;
 using Microsoft.AspNetCore.Components;
 using System.Diagnostics;
 using System.IO;
+using System.Data;
 
 
 namespace CinemaTicketBooking.Server
 {
-	public static class Program
-	{
-		public static void Main(string[] args)
-		{
-			WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
+    public static class Program
+    {
+        public static void Main(string[] args)
+        {
+            WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
-			if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")! != "Development")
-			{
-				string PORT = Environment.GetEnvironmentVariable("PORT")!;
-				builder.WebHost.
-						UseUrls($"http://0.0.0.0:{PORT}");
-			}
+            if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") != "Development")
+            {
+                string PORT = Environment.GetEnvironmentVariable("PORT")!;
+                builder.WebHost.UseUrls($"http://0.0.0.0:{PORT}");
+            }
 
             // Add authentication services
             builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -48,16 +48,23 @@ namespace CinemaTicketBooking.Server
 
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
-			builder.Services.AddSwaggerGen();
+            builder.Services.AddSwaggerGen();
+
             // Add services to the container.
             builder.Services.AddControllers();
-			builder.Services.AddLogging();
-            builder.Services.AddScoped<IPublicRepository, PublicRepository>(serviceProvider
-			=> new PublicRepository(new NpgsqlConnection(builder.Configuration["ConnectionStrings:DefaultConnection"])));
-			builder.Services.AddScoped<IUserRepository, UserRepository>();
-			WebApplication app = builder.Build();
+            builder.Services.AddLogging();
+            builder.Services.AddScoped<IDbConnection>(_ =>
+            {
+                return new NpgsqlConnection(builder.Configuration["ConnectionStrings:DefaultConnection"]);
+            });
 
-			app.UseRouting();
+            builder.Services.AddScoped<IPublicRepository, PublicRepository>();
+            builder.Services.AddScoped<IUserRepository, UserRepository>();
+
+            WebApplication app = builder.Build();
+
+
+            app.UseRouting();
 			
 			// Configure the HTTP request pipeline.
 			if (app.Environment.IsDevelopment() || app.Environment.IsProduction())

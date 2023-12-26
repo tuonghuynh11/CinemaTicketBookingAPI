@@ -25,7 +25,7 @@ namespace CinemaTicketBooking.Server.Controller
 
         // Endpoint for registration: api/auth/register
         [HttpPost("register")]
-        public ActionResult<Users> Register(RegistrationRequestModel model)
+        public async Task<ActionResult<Users>> RegisterAsync(RegistrationRequestModel model)
         {
             try
             {
@@ -46,7 +46,7 @@ namespace CinemaTicketBooking.Server.Controller
                 }
 
                 // Check if the username already exists
-                var existingUser = userRepository.FindByUsername(model.Username);
+                var existingUser = await userRepository.FindByUsername(model.Username);
                 if (existingUser != null)
                 {
                     return BadRequest("Username already exists.");
@@ -83,12 +83,13 @@ namespace CinemaTicketBooking.Server.Controller
 
         // Endpoint for login: api/auth/login
         [HttpPost("login")]
-        public ActionResult<Users> Login(LoginRequestModel model)
+        public async Task<ActionResult<Users>> LoginAsync(LoginRequestModel model)
         {
             try
             {
                 // Find user in the database
-                var user = userRepository.FindByUsername(model.Username);
+                var user = await userRepository.FindByUsername(model.Username);
+
 
                 // Kiểm tra xem người dùng có được tìm thấy hay không
                 if (user != null)
