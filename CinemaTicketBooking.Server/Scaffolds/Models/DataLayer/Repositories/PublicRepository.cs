@@ -1454,11 +1454,11 @@ namespace CinemaTicketBooking.Server.Scaffolds.Models.DataLayer.Repositories
 			
 			// Create parameters collection
 			var parameters = new DynamicParameters();
-			
+
 			// Add parameters to collection
-			parameters.Add("  @pageSize", pageSize  );
+			parameters.Add("@pageSize", pageSize);
 			parameters.Add("@pageNumber", pageNumber);
-			
+
 			// Retrieve result from database and convert to typed list
 			return await Connection.QueryAsync<Users>(new CommandDefinition(query.ToString(), parameters));
 		}
@@ -1785,7 +1785,7 @@ namespace CinemaTicketBooking.Server.Scaffolds.Models.DataLayer.Repositories
 			if (entity.Runtime != null)
 			query.Append("   and runtime = @runtime ");
 			if (entity.SpokenLanguages != null)
-			query.Append("   and spoken_languages = @spokenLanguages, ");
+			query.Append("   and spoken_languages = @spokenLanguages ");
 			if (entity.Status != null)
 			query.Append("   and status = @status ");
 			if (entity.Tagline != null)
@@ -2024,7 +2024,7 @@ namespace CinemaTicketBooking.Server.Scaffolds.Models.DataLayer.Repositories
 			if (entity.Runtime != null)
 			query.Append("   and runtime = @runtime ");
 			if (entity.SpokenLanguages != null)
-			query.Append("   and spoken_languages = @spokenLanguages, ");
+			query.Append("   and spoken_languages = @spokenLanguages ");
 			if (entity.Status != null)
 			query.Append("   and status = @status ");
 			if (entity.Tagline != null)
@@ -2150,7 +2150,7 @@ namespace CinemaTicketBooking.Server.Scaffolds.Models.DataLayer.Repositories
 			if (entity.Runtime != null)
 			query.Append("   and runtime = @runtime ");
 			if (entity.SpokenLanguages != null)
-			query.Append("   and spoken_languages = @spokenLanguages, ");
+			query.Append("   and spoken_languages = @spokenLanguages ");
 			if (entity.Status != null)
 			query.Append("   and status = @status ");
 			if (entity.Tagline != null)
@@ -2807,7 +2807,7 @@ namespace CinemaTicketBooking.Server.Scaffolds.Models.DataLayer.Repositories
 			query.Append("     user_id   UserId, ");
 			query.Append("   cinema_id CinemaId, ");
 			query.Append("   created_timestamp CreatedTimestamp, ");
-			query.Append("   updated_timestamp UpdatedTimestamp, ");
+			query.Append("   updated_timestamp UpdatedTimestamp  ");
 			query.Append(" from ");
 			query.Append("   public.staffs ");
 			query.Append(" order by ");
@@ -2833,18 +2833,18 @@ namespace CinemaTicketBooking.Server.Scaffolds.Models.DataLayer.Repositories
 			query.Append("     user_id   UserId, ");
 			query.Append("   cinema_id CinemaId, ");
 			query.Append("   created_timestamp CreatedTimestamp, ");
-			query.Append("   updated_timestamp UpdatedTimestamp, ");
+			query.Append("   updated_timestamp UpdatedTimestamp  ");
 			query.Append(" from ");
 			query.Append("   public.staffs ");
 			query.Append(" where true ");
 			if (entity.Email != null)
-			query.Append("   and email = @email, ");
+			query.Append("   and email = @email ");
 			if (entity.Role != null)
-			query.Append("   and role  = @role , ");
+			query.Append("   and role  = @role  ");
 			if (entity.DateOfBirth != null)
-			query.Append("   and date_of_birth = @dateOfBirth, ");
+			query.Append("   and date_of_birth = @dateOfBirth ");
 			if (entity.  UserId != null)
-			query.Append("   and   user_id =   @userId, ");
+			query.Append("   and   user_id =   @userId  ");
 			if (entity.CinemaId != null)
 			query.Append("   and cinema_id = @cinemaId  ");
 	
@@ -2897,13 +2897,13 @@ namespace CinemaTicketBooking.Server.Scaffolds.Models.DataLayer.Repositories
 			query.Append("   , cinema_id = @updatedCinemaId ");
 			query.Append(" where true ");
 			if (entity.Email != null)
-			query.Append("   and email = @email, ");
+			query.Append("   and email = @email ");
 			if (entity.Role != null)
-			query.Append("   and role  = @role , ");
+			query.Append("   and role  = @role  ");
 			if (entity.DateOfBirth != null)
-			query.Append("   and date_of_birth = @dateOfBirth, ");
+			query.Append("   and date_of_birth = @dateOfBirth ");
 			if (entity.  UserId != null)
-			query.Append("   and   user_id =   @userId, ");
+			query.Append("   and   user_id =   @userId  ");
 			if (entity.CinemaId != null)
 			query.Append("   and cinema_id = @cinemaId  ");
 
@@ -2929,13 +2929,13 @@ namespace CinemaTicketBooking.Server.Scaffolds.Models.DataLayer.Repositories
 
 			query.Append(" delete from public.staffs where true ");
 			if (entity.Email != null)
-			query.Append("   and email = @email, ");
+			query.Append("   and email = @email ");
 			if (entity.Role != null)
-			query.Append("   and role  = @role , ");
+			query.Append("   and role  = @role  ");
 			if (entity.DateOfBirth != null)
-			query.Append("   and date_of_birth = @dateOfBirth, ");
+			query.Append("   and date_of_birth = @dateOfBirth ");
 			if (entity.  UserId != null)
-			query.Append("   and   user_id =   @userId, ");
+			query.Append("   and   user_id =   @userId  ");
 			if (entity.CinemaId != null)
 			query.Append("   and cinema_id = @cinemaId  ");
 
