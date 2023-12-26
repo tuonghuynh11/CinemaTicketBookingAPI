@@ -1550,7 +1550,7 @@ namespace CinemaTicketBooking.Server.Scaffolds.Models.DataLayer.Repositories
 			parameters.Add("@sex", entity.Sex);
 
 			// Execute query in database
-			return await Connection.ExecuteAsync(new CommandDefinition(query.ToString(), parameters));
+			return await Connection.ExecuteScalarAsync<long>(new CommandDefinition(query.Append(" returning id ").ToString(), parameters));
 		}
 
 		public async Task<long> UpdateUsersMatchingAsync(Users entity, Users updatedValue)
@@ -2291,9 +2291,9 @@ namespace CinemaTicketBooking.Server.Scaffolds.Models.DataLayer.Repositories
 			// Add parameters to collection
 			parameters.Add("@name", entity.Name);
 			parameters.Add("@address", entity.Address);
-			
+
 			// Execute query in database
-			return await Connection.ExecuteAsync(new CommandDefinition(query.ToString(), parameters));
+			return await Connection.ExecuteScalarAsync<long>(new CommandDefinition(query.Append(" returning id ").ToString(), parameters));
 		}
 
 		public async Task<long> UpdateCinemasMatchingAsync(Cinemas entity, Cinemas updatedValue)
