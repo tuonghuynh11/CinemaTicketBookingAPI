@@ -172,5 +172,15 @@ namespace CinemaTicketBooking.Server.Scaffolds.Models.DataLayer.Contracts
 		Task<long> UpdateBillsMatchingAsync(Bills entity, Bills updatedValue);
 
 		Task<long> RemoveBillsMatchingAsync(Bills entity);
+
+		Task<IEnumerable<DiscountsUsers>> SelectDiscountsUsersAsync(int pageSize = 10, int pageNumber = 1);
+
+		Task<IEnumerable<DiscountsUsers>> SelectDiscountsUsersMatchingAsync(DiscountsUsers entity, string? additionalWhere = null, params (string parameterName, object? parameterValue)[] additionalParameters);
+
+		Task<long> InsertDiscountsUsersJustOnceAsync(DiscountsUsers entity);
+
+		Task<long> UpdateDiscountsUsersMatchingAsync(DiscountsUsers entity, DiscountsUsers updatedValue);
+
+		Task<long> RemoveDiscountsUsersMatchingAsync(DiscountsUsers entity);
 	}
 }
