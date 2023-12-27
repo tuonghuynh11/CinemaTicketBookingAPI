@@ -348,10 +348,29 @@ and date between current_date and current_date + interval '7 days'",
 						=> showtimeOnThisDay, (_movieId_, _showtimesOfThisMovie_) =>
 						{
 							Movies thisMovie = movies.First(movie => movie.Id == _movieId_);
-							Debug.WriteLine($"{daysOffset}:{thisMovie.Title}:{_showtimesOfThisMovie_.Count()}");
+							//Debug.WriteLine($"{daysOffset}:{thisMovie.Title}:{_showtimesOfThisMovie_.Count()}");
 							return new CustomMovies()
 							{
-								Showtimes = _showtimesOfThisMovie_.ToList(),
+								Showtimes = _showtimesOfThisMovie_.Select(_showtimeOfThisMovie_
+								=>
+								{
+									Auditoriums _showtimeOfThisMovieAuditorium_ = auditoriums
+									.First(auditorium => auditorium.Id == _showtimeOfThisMovie_.AuditoriumId);
+									return new CustomShowtimes()
+									{
+										Auditorium = _showtimeOfThisMovieAuditorium_,
+										AuditoriumId = _showtimeOfThisMovie_.AuditoriumId,
+										CreatedTimestamp = _showtimeOfThisMovie_.CreatedTimestamp,
+										UpdatedTimestamp = _showtimeOfThisMovie_.UpdatedTimestamp,
+										Id = _showtimeOfThisMovie_.Id,
+										MovieId = _showtimeOfThisMovie_.MovieId,
+										Date = _showtimeOfThisMovie_.Date,
+										StartTime = _showtimeOfThisMovie_.StartTime,
+										CeaseTime = _showtimeOfThisMovie_.CeaseTime,
+										Price = _showtimeOfThisMovie_.Price,
+										Status = _showtimeOfThisMovie_.Status,
+									};
+								}).ToList(),
 								Adult = thisMovie.Adult,
 								BackdropPath = thisMovie.BackdropPath,
 								BelongsToCollection = thisMovie.BelongsToCollection,
@@ -808,7 +827,7 @@ fields/properties then delete them, no fields/properties included `means` matchi
 
 	public class CustomMovies : Movies
 	{
-		public List<Showtimes> Showtimes { get; set; } = null!;
+		public List<CustomShowtimes> Showtimes { get; set; } = null!;
 	}
 
 	public class ShowtimesInEachDayOfOneCinema
