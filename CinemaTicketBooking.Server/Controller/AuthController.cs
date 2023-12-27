@@ -1,6 +1,6 @@
-﻿using CinemaTicketBooking.Server.Scaffolds.Models;
-using CinemaTicketBooking.Server.Scaffolds.Models.DataLayer.Contracts;
+﻿using CinemaTicketBooking.Server.Scaffolds.Models.DataLayer.Contracts;
 using CinemaTicketBooking.Server.Scaffolds.Models.EntityLayer;
+using CinemaTicketBooking.Server.Scaffolds.Models.ModelLayer;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
@@ -16,13 +16,11 @@ namespace CinemaTicketBooking.Server.Controller
 
         private readonly IConfiguration _configuration;
         private readonly IUserRepository userRepository;
-
         public AuthController(IUserRepository userRepository, IConfiguration configuration)
         {
             this.userRepository = userRepository;
             _configuration = configuration;
         }
-
         // Endpoint for registration: api/auth/register
         [HttpPost("registerCustomer")]
         public async Task<ActionResult<Users>> RegisterAsyncCustomer(RegistrationRequestModel model)
@@ -142,8 +140,6 @@ namespace CinemaTicketBooking.Server.Controller
                 return StatusCode(500, "Internal Server Error");
             }
         }
-
-
         // Endpoint for login: api/auth/login
         [HttpPost("login")]
         public async Task<ActionResult<Users>> LoginAsync(LoginRequestModel model)
@@ -173,7 +169,7 @@ namespace CinemaTicketBooking.Server.Controller
                     {
                         message = "Login Successful",
                         username = user.Username,
-                        user_id = user.Id,
+                        user_id = user.Username,
                         user_role = user.Role,
                         login_as = (user.Role == "1") ? "Login as customer" : "Login as employee",
                         token = token
@@ -193,8 +189,6 @@ namespace CinemaTicketBooking.Server.Controller
                 return StatusCode(500, "Internal Server Error");
             }
         }
-
-
         private string GenerateJwtToken(Users user)
         {
             List<Claim> claims = new List<Claim>
@@ -213,6 +207,53 @@ namespace CinemaTicketBooking.Server.Controller
                 );
             var jwt = new JwtSecurityTokenHandler().WriteToken(token);
             return jwt;
+        }
+
+        [HttpPost("changePassword")]
+        public async Task<ActionResult> ChangePasswordAsync(Users users)
+        {
+            try
+            {
+                // Retrieve user from the database
+                var user = await userRepository.FindByUsername(users.Username);
+
+                if (user == null)
+                {
+                    return BadRequest("User not found");
+                }
+
+                // Check if the old password matches
+                if (users.Password != user.Password)
+                {
+                    return BadRequest("Incorrect old password");
+                }
+
+                // Update the password with the new one
+                user.Password = users.NewPassword;
+                userRepository.Update(user);
+
+                return Ok(new { message = "Password changed successfully" });
+            }
+            catch (Exception ex)
+            {
+                // Log the exception for debugging purposes
+                Console.WriteLine(ex.Message);
+
+                // Return a generic error message to the client
+                return StatusCode(500, "Internal Server Error");
+            }
+        }
+
+        [HttpPost("resetPassword")]
+        public async Task<ActionResult> ResetPasswordAsync(Users users)
+        {
+            
+        }
+
+        [HttpGet("checkExistence")]
+        public async Task<ActionResult> CheckExistenceAsync(Users users)
+        {
+            
         }
     }
 }

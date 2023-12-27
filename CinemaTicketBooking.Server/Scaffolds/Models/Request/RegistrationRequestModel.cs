@@ -1,6 +1,6 @@
 ﻿using System.Collections.Specialized;
 
-namespace CinemaTicketBooking.Server.Scaffolds.Models
+namespace CinemaTicketBooking.Server.Scaffolds.Models.ModelLayer
 {
     public class RegistrationRequestModel
     {
@@ -10,7 +10,7 @@ namespace CinemaTicketBooking.Server.Scaffolds.Models
         public string Password { get; set; }
         // Add additional fields as necessary, like Email, FullName, etc.
         public string Fullname { get; set; }
-        
+
         public string PhoneNumber { get; set; }
 
         public string Address { get; set; }
