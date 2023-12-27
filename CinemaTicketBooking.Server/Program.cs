@@ -485,7 +485,7 @@ and date between current_date and current_date + interval '7 days'",
 				{
 					UserId = request.UserId,
 					DiscountId = request.DiscountId,
-					Paid = false,
+					Paid = request.Paid,
 					//MembershipId = request.MembershipId,
 				};
 				long newBillId = await publicRepository.InsertBillsJustOnceAsync(newBill);
@@ -547,6 +547,74 @@ and date between current_date and current_date + interval '7 days'",
 					(new() { Id = reservation.SeatId, })).First());
 				}
 				return billOldResponseBody;
+			});
+
+			app.MapGet("/bills/old/all", async ([FromQuery(Name = "user-id")] int userId,
+				[FromServices] IPublicRepository publicRepository) =>
+			{
+				IEnumerable<Bills> bills = await publicRepository.SelectBillsMatchingAsync
+				(new() { UserId = userId, });
+
+				IEnumerable<Tickets> tickets = await publicRepository.SelectTicketsMatchingAsync
+				(new(), @"bill_id = any(@billIds)", ("@billIds", bills.Select(bill => bill.Id).ToArray()));
+
+				IEnumerable<Orders> orders = await publicRepository.SelectOrdersMatchingAsync
+				(new(), @"bill_id = any(@billIds)", ("@billIds", bills.Select(bill => bill.Id).ToArray()));
+
+				IEnumerable<Showtimes> showtimes = await publicRepository.SelectShowtimesMatchingAsync
+				(new(), @"id = any(@ids)", ("@ids", tickets.Select(ticket => ticket.ShowtimeId).Distinct().ToArray()));
+
+				IEnumerable<Movies> movies = await publicRepository.SelectMoviesMatchingAsync
+				(new(), @"id = any(@ids)", ("@ids", showtimes.Select(showtime => showtime.MovieId).Distinct().ToArray()));
+
+				IEnumerable<Auditoriums> auditoriums = await publicRepository.SelectAuditoriumsMatchingAsync
+				(new(), @"id = any(@ids)", ("@ids", showtimes.Select(showtime => showtime.AuditoriumId).Distinct().ToArray()));
+
+				IEnumerable<Cinemas> cinemas = await publicRepository.SelectCinemasMatchingAsync
+				(new(), @"id = any(@ids)", ("@ids", auditoriums.Select(auditorium => auditorium.CinemaId).Distinct().ToArray()));
+
+				IEnumerable<Reservations> reservations = await publicRepository.SelectReservationsMatchingAsync
+				(new(), @"showtime_id = any(@showtimeIds) and ticket_id = any(@ticketIds)",
+				("@showtimeIds", showtimes.Select(showtime => showtime.Id).ToArray()),
+				("@ticketIds", tickets.Select(ticket => ticket.Id).ToArray()));
+
+				BillOldAllResponseBody billOldAllResponseBody = new();
+				billOldAllResponseBody.UserId = userId;
+				billOldAllResponseBody.Result = new();
+
+				foreach (Bills bill in bills)
+				{
+					CustomBillOldResponseBody customBillOldResponseBody = new();
+					customBillOldResponseBody.UserId = bill.UserId!.Value;
+					if (bill.DiscountId != null)
+						customBillOldResponseBody.Discount = (await publicRepository.SelectDiscountsMatchingAsync
+						(new() { Id = bill.DiscountId, })).First();
+					IEnumerable<Tickets> ticketsOfThisBill = tickets.Where
+					(ticket => ticket.BillId == bill.Id);
+					customBillOldResponseBody.TicketIds = ticketsOfThisBill.Select(ticket => ticket.Id!.Value).ToList();
+					customBillOldResponseBody.TicketsCost = ticketsOfThisBill.Sum(ticket => ticket.Price)!.Value;
+					customBillOldResponseBody.OrdersCost = orders.Where
+					(order => order.BillId == bill.Id).Sum(order => order.Price)!.Value;
+					customBillOldResponseBody.Showtime = showtimes.First
+					(showtime => showtime.Id == ticketsOfThisBill.First().ShowtimeId);
+					customBillOldResponseBody.Auditorium = auditoriums.First(auditorium
+					=> auditorium.Id == customBillOldResponseBody.Showtime.AuditoriumId);
+					customBillOldResponseBody.Cinema = cinemas.First(cinema =>
+					cinema.Id == customBillOldResponseBody.Auditorium.CinemaId);
+					customBillOldResponseBody.Movie = movies.First(movie =>
+					movie.Id == customBillOldResponseBody.Showtime.MovieId);
+					customBillOldResponseBody.Seats = new();
+					foreach (Tickets ticket in ticketsOfThisBill)
+					{
+						Reservations reservationOfThisTicket = reservations.First
+						(reservation => reservation.ShowtimeId == ticket.ShowtimeId && reservation.TicketId == ticket.Id);
+						customBillOldResponseBody.Seats.Add((await publicRepository.SelectSeatsMatchingAsync
+						(new() { Id = reservationOfThisTicket.SeatId, })).First());
+					}
+					billOldAllResponseBody.Result.Add(customBillOldResponseBody);
+				}
+
+				return billOldAllResponseBody;
 			});
 
 #pragma warning disable ASP0014
@@ -654,7 +722,7 @@ and date between current_date and current_date + interval '7 days'",
 					UPDATE_ByMatchingPropertiesDataMethod: publicRepository.UpdateMembershipsMatchingAsync,
 					DELETE_ByMatchingPropertiesDataMethod: publicRepository.RemoveMembershipsMatchingAsync);
 
-					endpoints.MapTogether<DiscountsUsers, DiscountsUsers>("/discounts-users",
+					endpoints.MapTogether<DiscountsUsers, ExtendedDiscountsUsers>("/discounts-users",
 					SELECT_EntireByPageSizeByPageNumberDataMethod: publicRepository.SelectDiscountsUsersAsync,
 					SELECT_ByMatchingPropertiesDataMethod: publicRepository.SelectDiscountsUsersMatchingAsync,
 					INSERT_JustOneDataMethod: publicRepository.InsertDiscountsUsersJustOnceAsync,
@@ -805,6 +873,7 @@ fields/properties then delete them, no fields/properties included `means` matchi
 		public long CinemaId { get; set; }
 		public List<long> SeatIds { get; set; } = null!;
 		public List<CustomMenus> Menus { get; set; } = null!;
+		public bool Paid { get; set; }
 	}
 
 	public class BillNewResponseBody
@@ -823,6 +892,19 @@ fields/properties then delete them, no fields/properties included `means` matchi
 		public Showtimes Showtime { get; set; } = null!;
 		public List<Seats> Seats { get; set; } = null!;
 		public List<long> TicketIds { get; set; } = null!;
+	}
+
+	public class CustomBillOldResponseBody : BillOldResponseBody
+	{
+		public Cinemas Cinema { get; set; } = null!;
+		public Auditoriums Auditorium { get; set; } = null!;
+		public Movies Movie { get; set; } = null!;
+	}
+
+	public class BillOldAllResponseBody
+	{
+		public long UserId { get; set; }
+		public List<CustomBillOldResponseBody> Result { get; set; }
 	}
 
 	public class CustomMovies : Movies

@@ -18,4 +18,14 @@ namespace CinemaTicketBooking.Server.Scaffolds.Models.EntityLayer
 		[JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
 		public bool? Usage { get; set; }
 	}
+
+	public class ExtendedDiscountsUsers : DiscountsUsers
+	{
+		public ExtendedDiscountsUsers() : base()
+		{
+		}
+
+		[JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+		public Discounts? Discount { get; set; }
+	}
 }
