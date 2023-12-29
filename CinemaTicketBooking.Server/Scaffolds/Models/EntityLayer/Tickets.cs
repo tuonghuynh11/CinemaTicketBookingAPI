@@ -25,5 +25,8 @@ namespace CinemaTicketBooking.Server.Scaffolds.Models.EntityLayer
 
 		[JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
 		public decimal? Price { get; set; }
+
+		[JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+		public bool? Checked { get; set; }
 	}
 }

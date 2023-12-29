@@ -417,7 +417,9 @@ namespace CinemaTicketBooking.Server.Scaffolds.Models.DataLayer.Repositories
 			query.Append("   and description = @description ");
 			if (entity.ImageUrl != null)
 			query.Append("   and image_url = @imageUrl ");
-			
+			if (additionalWhere != null)
+			query.Append($"  and {additionalWhere} ");
+
 			// Create parameters collection
 			var parameters = new DynamicParameters();
 			
@@ -427,6 +429,10 @@ namespace CinemaTicketBooking.Server.Scaffolds.Models.DataLayer.Repositories
 			parameters.Add("@category", entity.Category);
 			parameters.Add("@description", entity.Description);
 			parameters.Add("@imageUrl", entity.ImageUrl);
+			foreach ((string parameterName, object? parameterValue) in additionalParameters)
+			{
+				parameters.Add(parameterName, parameterValue);
+			}
 
 			// Retrieve result from database and convert to entity class
 			return await Connection.QueryAsync<FoodAndDrinks>(new CommandDefinition(query.ToString(), parameters));
@@ -723,7 +729,8 @@ namespace CinemaTicketBooking.Server.Scaffolds.Models.DataLayer.Repositories
 			query.Append(" select ");
 			query.Append("            id Id, ");
 			query.Append("   showtime_id ShowtimeId, ");
-			query.Append("   bill_id BillId, ");
+			query.Append("   bill_id BillId , ");
+			query.Append("   checked Checked, ");
 			query.Append("   created_timestamp CreatedTimestamp, ");
 			query.Append("   updated_timestamp UpdatedTimestamp, ");
 			query.Append("     price  Price  ");
@@ -754,7 +761,8 @@ namespace CinemaTicketBooking.Server.Scaffolds.Models.DataLayer.Repositories
 			query.Append(" select ");
 			query.Append("            id Id, ");
 			query.Append("   showtime_id ShowtimeId, ");
-			query.Append("   bill_id BillId, ");
+			query.Append("   bill_id BillId , ");
+			query.Append("   checked Checked, ");
 			query.Append("   created_timestamp CreatedTimestamp, ");
 			query.Append("   updated_timestamp UpdatedTimestamp, ");
 			query.Append("     price  Price  ");
@@ -769,13 +777,16 @@ namespace CinemaTicketBooking.Server.Scaffolds.Models.DataLayer.Repositories
 			query.Append("   and showtime_id = @showtimeId ");
 			if (entity.    BillId != null)
 			query.Append("   and     bill_id =     @billId ");
+			if (entity.Checked  != null)
+			query.Append("   and checked = @checked ");
 			if (additionalWhere != null)
-			query.Append($"  and {additionalWhere} ");
+			query.Append($"  and {additionalWhere}  ");
 
 			// Create parameters collection
 			var parameters = new DynamicParameters();
 
 			// Add parameters to collection
+			parameters.Add("@checked", entity.Checked);
 			parameters.Add("@price", entity.Price);
 			parameters.Add(          "@id", entity.Id);
 			parameters.Add(  "@showtimeId", entity.ShowtimeId);
@@ -799,19 +810,22 @@ namespace CinemaTicketBooking.Server.Scaffolds.Models.DataLayer.Repositories
 			query.Append("   ( ");
 			query.Append("       showtime_id, ");
 			query.Append("           bill_id, ");
+			query.Append("           checked, ");
 			query.Append("       price  ");
 			query.Append("   ) ");
 			query.Append(" values ");
 			query.Append("   ( ");
 			query.Append("       @showtimeId, ");
 			query.Append("           @billId, ");
+			query.Append("           @checked, ");
 			query.Append("       @price  ");
 			query.Append("   ) ");
 			
 			// Create parameters collection
 			var parameters = new DynamicParameters();
-			
+
 			// Add parameters to collection
+			parameters.Add("@checked", entity.Checked);
 			parameters.Add(  "@showtimeId", entity.ShowtimeId);
 			parameters.Add(      "@billId", entity.    BillId);
 			parameters.Add("@price", entity.Price);
@@ -838,6 +852,8 @@ namespace CinemaTicketBooking.Server.Scaffolds.Models.DataLayer.Repositories
 			query.Append("   ,       bill_id =       @updatedBillId ");
 			if (updatedValue.Price != null)
 			query.Append("   ,   price =   @updatedPrice ");
+			if (updatedValue.Checked != null)
+			query.Append("   ,   checked =   @updatedChecked ");
 			query.Append(" where true ");
 			if (entity.Price != null)
 			query.Append("   and      price = @price ");
@@ -847,16 +863,20 @@ namespace CinemaTicketBooking.Server.Scaffolds.Models.DataLayer.Repositories
 			query.Append("   and showtime_id = @showtimeId ");
 			if (entity.    BillId != null)
 			query.Append("   and     bill_id =     @billId ");
+			if (entity.Checked  != null)
+			query.Append("   and checked = @checked ");
 						
 			// Create parameters collection
 			var parameters = new DynamicParameters();
-			
+
 			// Add parameters to collection
+			parameters.Add("@checked", entity.Checked);
 			parameters.Add(  "@showtimeId", entity.  ShowtimeId);
 			parameters.Add(      "@billId", entity.      BillId);
 			parameters.Add(          "@id", entity.Id);
 			parameters.Add("@price", entity.Price);
 
+			parameters.Add("@updatedChecked", updatedValue.Checked);
 			parameters.Add(  "@updatedShowtimeId", updatedValue.ShowtimeId);
 			parameters.Add(      "@updatedBillId", updatedValue.    BillId);
 			parameters.Add("@updatedId"   , updatedValue.Id);
@@ -881,11 +901,14 @@ namespace CinemaTicketBooking.Server.Scaffolds.Models.DataLayer.Repositories
 			query.Append("   and   showtime_id =   @showtimeId ");
 			if (entity.    BillId != null)
 			query.Append("   and       bill_id =       @billId ");
+			if (entity.Checked  != null)
+			query.Append("   and checked = @checked ");
 			
 			// Create parameters collection
 			var parameters = new DynamicParameters();
-			
+
 			// Add parameters to collection
+			parameters.Add("@checked", entity.Checked);
 			parameters.Add(  "@showtimeId", entity.  ShowtimeId);
 			parameters.Add(      "@billId", entity.      BillId);
 			parameters.Add(          "@id", entity.Id);
