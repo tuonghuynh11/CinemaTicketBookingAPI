@@ -4,6 +4,7 @@ using CinemaTicketBooking.Server.Scaffolds.Models.ModelLayer;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using System;
+using System.Data;
 using System.IdentityModel.Tokens.Jwt;
 using System.Runtime.InteropServices;
 using System.Security.Claims;
@@ -38,13 +39,11 @@ namespace CinemaTicketBooking.Server.Controller
                 // Check if the request is valid
                 if (string.IsNullOrWhiteSpace(model.Username) ||
                     string.IsNullOrWhiteSpace(model.Password) ||
-                    string.IsNullOrWhiteSpace(model.Fullname) ||
-                    string.IsNullOrWhiteSpace(model.PhoneNumber) ||
-                    string.IsNullOrWhiteSpace(model.Address) ||
-                    string.IsNullOrWhiteSpace(model.Sex))
+                    (string.IsNullOrWhiteSpace(model.Email) && string.IsNullOrWhiteSpace(model.PhoneNumber)))
                 {
                     return BadRequest("Please fill in all required fields.");
                 }
+
 
                 // Check if the username already exists
                 var existingUser = await userRepository.FindByUsername(model.Username);
@@ -53,14 +52,29 @@ namespace CinemaTicketBooking.Server.Controller
                     return BadRequest("Username already exists.");
                 }
 
+                // Check if the email or phone number already exists
+                if (!string.IsNullOrWhiteSpace(model.Email))
+                {
+                    var existingEmail = await userRepository.FindByEmail(model.Email);
+                    if (existingEmail != null)
+                    {
+                        return BadRequest("Email already exists.");
+                    }
+                }
+
+                if (!string.IsNullOrWhiteSpace(model.PhoneNumber))
+                {
+                    var existingPhoneNumber = await userRepository.FindByPhoneNumber(model.PhoneNumber);
+                    if (existingPhoneNumber != null)
+                    {
+                        return BadRequest("Phone Number already exists.");
+                    }
+                }
                 var newUser = new Users
                 {
                     Username = model.Username,
                     Password = model.Password, // Note: In a production environment, you should hash the password
-                    FullName = model.Fullname,
                     PhoneNumber = model.PhoneNumber,
-                    Address = model.Address,
-                    Sex = model.Sex,
                     Email = model.Email,
                     Role = "1"
                 };
@@ -95,35 +109,43 @@ namespace CinemaTicketBooking.Server.Controller
                 // Check if the request is valid
                 if (string.IsNullOrWhiteSpace(model.Username) ||
                     string.IsNullOrWhiteSpace(model.Password) ||
-                    string.IsNullOrWhiteSpace(model.Fullname) ||
-                    string.IsNullOrWhiteSpace(model.PhoneNumber) ||
-                    string.IsNullOrWhiteSpace(model.Address) ||
-                    string.IsNullOrWhiteSpace(model.Sex))
+                    (string.IsNullOrWhiteSpace(model.Email) && string.IsNullOrWhiteSpace(model.PhoneNumber)))
                 {
                     return BadRequest("Please fill in all required fields.");
                 }
 
                 // Check if the username already exists
                 var existingUser = await userRepository.FindByUsername(model.Username);
-                var existingPhoneNumber = await userRepository.FindByPhoneNumber(model.PhoneNumber);
-                if (existingUser != null )
+                if (existingUser != null)
                 {
                     return BadRequest("Username already exists.");
                 }
-                if( existingPhoneNumber != null)
+
+                // Check if the email or phone number already exists
+                if (!string.IsNullOrWhiteSpace(model.Email))
                 {
-                    return BadRequest("Phone Number already exists.");
-                }    
+                    var existingEmail = await userRepository.FindByEmail(model.Email);
+                    if (existingEmail != null)
+                    {
+                        return BadRequest("Email already exists.");
+                    }
+                }
+
+                if (!string.IsNullOrWhiteSpace(model.PhoneNumber))
+                {
+                    var existingPhoneNumber = await userRepository.FindByPhoneNumber(model.PhoneNumber);
+                    if (existingPhoneNumber != null)
+                    {
+                        return BadRequest("Phone Number already exists.");
+                    }
+                }
                 var newUser = new Users
                 {
                     Username = model.Username,
                     Password = model.Password, // Note: In a production environment, you should hash the password
-                    FullName = model.Fullname,
                     PhoneNumber = model.PhoneNumber,
-                    Address = model.Address,
-                    Sex = model.Sex,
                     Email = model.Email,
-                    Role = "2"
+                    Role = model.Role
                 };
 
                 // Optionally, hash the password before storing it
