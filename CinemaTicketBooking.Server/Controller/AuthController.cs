@@ -1,11 +1,14 @@
-﻿using CinemaTicketBooking.Server.Scaffolds.Models;
-using CinemaTicketBooking.Server.Scaffolds.Models.DataLayer.Contracts;
+﻿using CinemaTicketBooking.Server.Scaffolds.Models.DataLayer.Contracts;
 using CinemaTicketBooking.Server.Scaffolds.Models.EntityLayer;
+using CinemaTicketBooking.Server.Scaffolds.Models.ModelLayer;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
+using System;
 using System.IdentityModel.Tokens.Jwt;
+using System.Runtime.InteropServices;
 using System.Security.Claims;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace CinemaTicketBooking.Server.Controller
 {
@@ -16,13 +19,11 @@ namespace CinemaTicketBooking.Server.Controller
 
         private readonly IConfiguration _configuration;
         private readonly IUserRepository userRepository;
-
         public AuthController(IUserRepository userRepository, IConfiguration configuration)
         {
             this.userRepository = userRepository;
             _configuration = configuration;
         }
-
         // Endpoint for registration: api/auth/register
         [HttpPost("registerCustomer")]
         public async Task<ActionResult<Users>> RegisterAsyncCustomer(RegistrationRequestModel model)
@@ -60,6 +61,7 @@ namespace CinemaTicketBooking.Server.Controller
                     PhoneNumber = model.PhoneNumber,
                     Address = model.Address,
                     Sex = model.Sex,
+                    Email = model.Email,
                     Role = "1"
                 };
 
@@ -120,6 +122,7 @@ namespace CinemaTicketBooking.Server.Controller
                     PhoneNumber = model.PhoneNumber,
                     Address = model.Address,
                     Sex = model.Sex,
+                    Email = model.Email,
                     Role = "2"
                 };
 
@@ -140,8 +143,6 @@ namespace CinemaTicketBooking.Server.Controller
                 return StatusCode(500, "Internal Server Error");
             }
         }
-
-
         // Endpoint for login: api/auth/login
         [HttpPost("login")]
         public async Task<ActionResult<Users>> LoginAsync(LoginRequestModel model)
@@ -171,9 +172,9 @@ namespace CinemaTicketBooking.Server.Controller
                     {
                         message = "Login Successful",
                         username = user.Username,
-                        user_id = user.Id,
+                        user_id = user.Username,
                         user_role = user.Role,
-                        login_as = (user.Role == "1") ? "Login as customer" : "Login as employee",
+                        login_as = GetLoginAsMessage(user.Role),
                         token = token
                     });
                 }
@@ -191,8 +192,23 @@ namespace CinemaTicketBooking.Server.Controller
                 return StatusCode(500, "Internal Server Error");
             }
         }
-
-
+        // Hàm để lấy giá trị cho login_as
+        private string GetLoginAsMessage(string role)
+        {
+            switch (role)
+            {
+                case "1":
+                    return "Login as customer";
+                case "2":
+                    return "Login as staff";
+                case "3":
+                    return "Login as manager";
+                case "4":
+                    return "Login as admin";
+                default:
+                    return "Unknown role";
+            }
+        }
         private string GenerateJwtToken(Users user)
         {
             List<Claim> claims = new List<Claim>
@@ -212,5 +228,86 @@ namespace CinemaTicketBooking.Server.Controller
             var jwt = new JwtSecurityTokenHandler().WriteToken(token);
             return jwt;
         }
+
+        // ... (existing code)
+
+        [HttpGet("forgot-password")]
+        public async Task<ActionResult> ForgotPasswordAsync(
+        [FromQuery] string username,
+        [FromQuery] string newPassword,
+        [FromQuery] string confirmPassword)
+        {
+            try
+            {
+                var user = await userRepository.FindByUsername(username);
+
+                if (user == null)
+                {
+                    return BadRequest("User not found");
+                }
+
+                // Check if new password and confirm password match
+                if (newPassword != confirmPassword)
+                {
+                    return BadRequest("New password and confirm password do not match");
+                }
+
+                user.Password = newPassword;
+                await userRepository.UpdatePassword(username, newPassword);
+                return Ok(new { message = "Password reset initiated successfully" });
+            }
+            catch (Exception ex)
+            {
+                // Log the exception for debugging purposes
+                Console.WriteLine(ex.Message);
+
+                // Return a generic error message to the client
+                return StatusCode(500, "Internal Server Error");
+            }
+        }
+        [HttpGet("reset-password")]
+        public async Task<ActionResult> ResetPasswordAsync(
+        [FromQuery] string username,
+        [FromQuery] string oldPassword,
+        [FromQuery] string newPassword,
+        [FromQuery] string confirmPassword)
+        {
+            try
+            {
+                var user = await userRepository.FindByUsername(username);
+
+                if (user == null)
+                {
+                    return BadRequest("User not found");
+                }
+
+                // Check if old password matches
+                if (oldPassword != user.Password)
+                {
+                    return BadRequest("Incorrect old password");
+                }
+
+                // Check if new password and confirm password match
+                if (newPassword != confirmPassword)
+                {
+                    return BadRequest("New password and confirm password do not match");
+                }
+
+                // Update the password with the new one
+                user.Password = newPassword;
+                await userRepository.UpdatePassword(username, newPassword);
+
+                return Ok(new { message = "Password changed successfully" });
+            }
+            catch (Exception ex)
+            {
+                // Log the exception for debugging purposes
+                Console.WriteLine(ex.Message);
+
+                // Return a generic error message to the client
+                return StatusCode(500, "Internal Server Error");
+            }
+        }
+
     }
 }
