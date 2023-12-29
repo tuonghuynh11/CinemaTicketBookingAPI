@@ -32,6 +32,38 @@ public class UserRepository : Repository, IUserRepository
         var query = "SELECT * FROM public.users WHERE phone_number = @phoneNumber";
         return await Connection.QueryFirstOrDefaultAsync<Users>(query, new { PhoneNumber = phoneNumber });
     }
+    public async Task<Users> FindByEmail(string email)
+    {
+        var query = "SELECT * FROM public.users WHERE email = @Email";
+        return await Connection.QueryFirstOrDefaultAsync<Users>(query, new { Email = email });
+    }
+    public async Task<Users> UpdatePassword(string username, string newPassword)
+    {
+        try
+        {
+            var updateQuery = "UPDATE public.users SET password = @Password " +
+                              "WHERE username = @Username";
 
+            // Update the password
+            await Connection.ExecuteAsync(updateQuery, new { Password = newPassword, Username = username });
+
+            // Fetch the updated user
+            var selectQuery = "SELECT * FROM public.users WHERE username = @Username";
+            return await Connection.QueryFirstOrDefaultAsync<Users>(selectQuery, new { Username = username });
+        }
+        catch (Exception ex)
+        {
+            // Log the exception for debugging purposes
+            Console.WriteLine(ex.Message);
+
+            // You might want to throw the exception or handle it accordingly
+            throw;
+        }
+    }
+    public async Task<Users> FindByUsernameOrPhoneNumberOrEmail(string identifier)
+    {
+        var query = "SELECT * FROM public.users WHERE username = @Identifier OR phone_number = @Identifier OR email = @Identifier";
+        return await Connection.QueryFirstOrDefaultAsync<Users>(query, new { Identifier = identifier });
+    }
 }
 

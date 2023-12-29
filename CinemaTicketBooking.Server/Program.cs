@@ -244,7 +244,7 @@ namespace CinemaTicketBooking.Server
 				return responseBodyTop10MoviesYear;
 			});
 
-			app.MapGet("/exist/email",
+            app.MapGet("/exist/email",
 			async ([FromQuery(Name = "email")] string email, [FromServices] IPublicRepository publicRepository) =>
 			{
 				return new ResponseBodyExistEmail()

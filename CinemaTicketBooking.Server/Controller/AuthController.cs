@@ -3,9 +3,12 @@ using CinemaTicketBooking.Server.Scaffolds.Models.EntityLayer;
 using CinemaTicketBooking.Server.Scaffolds.Models.ModelLayer;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
+using System;
 using System.IdentityModel.Tokens.Jwt;
+using System.Runtime.InteropServices;
 using System.Security.Claims;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace CinemaTicketBooking.Server.Controller
 {
@@ -171,7 +174,7 @@ namespace CinemaTicketBooking.Server.Controller
                         username = user.Username,
                         user_id = user.Username,
                         user_role = user.Role,
-                        login_as = (user.Role == "1") ? "Login as customer" : "Login as employee",
+                        login_as = GetLoginAsMessage(user.Role),
                         token = token
                     });
                 }
@@ -187,6 +190,23 @@ namespace CinemaTicketBooking.Server.Controller
 
                 // Return a generic error message to the client
                 return StatusCode(500, "Internal Server Error");
+            }
+        }
+        // Hàm để lấy giá trị cho login_as
+        private string GetLoginAsMessage(string role)
+        {
+            switch (role)
+            {
+                case "1":
+                    return "Login as customer";
+                case "2":
+                    return "Login as staff";
+                case "3":
+                    return "Login as manager";
+                case "4":
+                    return "Login as admin";
+                default:
+                    return "Unknown role";
             }
         }
         private string GenerateJwtToken(Users user)
@@ -209,28 +229,73 @@ namespace CinemaTicketBooking.Server.Controller
             return jwt;
         }
 
-        [HttpPost("changePassword")]
-        public async Task<ActionResult> ChangePasswordAsync(Users users)
+        // ... (existing code)
+
+        [HttpGet("forgot-password")]
+        public async Task<ActionResult> ForgotPasswordAsync(
+        [FromQuery] string username,
+        [FromQuery] string newPassword,
+        [FromQuery] string confirmPassword)
         {
             try
             {
-                // Retrieve user from the database
-                var user = await userRepository.FindByUsername(users.Username);
+                var user = await userRepository.FindByUsername(username);
 
                 if (user == null)
                 {
                     return BadRequest("User not found");
                 }
 
-                // Check if the old password matches
-                if (users.Password != user.Password)
+                // Check if new password and confirm password match
+                if (newPassword != confirmPassword)
+                {
+                    return BadRequest("New password and confirm password do not match");
+                }
+
+                user.Password = newPassword;
+                await userRepository.UpdatePassword(username, newPassword);
+                return Ok(new { message = "Password reset initiated successfully" });
+            }
+            catch (Exception ex)
+            {
+                // Log the exception for debugging purposes
+                Console.WriteLine(ex.Message);
+
+                // Return a generic error message to the client
+                return StatusCode(500, "Internal Server Error");
+            }
+        }
+        [HttpGet("reset-password")]
+        public async Task<ActionResult> ResetPasswordAsync(
+        [FromQuery] string username,
+        [FromQuery] string oldPassword,
+        [FromQuery] string newPassword,
+        [FromQuery] string confirmPassword)
+        {
+            try
+            {
+                var user = await userRepository.FindByUsername(username);
+
+                if (user == null)
+                {
+                    return BadRequest("User not found");
+                }
+
+                // Check if old password matches
+                if (oldPassword != user.Password)
                 {
                     return BadRequest("Incorrect old password");
                 }
 
+                // Check if new password and confirm password match
+                if (newPassword != confirmPassword)
+                {
+                    return BadRequest("New password and confirm password do not match");
+                }
+
                 // Update the password with the new one
-                user.Password = users.NewPassword;
-                userRepository.Update(user);
+                user.Password = newPassword;
+                await userRepository.UpdatePassword(username, newPassword);
 
                 return Ok(new { message = "Password changed successfully" });
             }
@@ -244,16 +309,5 @@ namespace CinemaTicketBooking.Server.Controller
             }
         }
 
-        [HttpPost("resetPassword")]
-        public async Task<ActionResult> ResetPasswordAsync(Users users)
-        {
-            
-        }
-
-        [HttpGet("checkExistence")]
-        public async Task<ActionResult> CheckExistenceAsync(Users users)
-        {
-            
-        }
     }
 }
