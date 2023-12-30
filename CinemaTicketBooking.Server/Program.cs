@@ -571,7 +571,13 @@ and date between current_date and current_date + interval '7 days'",
 				IEnumerable<Tickets> tickets = await publicRepository.SelectTicketsMatchingAsync
 				(new() { Checked = ticketsChecked, }, @"bill_id = any(@billIds)", ("@billIds", bills.Select(bill => bill.Id).ToArray()));
 
-
+				if (!tickets.Any())
+				{
+					BillOldAllResponseBody emptyBillOldAllResponseBody = new();
+					emptyBillOldAllResponseBody.UserId = userId;
+					emptyBillOldAllResponseBody.Result = new();
+					return emptyBillOldAllResponseBody;
+				}
 
 				IEnumerable<Orders> orders = await publicRepository.SelectOrdersMatchingAsync
 				(new(), @"bill_id = any(@billIds)", ("@billIds", bills.Select(bill => bill.Id).ToArray()));
