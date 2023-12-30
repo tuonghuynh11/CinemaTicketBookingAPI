@@ -562,19 +562,20 @@ and date between current_date and current_date + interval '7 days'",
 			});
 
 			app.MapGet("/bills/old/all", async ([FromQuery(Name = "user-id")] int userId,
-				[FromServices] IPublicRepository publicRepository) =>
+				[FromServices] IPublicRepository publicRepository,
+				[FromQuery(Name = "tickets-checked")] bool? ticketsChecked) =>
 			{
 				IEnumerable<Bills> bills = await publicRepository.SelectBillsMatchingAsync
 				(new() { UserId = userId, });
 
 				IEnumerable<Tickets> tickets = await publicRepository.SelectTicketsMatchingAsync
-				(new(), @"bill_id = any(@billIds)", ("@billIds", bills.Select(bill => bill.Id).ToArray()));
+				(new() { Checked = ticketsChecked, }, @"bill_id = any(@billIds)", ("@billIds", bills.Select(bill => bill.Id).ToArray()));
 
 				IEnumerable<Orders> orders = await publicRepository.SelectOrdersMatchingAsync
 				(new(), @"bill_id = any(@billIds)", ("@billIds", bills.Select(bill => bill.Id).ToArray()));
 
 				IEnumerable<FoodAndDrinks> foodAndDrinks = await publicRepository.SelectFoodAndDrinksMatchingAsync
-				(new(), @"id = any(@ids)", ("@ids", orders.Select(order=>order.FoodAndDrinkId).Distinct().ToArray()));
+				(new(), @"id = any(@ids)", ("@ids", orders.Select(order => order.FoodAndDrinkId).Distinct().ToArray()));
 
 				IEnumerable<Showtimes> showtimes = await publicRepository.SelectShowtimesMatchingAsync
 				(new(), @"id = any(@ids)", ("@ids", tickets.Select(ticket => ticket.ShowtimeId).Distinct().ToArray()));
@@ -648,6 +649,96 @@ and date between current_date and current_date + interval '7 days'",
 
 				return billOldAllResponseBody;
 			});
+
+
+			//app.MapGet("/tickets/unchecked", async ([FromQuery(Name = "user-id")] int userId,
+			//	[FromServices] IPublicRepository publicRepository) =>
+			//{
+			//	IEnumerable<Bills> bills = await publicRepository.SelectBillsMatchingAsync
+			//	(new() { UserId = userId, });
+
+			//	IEnumerable<Tickets> tickets = await publicRepository.SelectTicketsMatchingAsync
+			//	(new() { Checked = false, }, @"bill_id = any(@billIds)", ("@billIds", bills.Select(bill => bill.Id).ToArray()));
+
+			//	IEnumerable<Orders> orders = await publicRepository.SelectOrdersMatchingAsync
+			//	(new(), @"bill_id = any(@billIds)", ("@billIds", bills.Select(bill => bill.Id).ToArray()));
+
+			//	IEnumerable<FoodAndDrinks> foodAndDrinks = await publicRepository.SelectFoodAndDrinksMatchingAsync
+			//	(new(), @"id = any(@ids)", ("@ids", orders.Select(order => order.FoodAndDrinkId).Distinct().ToArray()));
+
+			//	IEnumerable<Showtimes> showtimes = await publicRepository.SelectShowtimesMatchingAsync
+			//	(new(), @"id = any(@ids)", ("@ids", tickets.Select(ticket => ticket.ShowtimeId).Distinct().ToArray()));
+
+			//	IEnumerable<Movies> movies = await publicRepository.SelectMoviesMatchingAsync
+			//	(new(), @"id = any(@ids)", ("@ids", showtimes.Select(showtime => showtime.MovieId).Distinct().ToArray()));
+
+			//	IEnumerable<Auditoriums> auditoriums = await publicRepository.SelectAuditoriumsMatchingAsync
+			//	(new(), @"id = any(@ids)", ("@ids", showtimes.Select(showtime => showtime.AuditoriumId).Distinct().ToArray()));
+
+			//	IEnumerable<Cinemas> cinemas = await publicRepository.SelectCinemasMatchingAsync
+			//	(new(), @"id = any(@ids)", ("@ids", auditoriums.Select(auditorium => auditorium.CinemaId).Distinct().ToArray()));
+
+			//	IEnumerable<Reservations> reservations = await publicRepository.SelectReservationsMatchingAsync
+			//	(new(), @"showtime_id = any(@showtimeIds) and ticket_id = any(@ticketIds)",
+			//	("@showtimeIds", showtimes.Select(showtime => showtime.Id).ToArray()),
+			//	("@ticketIds", tickets.Select(ticket => ticket.Id).ToArray()));
+
+			//	BillOldAllResponseBody billOldAllResponseBody = new();
+			//	billOldAllResponseBody.UserId = userId;
+			//	billOldAllResponseBody.Result = new();
+
+			//	foreach (Bills bill in bills)
+			//	{
+			//		CustomBillOldResponseBody customBillOldResponseBody = new();
+			//		customBillOldResponseBody.UserId = bill.UserId!.Value;
+			//		if (bill.DiscountId != null)
+			//			customBillOldResponseBody.Discount = (await publicRepository.SelectDiscountsMatchingAsync
+			//			(new() { Id = bill.DiscountId, })).First();
+			//		IEnumerable<Tickets> ticketsOfThisBill = tickets.Where
+			//		(ticket => ticket.BillId == bill.Id);
+			//		IEnumerable<CustomOrders> ordersOfThisBill = orders.Where
+			//		(order => order.BillId == bill.Id).Select(order => new CustomOrders()
+			//		{
+			//			BillId = order.BillId,
+			//			CinemaId = order.CinemaId,
+			//			FoodAndDrinkId = order.FoodAndDrinkId,
+			//			Id = order.Id,
+			//			Price = order.Price,
+			//			ServingSize = order.ServingSize,
+			//			CreatedTimestamp = order.CreatedTimestamp,
+			//			UpdatedTimestamp = order.UpdatedTimestamp,
+			//			FoodAndDrinks = foodAndDrinks.First(foodAndDrink => foodAndDrink.Id == order.FoodAndDrinkId),
+			//		});
+			//		customBillOldResponseBody.TicketIds = ticketsOfThisBill.Select(ticket => ticket.Id!.Value).ToList();
+			//		customBillOldResponseBody.TicketsCost = ticketsOfThisBill.Sum(ticket => ticket.Price)!.Value;
+			//		customBillOldResponseBody.OrdersCost = ordersOfThisBill.Sum(order => order.Price)!.Value;
+			//		customBillOldResponseBody.Showtime = showtimes.First
+			//		(showtime => showtime.Id == ticketsOfThisBill.First().ShowtimeId);
+			//		customBillOldResponseBody.Auditorium = auditoriums.First(auditorium
+			//		=> auditorium.Id == customBillOldResponseBody.Showtime.AuditoriumId);
+			//		customBillOldResponseBody.Cinema = cinemas.First(cinema =>
+			//		cinema.Id == customBillOldResponseBody.Auditorium.CinemaId);
+			//		customBillOldResponseBody.Movie = movies.First(movie =>
+			//		movie.Id == customBillOldResponseBody.Showtime.MovieId);
+			//		customBillOldResponseBody.Seats = new();
+			//		customBillOldResponseBody.Orders = ordersOfThisBill.ToList();
+			//		if (bill.DiscountId != null)
+			//			customBillOldResponseBody.DiscountCost = (
+			//			customBillOldResponseBody.TicketsCost +
+			//			customBillOldResponseBody.OrdersCost) * customBillOldResponseBody.Discount!.Percentage!.Value / 100;
+			//		foreach (Tickets ticket in ticketsOfThisBill)
+			//		{
+			//			Reservations reservationOfThisTicket = reservations.First
+			//			(reservation => reservation.ShowtimeId == ticket.ShowtimeId && reservation.TicketId == ticket.Id);
+			//			customBillOldResponseBody.Seats.Add((await publicRepository.SelectSeatsMatchingAsync
+			//			(new() { Id = reservationOfThisTicket.SeatId, })).First());
+			//		}
+			//		billOldAllResponseBody.Result.Add(customBillOldResponseBody);
+			//	}
+
+			//	return billOldAllResponseBody;
+			//});
+
 
 #pragma warning disable ASP0014
 			app.UseEndpoints(endpoints =>
@@ -1034,4 +1125,9 @@ fields/properties then delete them, no fields/properties included `means` matchi
 		public decimal TotalRevenue { get; set; }
 		public List<StatisticRevenueEachMonth> RevenueEachMonths { get; set; } = null!;
 	}
+
+	//public class ResponseBodyTickets
+	//{
+
+	//}
 }
