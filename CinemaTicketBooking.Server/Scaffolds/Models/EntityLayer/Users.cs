@@ -54,18 +54,4 @@ namespace CinemaTicketBooking.Server.Scaffolds.Models.EntityLayer
         }
     }
 
-    [JsonConverter(typeof(JsonStringEnumConverter))]
-    public enum RoleEnum
-    {
-        [EnumMember(Value = "Customer")]
-        Customer = 1,
-        [EnumMember(Value = "Staff")]
-        Staff = 2,
-        [EnumMember(Value = "Manager")]
-        Manager = 3,
-        [EnumMember(Value = "Admin")]
-        Admin = 4
-    }
-
-
 }
