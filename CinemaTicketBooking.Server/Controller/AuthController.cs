@@ -199,7 +199,7 @@ namespace CinemaTicketBooking.Server.Controller
                     {
                         message = "Login Successful",
                         username = user.Username,
-                        user_id = user.Username,
+                        user_id = user.Id,
                         user_role = user.Role,
                         login_as = GetLoginAsMessage(user.Role),
                         token = token
