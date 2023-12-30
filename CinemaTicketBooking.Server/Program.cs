@@ -588,6 +588,14 @@ and date between current_date and current_date + interval '7 days'",
 				IEnumerable<Showtimes> showtimes = await publicRepository.SelectShowtimesMatchingAsync
 				(new(), @"id = any(@ids)", ("@ids", tickets.Select(ticket => ticket.ShowtimeId).Distinct().ToArray()));
 
+				if (!showtimes.Any())
+				{
+					BillOldAllResponseBody emptyBillOldAllResponseBody = new();
+					emptyBillOldAllResponseBody.UserId = userId;
+					emptyBillOldAllResponseBody.Result = new();
+					return emptyBillOldAllResponseBody;
+				}
+
 				IEnumerable<Movies> movies = await publicRepository.SelectMoviesMatchingAsync
 				(new(), @"id = any(@ids)", ("@ids", showtimes.Select(showtime => showtime.MovieId).Distinct().ToArray()));
 
