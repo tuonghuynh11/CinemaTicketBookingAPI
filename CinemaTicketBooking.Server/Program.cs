@@ -245,9 +245,9 @@ namespace CinemaTicketBooking.Server
 					});
 				}
 
-				responseBodyTop10MoviesYear =
+				responseBodyTop10MoviesYear.Result =
 				responseBodyTop10MoviesYear.Result.OrderByDescending(movie => movie.Revenue)
-				.Take(10);
+				.Take(10).ToList();
 
 				return responseBodyTop10MoviesYear;
 			});
