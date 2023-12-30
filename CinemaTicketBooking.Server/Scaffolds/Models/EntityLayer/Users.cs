@@ -42,9 +42,6 @@ namespace CinemaTicketBooking.Server.Scaffolds.Models.EntityLayer
 		public string? Email { get; set; }
 
 
-        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
-        public string? Token { get; set; }
-
         public void SetPassword(string password)
         {
             Password = BCrypt.Net.BCrypt.HashPassword(password);
@@ -53,12 +50,6 @@ namespace CinemaTicketBooking.Server.Scaffolds.Models.EntityLayer
         public bool VerifyPassword(string password)
         {
             return BCrypt.Net.BCrypt.Verify(password, this.Password);
-        }
-
-        public void GenerateToken()
-        {
-            // Generate your token here; you can use any method you prefer
-            Token = Guid.NewGuid().ToString();
         }
     }
 }

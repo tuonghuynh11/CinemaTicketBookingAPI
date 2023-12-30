@@ -74,16 +74,18 @@ namespace CinemaTicketBooking.Server.Controller
                 {
                     Username = model.Username,
                     Password = model.Password, // Note: In a production environment, you should hash the password
-                    PhoneNumber = model.PhoneNumber,
-                    Email = model.Email,
-                    Role = "1"
+                    PhoneNumber = model.PhoneNumber ?? "",  // Sử dụng ?? để gán null nếu không có giá trị
+                    Email = model.Email ?? "",
+                    Role = "1",
+                    FullName = "",  // Gán trực tiếp null nếu không có giá trị
+                    Address = "",
+                    Sex = "",
                 };
 
                 // Optionally, hash the password before storing it
                 // newUser.SetPassword(model.Password);
 
                 userRepository.Add(newUser); // Save the user to the database
-
                 // Optionally, you can return additional information or a success status
                 return Ok(new { message = "Registration successful", username = newUser.Username, role = newUser.Role });
             }
@@ -143,16 +145,19 @@ namespace CinemaTicketBooking.Server.Controller
                 {
                     Username = model.Username,
                     Password = model.Password, // Note: In a production environment, you should hash the password
-                    PhoneNumber = model.PhoneNumber,
-                    Email = model.Email,
-                    Role = model.Role
+                    PhoneNumber = model.PhoneNumber ?? "",  // Sử dụng ?? để gán null nếu không có giá trị
+                    Email = model.Email ?? "",
+                    Role = model.Role,
+                    FullName = "",  // Gán trực tiếp null nếu không có giá trị
+                    Address = "",
+                    Sex = "",
+
                 };
 
                 // Optionally, hash the password before storing it
                 // newUser.SetPassword(model.Password);
 
                 userRepository.Add(newUser); // Save the user to the database
-
                 // Optionally, you can return additional information or a success status
                 return Ok(new { message = "Registration successful", username = newUser.Username, role = newUser.Role });
             }
