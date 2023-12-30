@@ -103,7 +103,7 @@ namespace CinemaTicketBooking.Server
 				IEnumerable<Showtimes> showtimes = await publicRepository.SelectShowtimesMatchingAsync
 				(new(),
 				@"auditorium_id = any(@auditoriumIds)
-				and (extract year from date) = @year",
+				and extract(year from date) = @year",
 				("@auditoriumIds", auditoriums.Select(auditorium => auditorium.Id).ToArray()),
 				("@year", year));
 
@@ -199,6 +199,10 @@ namespace CinemaTicketBooking.Server
 					});
 				}
 
+				responseBodyTop10MoviesMonthOfYear.Result =
+				responseBodyTop10MoviesMonthOfYear.Result.OrderByDescending(movie => movie.Revenue)
+				.Take(10).ToList();
+
 				return responseBodyTop10MoviesMonthOfYear;
 			});
 
@@ -240,6 +244,10 @@ namespace CinemaTicketBooking.Server
 						Revenue = ticketsOfThisMovie.Select(ticketOfThisMovie => ticketOfThisMovie.Price!.Value).Sum(),
 					});
 				}
+
+				responseBodyTop10MoviesYear =
+				responseBodyTop10MoviesYear.Result.OrderByDescending(movie => movie.Revenue)
+				.Take(10);
 
 				return responseBodyTop10MoviesYear;
 			});
