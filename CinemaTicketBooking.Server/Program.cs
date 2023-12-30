@@ -571,6 +571,8 @@ and date between current_date and current_date + interval '7 days'",
 				IEnumerable<Tickets> tickets = await publicRepository.SelectTicketsMatchingAsync
 				(new() { Checked = ticketsChecked, }, @"bill_id = any(@billIds)", ("@billIds", bills.Select(bill => bill.Id).ToArray()));
 
+
+
 				IEnumerable<Orders> orders = await publicRepository.SelectOrdersMatchingAsync
 				(new(), @"bill_id = any(@billIds)", ("@billIds", bills.Select(bill => bill.Id).ToArray()));
 
@@ -621,8 +623,8 @@ and date between current_date and current_date + interval '7 days'",
 						FoodAndDrinks = foodAndDrinks.First(foodAndDrink => foodAndDrink.Id == order.FoodAndDrinkId),
 					});
 					customBillOldResponseBody.TicketIds = ticketsOfThisBill.Select(ticket => ticket.Id!.Value).ToList();
-					customBillOldResponseBody.TicketsCost = ticketsOfThisBill.Sum(ticket => ticket.Price)!.Value;
-					customBillOldResponseBody.OrdersCost = ordersOfThisBill.Sum(order => order.Price)!.Value;
+					customBillOldResponseBody.TicketsCost = ticketsOfThisBill.Sum(ticket => ticket.Price!.Value);
+					customBillOldResponseBody.OrdersCost = ordersOfThisBill.Sum(order => order.Price!.Value);
 					customBillOldResponseBody.Showtime = showtimes.First
 					(showtime => showtime.Id == ticketsOfThisBill.First().ShowtimeId);
 					customBillOldResponseBody.Auditorium = auditoriums.First(auditorium
