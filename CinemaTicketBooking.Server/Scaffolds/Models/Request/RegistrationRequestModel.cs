@@ -1,4 +1,5 @@
-﻿using System.Collections.Specialized;
+﻿using CinemaTicketBooking.Server.Scaffolds.Models.EntityLayer;
+using System.Collections.Specialized;
 
 namespace CinemaTicketBooking.Server.Scaffolds.Models.ModelLayer
 {
@@ -13,7 +14,7 @@ namespace CinemaTicketBooking.Server.Scaffolds.Models.ModelLayer
         public string? Email { get; set; }
         public string? PhoneNumber { get; set; }
 
-        public string? Role { get; set; }
+        public RoleEnum? Role { get; set; }
 
     }
 }

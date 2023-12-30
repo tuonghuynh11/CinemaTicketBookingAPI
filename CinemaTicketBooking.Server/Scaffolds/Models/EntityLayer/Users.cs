@@ -1,4 +1,5 @@
-using System;
+﻿using System;
+using System.Runtime.Serialization;
 using System.Text.Json.Serialization;
 
 namespace CinemaTicketBooking.Server.Scaffolds.Models.EntityLayer
@@ -35,10 +36,10 @@ namespace CinemaTicketBooking.Server.Scaffolds.Models.EntityLayer
 		[JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
 		public string? Sex { get; set; }
 
-		[JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
-		public string Role { get; set; }
-    
-		[JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+        [JsonConverter(typeof(JsonStringEnumConverter))]
+        public RoleEnum Role { get; set; }
+
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
 		public string? Email { get; set; }
 
 
@@ -52,4 +53,19 @@ namespace CinemaTicketBooking.Server.Scaffolds.Models.EntityLayer
             return BCrypt.Net.BCrypt.Verify(password, this.Password);
         }
     }
+
+    [JsonConverter(typeof(JsonStringEnumConverter))]
+    public enum RoleEnum
+    {
+        [EnumMember(Value = "Customer")]
+        Customer = 1,
+        [EnumMember(Value = "Staff")]
+        Staff = 2,
+        [EnumMember(Value = "Manager")]
+        Manager = 3,
+        [EnumMember(Value = "Admin")]
+        Admin = 4
+    }
+
+
 }

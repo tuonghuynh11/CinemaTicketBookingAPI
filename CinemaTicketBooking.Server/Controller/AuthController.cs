@@ -76,7 +76,7 @@ namespace CinemaTicketBooking.Server.Controller
                     Password = model.Password, // Note: In a production environment, you should hash the password
                     PhoneNumber = model.PhoneNumber ?? "",  // Sử dụng ?? để gán null nếu không có giá trị
                     Email = model.Email ?? "",
-                    Role = "1",
+                    Role = RoleEnum.Customer,
                     FullName = "",  // Gán trực tiếp null nếu không có giá trị
                     Address = "",
                     Sex = "",
@@ -147,7 +147,7 @@ namespace CinemaTicketBooking.Server.Controller
                     Password = model.Password, // Note: In a production environment, you should hash the password
                     PhoneNumber = model.PhoneNumber ?? "",  // Sử dụng ?? để gán null nếu không có giá trị
                     Email = model.Email ?? "",
-                    Role = model.Role,
+                    Role = model.Role.Value,
                     FullName = "",  // Gán trực tiếp null nếu không có giá trị
                     Address = "",
                     Sex = "",
@@ -200,8 +200,8 @@ namespace CinemaTicketBooking.Server.Controller
                         message = "Login Successful",
                         username = user.Username,
                         user_id = user.Id,
-                        user_role = user.Role,
-                        login_as = GetLoginAsMessage(user.Role),
+                        user_role = (int)user.Role,
+                        login_as = user.Role,
                         token = token
                     });
                 }
