@@ -2959,7 +2959,7 @@ namespace CinemaTicketBooking.Server.Scaffolds.Models.DataLayer.Repositories
 			var query = new StringBuilder();
 
 			query.Append(" update ");
-			query.Append("   public.menus ");
+			query.Append("   public.staffs ");
 			query.Append(" set ");
 			query.Append("     created_timestamp = created_timestamp ");
 			if (updatedValue.Email != null)
