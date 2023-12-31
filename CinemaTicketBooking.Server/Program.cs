@@ -159,7 +159,71 @@ namespace CinemaTicketBooking.Server
 				return responseBodyStatisticRevenue12Months;
 			});
 
-			app.MapGet("/movies/top-10/month-of-year",
+            app.MapGet("/statistic/revenue-12-months-of-year-of-all-cinema",
+            async ([FromQuery(Name = "year")] int year,
+            [FromServices] IPublicRepository publicRepository) =>
+            {
+                ResponseBodyStatisticRevenue12MonthsOfYearOfAllCinema responseBodyStatisticRevenue12MonthsOfYearOfAllCinema = new();
+                responseBodyStatisticRevenue12MonthsOfYearOfAllCinema.Year = year;
+
+                IEnumerable<Showtimes> showtimes = await publicRepository.SelectShowtimesMatchingAsync
+                (new(),
+                @"extract(year from date) = @year",
+                ("@year", year));
+
+                IEnumerable<Tickets> tickets = await publicRepository.SelectTicketsMatchingAsync
+                (new(),
+                @"showtime_id = any(@showtimeIds)",
+                (parameterName: "@showtimeIds", parameterValue: showtimes.Select(showtime
+                => showtime.Id).ToArray()));
+
+                IEnumerable<Movies> movies = await publicRepository.SelectMoviesMatchingAsync
+                (new(),
+                @"id = any(@ids)",
+                ("@ids", showtimes.Select(showtime => showtime.MovieId).Distinct().ToArray()));
+
+                IEnumerable<IGrouping<int, Showtimes>> _ = showtimes.GroupBy(showtime => showtime.Date!.Value.Month,
+                showtime => showtime);
+
+                responseBodyStatisticRevenue12MonthsOfYearOfAllCinema.RevenueEachMonths = new();
+
+                foreach (IGrouping<int, Showtimes> group in _)
+                {
+                    StatisticRevenueEachMonth statisticRevenueEachMonth = new();
+                    statisticRevenueEachMonth.Month = group.Key;
+                    statisticRevenueEachMonth.RevenueEachMovies = new();
+
+                    IEnumerable<IGrouping<long, Showtimes>> __ =
+                    group.GroupBy(showtime => showtime.MovieId!.Value, showtime => showtime);
+
+                    foreach (IGrouping<long, Showtimes> subgroup in __)
+                    {
+                        Movies movie = movies.First(movie => movie.Id == subgroup.Key);
+                        IEnumerable<Tickets> ticketsOfThisMovie = tickets.Where(ticket =>
+                        subgroup.Any(showtime => showtime.Id == ticket.ShowtimeId));
+                        statisticRevenueEachMonth.RevenueEachMovies.Add(new()
+                        {
+                            MovieId = movie.Id!.Value,
+                            MovieTitle = movie.Title!,
+                            PremiereDate = movie.ReleaseDate!,
+                            NumberOfViews = ticketsOfThisMovie.Count(),
+                            Revenue = ticketsOfThisMovie.Select(ticketOfThisMovie => ticketOfThisMovie.Price!.Value).Sum(),
+                        });
+                    }
+
+                    statisticRevenueEachMonth.TotalRevenue = statisticRevenueEachMonth.RevenueEachMovies
+                    .Select(revenueEachMovie => revenueEachMovie.Revenue).Sum();
+
+                    responseBodyStatisticRevenue12MonthsOfYearOfAllCinema.RevenueEachMonths.Add(statisticRevenueEachMonth);
+                }
+
+                responseBodyStatisticRevenue12MonthsOfYearOfAllCinema.TotalRevenue = responseBodyStatisticRevenue12MonthsOfYearOfAllCinema
+                .RevenueEachMonths.Select(revenueEachMonth => revenueEachMonth.TotalRevenue).Sum();
+
+                return responseBodyStatisticRevenue12MonthsOfYearOfAllCinema;
+            });
+
+            app.MapGet("/movies/top-10/month-of-year",
 			async ([FromQuery(Name = "month")] int month, [FromQuery(Name = "year")] int year,
 			[FromServices] IPublicRepository publicRepository) =>
 			{
@@ -1148,8 +1212,15 @@ fields/properties then delete them, no fields/properties included `means` matchi
 		public List<StatisticRevenueEachMonth> RevenueEachMonths { get; set; } = null!;
 	}
 
-	//public class ResponseBodyTickets
-	//{
+    public class ResponseBodyStatisticRevenue12MonthsOfYearOfAllCinema
+    {
+        public int Year { get; set; }
+        public decimal TotalRevenue { get; set; }
+        public List<StatisticRevenueEachMonth> RevenueEachMonths { get; set; } = null!;
+    }
 
-	//}
+    //public class ResponseBodyTickets
+    //{
+
+    //}
 }

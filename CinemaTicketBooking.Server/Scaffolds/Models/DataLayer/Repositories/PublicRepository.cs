@@ -1579,7 +1579,7 @@ namespace CinemaTicketBooking.Server.Scaffolds.Models.DataLayer.Repositories
 			query.Append("     phone_number, ");
 			query.Append("     address, ");
 			query.Append("     email, ");
-			query.Append("     sex ");
+			query.Append("     sex, ");
             query.Append("     role ");
             query.Append("   ) ");
 			query.Append(" values ");
@@ -1590,7 +1590,7 @@ namespace CinemaTicketBooking.Server.Scaffolds.Models.DataLayer.Repositories
 			query.Append("     @phoneNumber, ");
 			query.Append("     @address, ");
 			query.Append("     @email, ");
-			query.Append("     @sex ");
+			query.Append("     @sex, ");
             query.Append("     @role ");
             query.Append("   ) ");
 			
