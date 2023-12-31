@@ -123,13 +123,17 @@ namespace CinemaTicketBooking.Server
 
 				responseBodyStatisticRevenue12Months.RevenueEachMonths = new();
 
-				foreach (IGrouping<int, Showtimes> group in _)
+                List<int> alreadyCalcMonth = new();
+
+                foreach (IGrouping<int, Showtimes> group in _)
 				{
 					StatisticRevenueEachMonth statisticRevenueEachMonth = new();
 					statisticRevenueEachMonth.Month = group.Key;
 					statisticRevenueEachMonth.RevenueEachMovies = new();
 
-					IEnumerable<IGrouping<long, Showtimes>> __ =
+                    alreadyCalcMonth.Add(group.Key);
+
+                    IEnumerable<IGrouping<long, Showtimes>> __ =
 					group.GroupBy(showtime => showtime.MovieId!.Value, showtime => showtime);
 
 					foreach (IGrouping<long, Showtimes> subgroup in __)
@@ -153,7 +157,21 @@ namespace CinemaTicketBooking.Server
 					responseBodyStatisticRevenue12Months.RevenueEachMonths.Add(statisticRevenueEachMonth);
 				}
 
-				responseBodyStatisticRevenue12Months.TotalRevenue = responseBodyStatisticRevenue12Months
+                for (int month = 1; month <= 12; ++month)
+                {
+                    if (alreadyCalcMonth.Contains(month))
+                        continue;
+                    responseBodyStatisticRevenue12Months.RevenueEachMonths.Add(new StatisticRevenueEachMonth()
+                    {
+                        Month = month,
+                        TotalRevenue = 0,
+                        RevenueEachMovies = new(),
+                    });
+                }
+                responseBodyStatisticRevenue12Months.RevenueEachMonths
+                .Sort((rem1, rem2) => rem1.Month.CompareTo(rem2.Month));
+
+                responseBodyStatisticRevenue12Months.TotalRevenue = responseBodyStatisticRevenue12Months
 				.RevenueEachMonths.Select(revenueEachMonth => revenueEachMonth.TotalRevenue).Sum();
 
 				return responseBodyStatisticRevenue12Months;
@@ -187,11 +205,15 @@ namespace CinemaTicketBooking.Server
 
                 responseBodyStatisticRevenue12MonthsOfYearOfAllCinema.RevenueEachMonths = new();
 
+                List<int> alreadyCalcMonth = new();
+
                 foreach (IGrouping<int, Showtimes> group in _)
                 {
                     StatisticRevenueEachMonth statisticRevenueEachMonth = new();
                     statisticRevenueEachMonth.Month = group.Key;
                     statisticRevenueEachMonth.RevenueEachMovies = new();
+
+                    alreadyCalcMonth.Add(group.Key);
 
                     IEnumerable<IGrouping<long, Showtimes>> __ =
                     group.GroupBy(showtime => showtime.MovieId!.Value, showtime => showtime);
@@ -217,6 +239,20 @@ namespace CinemaTicketBooking.Server
                     responseBodyStatisticRevenue12MonthsOfYearOfAllCinema.RevenueEachMonths.Add(statisticRevenueEachMonth);
                 }
 
+                for (int month = 1; month <= 12; ++month)
+                {
+                    if (alreadyCalcMonth.Contains(month))
+                        continue;
+                    responseBodyStatisticRevenue12MonthsOfYearOfAllCinema.RevenueEachMonths.Add(new StatisticRevenueEachMonth()
+                    {
+                        Month = month,
+                        TotalRevenue = 0,
+                        RevenueEachMovies = new(),
+                    });
+                }
+                responseBodyStatisticRevenue12MonthsOfYearOfAllCinema.RevenueEachMonths
+                .Sort((rem1, rem2) => rem1.Month.CompareTo(rem2.Month));
+
                 responseBodyStatisticRevenue12MonthsOfYearOfAllCinema.TotalRevenue = responseBodyStatisticRevenue12MonthsOfYearOfAllCinema
                 .RevenueEachMonths.Select(revenueEachMonth => revenueEachMonth.TotalRevenue).Sum();
 
@@ -224,8 +260,8 @@ namespace CinemaTicketBooking.Server
             });
 
             app.MapGet("/movies/top-10/month-of-year",
-			async ([FromQuery(Name = "month")] int month, [FromQuery(Name = "year")] int year,
-			[FromServices] IPublicRepository publicRepository) =>
+            async ([FromQuery(Name = "month")] int month, [FromQuery(Name = "year")] int year,
+            [FromServices] IPublicRepository publicRepository) =>
 			{
 				IEnumerable<Showtimes> showtimes = await publicRepository.SelectShowtimesMatchingAsync
 				(new(),
