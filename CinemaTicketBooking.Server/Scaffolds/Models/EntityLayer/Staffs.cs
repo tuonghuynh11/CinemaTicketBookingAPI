@@ -25,7 +25,7 @@ namespace CinemaTicketBooking.Server.Scaffolds.Models.EntityLayer
 		public string? Email { get; set; }
 
 		[JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
-        public RoleEnum Role { get; set; }
+        public RoleEnum? Role { get; set; }
 
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
 		public long? CinemaId { get; set; }

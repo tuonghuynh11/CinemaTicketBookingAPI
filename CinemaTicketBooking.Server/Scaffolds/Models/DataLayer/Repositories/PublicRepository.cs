@@ -2927,7 +2927,7 @@ namespace CinemaTicketBooking.Server.Scaffolds.Models.DataLayer.Repositories
 	
 			var parameters = new DynamicParameters();
 			parameters.Add("@email", entity.Email);
-			parameters.Add("@role", entity.Role);
+			parameters.Add("@role", entity.Role.ToString());
 			parameters.Add("@dateOfBirth", entity.DateOfBirth);
 			parameters.Add("@cinemaId", entity.CinemaId);
 			parameters.Add("@userId", entity.UserId);
@@ -2946,7 +2946,7 @@ namespace CinemaTicketBooking.Server.Scaffolds.Models.DataLayer.Repositories
 
 			var parameters = new DynamicParameters();
 			parameters.Add("@email", entity.Email);
-			parameters.Add("@role", entity.Role);
+			parameters.Add("@role", entity.Role.ToString());
 			parameters.Add("@dateOfBirth", entity.DateOfBirth);
 			parameters.Add("@cinemaId", entity.CinemaId);
 			parameters.Add("@userId", entity.UserId);
@@ -2986,13 +2986,13 @@ namespace CinemaTicketBooking.Server.Scaffolds.Models.DataLayer.Repositories
 
 			var parameters = new DynamicParameters();
 			parameters.Add("@email", entity.Email);
-			parameters.Add("@role", entity.Role);
+			parameters.Add("@role", entity.Role.ToString());
 			parameters.Add("@dateOfBirth", entity.DateOfBirth);
 			parameters.Add("@cinemaId", entity.CinemaId);
 			parameters.Add("@userId", entity.UserId);
 
 			parameters.Add("@updatedEmail", updatedValue.Email);
-			parameters.Add("@updatedRole", updatedValue.Role);
+			parameters.Add("@updatedRole", updatedValue.Role.ToString());
 			parameters.Add("@updatedDateOfBirth", updatedValue.DateOfBirth);
 			parameters.Add("@updatedCinemaId", updatedValue.CinemaId);
 			parameters.Add("@updatedUserId", updatedValue.UserId);
@@ -3018,7 +3018,7 @@ namespace CinemaTicketBooking.Server.Scaffolds.Models.DataLayer.Repositories
 
 			var parameters = new DynamicParameters();
 			parameters.Add("@email", entity.Email);
-			parameters.Add("@role", entity.Role);
+			parameters.Add("@role", entity.Role.ToString());
 			parameters.Add("@dateOfBirth", entity.DateOfBirth);
 			parameters.Add("@cinemaId", entity.CinemaId);
 			parameters.Add("@userId", entity.UserId);
