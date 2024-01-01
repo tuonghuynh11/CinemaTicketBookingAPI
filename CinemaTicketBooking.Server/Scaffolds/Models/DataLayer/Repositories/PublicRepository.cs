@@ -1924,7 +1924,7 @@ namespace CinemaTicketBooking.Server.Scaffolds.Models.DataLayer.Repositories
 			query.Append("     budget, ");
 			query.Append("     genres, ");
 			query.Append("     homepage, ");
-			query.Append("     id, ");
+			//query.Append("     id, ");
 			query.Append("     imdb_id, ");
 			query.Append("     original_language, ");
 			query.Append("     original_title, ");
@@ -1954,7 +1954,7 @@ namespace CinemaTicketBooking.Server.Scaffolds.Models.DataLayer.Repositories
 			query.Append("     @budget, ");
 			query.Append("     @genres, ");
 			query.Append("     @homepage, ");
-			query.Append("     @id, ");
+			//query.Append("     @id, ");
 			query.Append("     @imdbId, ");
 			query.Append("     @originalLanguage, ");
 			query.Append("     @originalTitle, ");
@@ -1987,7 +1987,7 @@ namespace CinemaTicketBooking.Server.Scaffolds.Models.DataLayer.Repositories
 			parameters.Add("@budget", entity.Budget);
 			parameters.Add("@genres", entity.Genres);
 			parameters.Add("@homepage", entity.Homepage);
-			parameters.Add("@id", entity.Id);
+			//parameters.Add("@id", entity.Id);
 			parameters.Add("@imdbId", entity.ImdbId);
 			parameters.Add("@originalLanguage", entity.OriginalLanguage);
 			parameters.Add("@originalTitle", entity.OriginalTitle);
