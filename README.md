@@ -1,7 +1,7 @@
 # CinemaTicketBooking
 
 Hosting at:
->https://cinema-ticket-booking-server.up.railway.app/
+>https://productcatalog123.azurewebsites.net/
 
 Swagger:
->https://cinema-ticket-booking-server.up.railway.app/swagger/index.html
+>https://productcatalog123.azurewebsites.net/swagger/index.html
